@@ -1,70 +1,119 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Stack, Link } from 'expo-router';
+import React from 'react';
+import { useCallback } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { Button, StyleSheet, Text, View, Dimensions, TouchableHighlight, ScrollView} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+SplashScreen.preventAutoHideAsync();
 
-export default function HomeScreen() {
+export default function App() {
+  
+  const [fontsLoaded, fontError] = useFonts({
+    'Lobster-Regular': require('../../assets/fonts/Lobster-Regular.ttf'),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded || fontError) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+    <View style={styles.layout}>
+      <View style={styles.profileBar}>
+        <LinearGradient colors={['turquoise', 'purple']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <Text style={styles.profileText}>SplitLah!</Text>
+        </LinearGradient>
+      </View>
+      <View style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'row', padding: 12}}>
+        <Link href='newgroup' asChild >
+          <TouchableHighlight 
+            style={{...styles.midCircle}}
+            underlayColor = '#ccc'>
+            <LinearGradient style={styles.midCircle} colors={['purple', 'blue']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <Text style={{fontSize: 26, color: "white", fontWeight: 'bold'}}> New Group </Text>
+            </LinearGradient>
+          </TouchableHighlight>
+        </Link>
+        <Link href='bill' asChild >
+          <TouchableHighlight 
+            style={{...styles.midCircle}}
+            underlayColor = '#ccc'>
+            <LinearGradient style={styles.midCircle} colors={['#ecb40a', '#f44336']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+            <Text style={{fontSize: 26, color: "white", fontWeight: 'bold'}}> Join Group </Text>
+            </LinearGradient>
+          </TouchableHighlight>
+        </Link>
+      </View>
+      <View style={{marginHorizontal: 16, marginTop: 40}}>
+        <Text style={{color: 'white', fontSize: 18}}>Recently Joined Groups</Text>
+      </View>
+      <View style={styles.groupview}>
+        <ScrollView>
+        <Text style={{...styles.dummyText, marginTop: 24}}>Sample Group 1</Text>
+        <Text style={styles.dummyText}>Sample Group 2</Text>
+        <Text style={styles.dummyText}>Sample Group 3</Text>
+        <Text style={styles.dummyText}>Sample Group 4</Text>
+        <Text style={styles.dummyText}>Sample Group 5</Text>
+        </ScrollView>
+      </View>
+      
+    </View>
+    
+  
   );
 }
 
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  layout: {
+    flex: 1,
+    backgroundColor: 'black',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  midCircle: {
+      borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
+      width: Dimensions.get('window').width * 0.42,
+      height: Dimensions.get('window').width * 0.42,
+      borderColor: 'black',
+      borderWidth: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginHorizontal: 12
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  dummyText: {
+    margin: 16,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: 'turquoise',
+    color: 'white',
+    fontStyle: 'italic'
   },
+  groupview: {
+    marginHorizontal: 16,
+    borderWidth: 2,
+    borderColor: 'white',
+    height: 390,
+  },
+  profileBar: {
+    marginVertical: 50,
+    // borderWidth: 4,
+    backgroundColor: 'white',
+  },
+  profileText: {
+    color: 'white',
+    fontSize: 42,
+    fontFamily: 'Lobster-Regular',
+    alignContent: 'center',
+    textAlign: 'center',
+    height: 55,
+  }
 });
+
