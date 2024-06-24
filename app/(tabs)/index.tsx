@@ -25,6 +25,8 @@ export default function App() {
     return null;
   }
 
+  
+
   return (
 
     <View style={styles.layout}>
