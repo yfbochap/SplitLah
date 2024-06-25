@@ -17,8 +17,10 @@ import {Link} from 'expo-router';
 import {useRouter} from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import styles from '../../assets/styles';
+import {SUPABASE_URL,SUPABASE_KEY} from '@env'
 
 export default function login() {
+
     return(
 
             <ScrollView style={styles.container}>
@@ -52,6 +54,7 @@ export default function login() {
                     </Link>
 
                 </View>
+
             </ScrollView>
 
     );
