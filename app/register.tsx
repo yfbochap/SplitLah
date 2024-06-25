@@ -16,6 +16,7 @@ import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import {Link} from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import styles from '../assets/styles';
+import {passwordTotalCheck, emailTotalCheck, usernameTotalCheck} from '../services/registerService';
 
 export default function register(){
     // Set up the useState starting with empty fields, the first field is the var name, the 2nd field is the updaterFunction when changed
@@ -28,6 +29,11 @@ export default function register(){
     const [username, setUsername] = useState('');
     // For username error msg
     const [checkUsernameError, setCheckUsernameError] = useState(false);
+
+    // For Email
+    const [email, setEmail] = useState('');
+    // For Email error msg
+    const [checkEmailError, setCheckEmailError] = useState(false);
 
     // Sort of updates when user changes the status of the fields
     const handlePasswordChange = (pass) => {
@@ -42,44 +48,50 @@ export default function register(){
       setUsername(username);
     };
 
-
-    //Function to check if the fields are empty
-    function checkNotEmpty(password, confirmPassword){
-        if (password.length!=0 && confirmPassword.length != 0){
-            return true;
-        }
-        console.log("Password is empty");
-        return false;
+    // handle email input
+    const handleEmailChange = (email)=> {
+        setEmail(email);
     }
-    //Function to check if password & confirm password same
-    function checkMatch(password, confirmPassword){
-        if (password == confirmPassword){
-            return true;
-        }
-        console.log("Password not match");
-        return false;
-    }
-
-    // Function to check username empty
-
-    // Function to check if username already taken
-
-
-    //Combines both checks
-    function totalCheck() {
-        if(checkNotEmpty(password,confirmPassword) && checkMatch(password,confirmPassword)){
-            return true;
-        }
-        return false;
-    }
-
 
     const handleRegister = () => {
-        if(!totalCheck()) {
-            console.log("Indeed not match");
+        // console.log("IN HANDLE");
+        var counter = 0;
+        if(!passwordTotalCheck(password,confirmPassword)) {
             setPasswordErrorMsg(true);
         }
         else{
+            setPasswordErrorMsg(false);
+            counter++;
+        }
+    //  Check if email does not pass the checks
+    //      set the email error to true
+    //  Else counter increase by 1
+        if(!emailTotalCheck(email)){
+            setCheckEmailError(true);
+        }
+        else {
+            setCheckEmailError(false);
+            counter++;
+        }
+    //  Check if username does not pass the checks
+    //      set username error to true
+    //   Else counter increase by 1
+        if(!usernameTotalCheck(username)){
+            setCheckUsernameError(true);
+        }
+        else {
+            setCheckUsernameError(false);
+            counter++;
+        }
+
+    //  Check if the counter == 3
+    //      add the user into auth db
+    //      redirect to home page w/ uid? (C if can j take from somewhere)
+        if (counter !=3){
+            console.log("ERROR");
+        }
+        else{
+            console.log("PASS");
         }
     };
 
@@ -96,6 +108,7 @@ export default function register(){
             </View>
             <View style={styles.body}>
                 <TextInput placeholder='username' placeholderTextColor={'grey'} style={{...styles.inputText}} onChangeText={handleUsernameChange}></TextInput>
+                <TextInput placeholder='email' placeholderTextColor={'grey'} style={{...styles.inputText}} onChangeText={handleEmailChange}></TextInput>
                 <TextInput placeholder='Password' placeholderTextColor={'grey'} style={{...styles.inputText}} secureTextEntry={true} onChangeText={handlePasswordChange}></TextInput>
                 <TextInput placeholder='Confirm Password' placeholderTextColor={'grey'} style={{...styles.inputText}} secureTextEntry={true} onChangeText={handleConfirmPasswordChange}></TextInput>
                 <TouchableHighlight
@@ -111,16 +124,21 @@ export default function register(){
             <View style={{display: checkPasswordError ? 'flex':'none'}}>
                 <Text
                 style={{color:'red'}}>
-                    Ensure that your password field is:
-                    Not Empty & both fields match
-
+                    Ensure password is not empty and both fields match{"\n"}
                 </Text>
             </View>
 
-            <View>
+            <View style={{display: checkEmailError ? 'flex':'none'}}>
                 <Text
                     style={{color:'red'}}>
-                    Ensure Valid Email
+                    Ensure email is not empty and valid{"\n"}
+                </Text>
+            </View>
+
+            <View style={{display: checkUsernameError ? 'flex':'none'}}>
+                <Text
+                    style={{color:'red'}}>
+                    Ensure username is not empty and more than 6 characters{"\n"}
                 </Text>
             </View>
         </ScrollView>
@@ -130,4 +148,3 @@ export default function register(){
 
 }
 
-asdasdasd
