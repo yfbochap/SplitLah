@@ -51,5 +51,6 @@ const styles = StyleSheet.create({
     saferArea: {
       paddingVertical: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
     },
+
 });
 export default styles;
