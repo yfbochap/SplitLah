@@ -135,4 +135,24 @@ async function signUpEmail(inputEmail,inputPassword,inputUsername) {
     }
 }
 
-export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail};
+// Signing in
+async  function  signInEmail(inputEmail,inputPassword){
+    const { error } = await supabase.auth.signInWithPassword({
+        email: inputEmail,
+        password: inputPassword,
+    })
+    if (error) {
+        if (error.message == "Invalid login credentials"){
+            Alert.alert("email/password is wrong");
+        }
+        else {
+            Alert.alert(error.message);
+        }
+    }
+    else {
+        const {data: {user}} = await supabase.auth.getUser();
+        console.log(`User UID: ${user.id}`);
+    }
+}
+
+export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail, signInEmail};
