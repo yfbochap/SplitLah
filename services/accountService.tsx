@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-
+import { Alert, StyleSheet, View } from 'react-native'
+import { supabase } from '../hooks/supabase';
+import {Simulate} from "react-dom/test-utils";
+import canPlayThrough = Simulate.canPlayThrough;
+import * as Crypto from 'expo-crypto';
 
 //Function to check if the fields are empty
 function passwordCheckNotEmpty(password, confirmPassword){
@@ -100,4 +104,27 @@ function usernameTotalCheck(username){
     return false;
 }
 
-export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck};
+//Basic Sign up
+async function signUpEmail(inputEmail,inputPassword) {
+    // console.log(supabase);
+    try {
+        const hashedPassword = await hashedPassword(inputPassword);
+        const {
+            data: {session},
+            error,
+        } = await supabase.auth.signUp({email: inputEmail, password: inputPassword});
+
+        if (error) {
+            Alert.alert(error.message);
+        } else if (!session) {
+            Alert.alert('Please check your inbox for email verification!');
+        }
+    }
+    catch (error){
+        console.error(error);
+        console.error(error.message);
+        console.error(error.stack);
+    }
+}
+
+export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail};
