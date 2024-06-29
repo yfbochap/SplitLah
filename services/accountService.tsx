@@ -3,7 +3,6 @@ import { Alert, StyleSheet, View } from 'react-native'
 import { supabase } from '../hooks/supabase';
 import {Simulate} from "react-dom/test-utils";
 import canPlayThrough = Simulate.canPlayThrough;
-import * as Crypto from 'expo-crypto';
 
 //Function to check if the fields are empty
 function passwordCheckNotEmpty(password, confirmPassword){
@@ -105,17 +104,26 @@ function usernameTotalCheck(username){
 }
 
 //Basic Sign up
-async function signUpEmail(inputEmail,inputPassword) {
+async function signUpEmail(inputEmail,inputPassword,inputUsername) {
     // console.log(supabase);
     try {
-        const hashedPassword = await hashedPassword(inputPassword);
         const {
             data: {session},
             error,
-        } = await supabase.auth.signUp({email: inputEmail, password: inputPassword});
+        } = await supabase.auth.signUp({email: inputEmail, password: inputPassword,
+        options:{
+            data: {
+                userName: inputUsername
+            }
+        }});
 
         if (error) {
-            Alert.alert(error.message);
+            if (error.message == "User already registered"){
+                Alert.alert("Email has already been registered!");
+            }
+            else {
+                Alert.alert(error.message);
+            }
         } else if (!session) {
             Alert.alert('Please check your inbox for email verification!');
         }

@@ -92,7 +92,7 @@ export default function register(){
         }
         else{
             console.log("PASS");
-            signUpEmail(email, password);
+            signUpEmail(email, password,username);
         }
     };
 
