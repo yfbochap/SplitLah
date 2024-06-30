@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-
+import { Alert, StyleSheet, View } from 'react-native'
+import { supabase } from '../hooks/supabase';
+import {Simulate} from "react-dom/test-utils";
+import canPlayThrough = Simulate.canPlayThrough;
 
 //Function to check if the fields are empty
 function passwordCheckNotEmpty(password, confirmPassword){
@@ -100,4 +103,56 @@ function usernameTotalCheck(username){
     return false;
 }
 
-export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck};
+//Basic Sign up
+async function signUpEmail(inputEmail,inputPassword,inputUsername) {
+    // console.log(supabase);
+    try {
+        const {
+            data: {session},
+            error,
+        } = await supabase.auth.signUp({email: inputEmail, password: inputPassword,
+        options:{
+            data: {
+                userName: inputUsername
+            }
+        }});
+
+        if (error) {
+            if (error.message == "User already registered"){
+                Alert.alert("Email has already been registered!");
+            }
+            else {
+                Alert.alert(error.message);
+            }
+        } else if (!session) {
+            Alert.alert('Please check your inbox for email verification!');
+        }
+    }
+    catch (error){
+        console.error(error);
+        console.error(error.message);
+        console.error(error.stack);
+    }
+}
+
+// Signing in
+async  function  signInEmail(inputEmail,inputPassword){
+    const { error } = await supabase.auth.signInWithPassword({
+        email: inputEmail,
+        password: inputPassword,
+    })
+    if (error) {
+        if (error.message == "Invalid login credentials"){
+            Alert.alert("email/password is wrong");
+        }
+        else {
+            Alert.alert(error.message);
+        }
+    }
+    else {
+        const {data: {user}} = await supabase.auth.getUser();
+        console.log(`User UID: ${user.id}`);
+    }
+}
+
+export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail, signInEmail};

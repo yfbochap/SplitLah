@@ -16,7 +16,7 @@ import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import {Link} from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import styles from '../assets/styles';
-import {passwordTotalCheck, emailTotalCheck, usernameTotalCheck} from '../services/registerService';
+import {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail} from '../services/accountService';
 
 export default function register(){
     // Set up the useState starting with empty fields, the first field is the var name, the 2nd field is the updaterFunction when changed
@@ -92,6 +92,7 @@ export default function register(){
         }
         else{
             console.log("PASS");
+            signUpEmail(email, password,username);
         }
     };
 
@@ -107,10 +108,10 @@ export default function register(){
                 <FontAwesome name="user" size={150} color="white"/>
             </View>
             <View style={styles.body}>
-                <TextInput placeholder='username' placeholderTextColor={'grey'} style={{...styles.inputText}} onChangeText={handleUsernameChange}></TextInput>
-                <TextInput placeholder='email' placeholderTextColor={'grey'} style={{...styles.inputText}} onChangeText={handleEmailChange}></TextInput>
-                <TextInput placeholder='Password' placeholderTextColor={'grey'} style={{...styles.inputText}} secureTextEntry={true} onChangeText={handlePasswordChange}></TextInput>
-                <TextInput placeholder='Confirm Password' placeholderTextColor={'grey'} style={{...styles.inputText}} secureTextEntry={true} onChangeText={handleConfirmPasswordChange}></TextInput>
+                <TextInput placeholder='username' placeholderTextColor={'grey'} style={{...styles.inputText}} onChangeText={handleUsernameChange}>joe_danger</TextInput>
+                <TextInput placeholder='email' placeholderTextColor={'grey'} style={{...styles.inputText}} onChangeText={handleEmailChange}>test@email.com</TextInput>
+                <TextInput placeholder='Password' placeholderTextColor={'grey'} style={{...styles.inputText}} secureTextEntry={true} onChangeText={handlePasswordChange}>password123</TextInput>
+                <TextInput placeholder='Confirm Password' placeholderTextColor={'grey'} style={{...styles.inputText}} secureTextEntry={true} onChangeText={handleConfirmPasswordChange}>password123</TextInput>
                 <TouchableHighlight
                 style={{...styles.loginButton}}
                 underlayColor = '#ccc'
