@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import styles from '../../assets/styles';
 
 export default function NewGroup() {
   const navigation = useNavigation();
@@ -50,7 +52,7 @@ export default function NewGroup() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
         <Text style={styles.headerText}>Create New Group</Text>
@@ -91,70 +93,6 @@ export default function NewGroup() {
           </ScrollView>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
-  header: {
-    backgroundColor: 'purple',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    marginBottom: 12,
-    marginTop: 50,
-  },
-  headerText: {
-    textAlign: 'center',
-    fontSize: 24,
-    color: 'white',
-    marginLeft: 8,
-  },
-  descText: {
-    color: 'grey',
-    fontSize: 16,
-    padding: 8,
-    marginHorizontal: 24,
-  },
-  inputText: {
-    color: 'white',
-    paddingHorizontal: 8,
-    fontSize: 20,
-    marginHorizontal: 24,
-    borderBottomColor: 'purple',
-    borderWidth: 2,
-    marginBottom: 8,
-  },
-  currencyInputContainer: {
-    marginHorizontal: 24,
-    borderBottomColor: 'purple',
-    borderWidth: 2,
-    marginBottom: 8,
-  },
-  currencyInput: {
-    color: 'white',
-    paddingHorizontal: 8,
-    fontSize: 20,
-  },
-  popup: {
-    maxHeight: 200,
-    marginHorizontal: 24,
-    borderWidth: 2,
-    borderColor: 'purple',
-    borderRadius: 5,
-    marginBottom: 8,
-  },
-  currencyButton: {
-    backgroundColor: '#DDDDDD',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-  },
-  currencyText: {
-    fontSize: 16,
-  },
-});
