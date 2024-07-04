@@ -19,11 +19,14 @@ import {LinearGradient} from 'expo-linear-gradient';
 import styles from '../../assets/styles';
 import {SUPABASE_URL,SUPABASE_KEY} from '@env'
 import {signInEmail} from "@/services/accountService";
+// import {localDatabase} from "@/constructors/localStorage";
 
 export default function login() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    // const db = new localDatabase();
 
     const handleEmailChange = (inputEmail)=> {
         setEmail(inputEmail);
@@ -33,9 +36,6 @@ export default function login() {
         setPassword(inputPassword);
     }
 
-    function handleSignIn(){
-        signInEmail(email, password);
-    }
 
     return(
             <ScrollView style={styles.container}>

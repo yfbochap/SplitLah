@@ -148,10 +148,13 @@ async  function  signInEmail(inputEmail,inputPassword){
         else {
             Alert.alert(error.message);
         }
+        return false;
     }
     else {
         const {data: {user}} = await supabase.auth.getUser();
+        console.log(user);
         console.log(`User UID: ${user.id}`);
+        return  user.id;
     }
 }
 
