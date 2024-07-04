@@ -158,4 +158,44 @@ async  function  signInEmail(inputEmail,inputPassword){
     }
 }
 
-export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail, signInEmail};
+async function signOutEmail() {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Error signing out:', error);
+        } else {
+            console.log('Signed out successfully');
+        }
+    } catch (error) {
+        console.error('Error signing out:', error);
+    }
+}
+
+// check if session exists
+// To use the function do:
+// getSessionUserId().then((userId) => {
+//     if (userId) {
+//         // Do something with the user ID
+//     } else {
+//         // Handle the case where no session is found
+//     }
+// });
+async function checkSession(){
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error) {
+        console.error('Error getting session:', error);
+        return null;
+    }
+
+    if (!data || !data.session) {
+        console.log('No session found');
+        return null;
+    }
+
+    const userId = data.session.user.id;
+    console.log('User ID:', userId);
+    return userId;
+}
+
+export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail, signInEmail, signOutEmail, checkSession};

@@ -15,8 +15,9 @@ import { HeaderBackButton } from '@react-navigation/elements';
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import {Link} from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
-import styles from '../assets/styles';
-import {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail} from '../services/accountService';
+import styles from '../../assets/styles';
+import {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail} from '../../services/accountService';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function register(){
     // Set up the useState starting with empty fields, the first field is the var name, the 2nd field is the updaterFunction when changed
@@ -97,21 +98,21 @@ export default function register(){
     };
 
     return(
-        <ScrollView style={styles.container}>
-
-            <View style={styles.header}>
+        <SafeAreaView style={styles.container}>
+            <ScrollView>
+            <View style={styles.primaryheader}>
                 <LinearGradient colors={['turquoise', 'purple']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                    <Text style={styles.headertext}>Register</Text>
+                    <Text style={styles.primaryheadertext}>Register</Text>
                 </LinearGradient>
             </View>
             <View style={{alignItems: 'center'}}>
                 <FontAwesome name="user" size={150} color="white"/>
             </View>
-            <View style={styles.body}>
-                <TextInput placeholder='username' placeholderTextColor={'grey'} style={{...styles.inputText}} onChangeText={handleUsernameChange}>joe_danger</TextInput>
-                <TextInput placeholder='email' placeholderTextColor={'grey'} style={{...styles.inputText}} onChangeText={handleEmailChange}>test@email.com</TextInput>
-                <TextInput placeholder='Password' placeholderTextColor={'grey'} style={{...styles.inputText}} secureTextEntry={true} onChangeText={handlePasswordChange}>password123</TextInput>
-                <TextInput placeholder='Confirm Password' placeholderTextColor={'grey'} style={{...styles.inputText}} secureTextEntry={true} onChangeText={handleConfirmPasswordChange}>password123</TextInput>
+            <View style={styles.accountbody}>
+                <TextInput placeholder='username' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} onChangeText={handleUsernameChange}>joe_danger</TextInput>
+                <TextInput placeholder='email' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} onChangeText={handleEmailChange}>test@email.com</TextInput>
+                <TextInput placeholder='Password' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} secureTextEntry={true} onChangeText={handlePasswordChange}>password123</TextInput>
+                <TextInput placeholder='Confirm Password' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} secureTextEntry={true} onChangeText={handleConfirmPasswordChange}>password123</TextInput>
                 <TouchableHighlight
                 style={{...styles.loginButton}}
                 underlayColor = '#ccc'
@@ -143,6 +144,7 @@ export default function register(){
                 </Text>
             </View>
         </ScrollView>
+        </SafeAreaView>
     );
 
 

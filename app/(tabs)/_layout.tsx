@@ -7,6 +7,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet } from 'react-native';
+import { Tab } from '@rneui/themed';
 
 function CustomTabBar() {
   const colorScheme = useColorScheme();
@@ -31,12 +32,12 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? 'dark'].tint,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colorScheme === 'dark' ? '#000' : 'purple', // Set your desired background color here
+          backgroundColor: colorScheme === 'dark' ? 'purple' : 'purple', // Set your desired background color here
           borderTopColor: colorScheme === 'dark' ? '#000' : '#fff',  
-        }
+        },
       }}>
       <Tabs.Screen
         name="index"
@@ -59,6 +60,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="newgroup"
         options={{ href: null, }}
+      />
+      <Tabs.Screen
+        name="register"
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
     </Tabs>
   );
