@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../hooks/supabase';
 import styles from '../../assets/styles';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 
 export default function NewGroup() {
   const navigation = useNavigation();
-
-  const handleBackButtonPress = () => {
-    navigation.goBack();
-  };
+  const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currencies, setCurrencies] = useState<string[]>([]);
   const [selectedCurrency, setSelectedCurrency] = useState<string | null>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
+
+  const [groupName, setGroupName] = useState('');
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
     fetchCurrencies();
@@ -42,8 +42,9 @@ export default function NewGroup() {
   };
 
   const handleCurrencySelect = (currency: string) => {
-    setSelectedCurrency(currency);
-    setIsInputFocused(false);
+    setSelectedCurrency(currency); // Set the selected currency
+    setSearchQuery(''); // Clear the search query
+    setIsInputFocused(false); // Hide the currency list
   };
 
   const handleInputFocus = () => {
@@ -52,26 +53,83 @@ export default function NewGroup() {
 
   const handleInputChange = (text: string) => {
     setSearchQuery(text);
+    setSelectedCurrency(null); // Clear selected currency when typing
   };
 
-  //supabase javascript client code for CRUD operations
+  const handleSubmit = async (): Promise<void> => {
+    const userId: string | null = await SecureStore.getItemAsync('user_uuid');
 
+    if (!userId) {
+      console.error('User ID is not available');
+      return;
+    }
+
+    if (!selectedCurrency) {
+      Alert.alert('Error', 'Currency is not selected');
+      return;
+    }
+
+    const result = await createGroup(userId, groupName, description, selectedCurrency);
+    if (result) {
+      router.navigate("group");  // Navigate to group page after successful creation
+    }
+  };
+
+  const createGroup = async (userId: string, groupName: string, description: string, currency: string) => {
+    try {
+      const { data: groupData, error: groupError } = await supabase
+        .from('group')
+        .insert([
+          { group_name: groupName, description, no_of_people: 1, currency }
+        ])
+        .select();
+
+      if (groupError) {
+        throw groupError;
+      }
+
+      const groupId = groupData[0].group_id;
+
+      const { data: userGroupData, error: userGroupError } = await supabase
+        .from('user_group')
+        .insert([
+          { user_id: userId, group_id: groupId }
+        ]);
+
+      if (userGroupError) {
+        throw userGroupError;
+      }
+
+      return groupData;
+    } catch (error) {
+      console.error('Error creating group:', error);
+      return null;
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
+        <HeaderBackButton tintColor='white' onPress={() => navigation.goBack()} />
         <Text style={styles.headerText}>Create New Group</Text>
       </View>
       <View>
         <Text style={styles.descText}>Group Name</Text>
-        <TextInput style={styles.inputText}></TextInput>
+        <TextInput
+          style={styles.inputText}
+          value={groupName}
+          onChangeText={setGroupName}
+        />
 
         <Text style={styles.descText}>Description</Text>
-        <TextInput style={styles.inputText}></TextInput>
+        <TextInput
+          style={styles.inputText}
+          value={description}
+          onChangeText={setDescription}
+        />
 
         <Text style={styles.descText}>Currency</Text>
-        
+
         <TouchableOpacity
           style={styles.currencyInputContainer}
           onPress={handleInputFocus}
@@ -79,10 +137,8 @@ export default function NewGroup() {
           <TextInput
             style={styles.currencyInput}
             placeholder="Select currency..."
-            editable={!selectedCurrency}
             onFocus={handleInputFocus}
-            onBlur={() => setIsInputFocused(false)}
-            value={selectedCurrency || ''}
+            value={searchQuery || selectedCurrency || ''} // Show searchQuery if not empty, otherwise show selectedCurrency
             onChangeText={handleInputChange}
           />
         </TouchableOpacity>
@@ -101,13 +157,14 @@ export default function NewGroup() {
         )}
 
         <View>
-            <TouchableOpacity style={{...styles.loginButton, backgroundColor: 'purple'}}>
-            <Text style={{fontSize: 26, color: "white", textAlign: 'center'}}> SUBMIT </Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={{ ...styles.loginButton, backgroundColor: 'purple' }}
+            onPress={handleSubmit}
+          >
+            <Text style={{ fontSize: 26, color: "white", textAlign: 'center' }}> SUBMIT </Text>
+          </TouchableOpacity>
         </View>
-
       </View>
-
     </SafeAreaView>
   );
 }
