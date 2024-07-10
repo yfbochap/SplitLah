@@ -65,6 +65,10 @@ export default function TabLayout() {
         name="register"
         options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
+      <Tabs.Screen
+        name="login"
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
+      />
     </Tabs>
   );
 }

@@ -1,6 +1,6 @@
 import { Stack, Link } from 'expo-router';
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Image, Dimensions, StatusBar } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Image, Dimensions, StatusBar, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,16 +11,68 @@ import  {
   SafeAreaInsetsContext,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import * as SecureStore from 'expo-secure-store';
+import { useRouter, useFocusEffect } from 'expo-router';
 // import { StatusBar } from 'expo-status-bar';
 
 SplashScreen.preventAutoHideAsync();
 
+const getUUID = async (): Promise<string | null> => {
+  try {
+    const uuid = await SecureStore.getItemAsync('user_uuid');
+    return uuid;
+  } catch (e) {
+    console.error('Failed to retrieve UUID.', e);
+    return null;
+  }
+};
+
 export default function App() {
+
   const [fontsLoaded, fontError] = useFonts({
     'Lobster-Regular': require('../../assets/fonts/Lobster-Regular.ttf'),
   });
 
   const [isFabOpen, setIsFabOpen] = useState(false);
+  //Test feature for checking login status
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkLoginStatus = async () => {
+        try {
+          const uuid = await getUUID();
+          if (uuid) {
+            console.log(`UUID found: ${uuid}`);
+            setIsLoggedIn(true);
+          } else {
+            console.log('UUID not found.');
+            router.replace('login');
+          }
+        } catch (e) {
+          console.error('Failed to load UUID.', e);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      checkLoginStatus();
+    }, [])
+  );
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (isLoggedIn) {
+        console.log('logged in');
+      } else {
+        console.log('not in');
+        router.replace('login');
+      }
+    }
+  }, [isLoading, isLoggedIn]);
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
@@ -28,13 +80,18 @@ export default function App() {
     }
   }, [fontsLoaded, fontError]);
 
+  const toggleFab = () => {
+    setIsFabOpen(!isFabOpen);
+  };
+
   if (!fontsLoaded && !fontError) {
     return null;
   }
 
-  const toggleFab = () => {
-    setIsFabOpen(!isFabOpen);
-  };
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+  //end of test feature
 
   return (
     

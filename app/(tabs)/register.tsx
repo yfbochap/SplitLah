@@ -13,13 +13,15 @@ import {
 } from 'react-native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import {Link} from 'expo-router';
+import {Link, useRouter} from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import styles from '../../assets/styles';
 import {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail} from '../../services/accountService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function register(){
+    const router = useRouter();
+
     // Set up the useState starting with empty fields, the first field is the var name, the 2nd field is the updaterFunction when changed
     const [password, inputtedPassword] = useState("");
     const [confirmPassword,inputtedConfirmPassword] = useState("");
@@ -93,7 +95,17 @@ export default function register(){
         }
         else{
             console.log("PASS");
-            var result = signUpEmail(email, password,username);
+            // var result = signUpEmail(email, password,username);
+            async function signUpResult(){
+                const signUpCheck = await signUpEmail(email, password, username);
+                console.log(signUpCheck);
+                if (signUpCheck) {
+                  router.navigate('login');
+                  /* can consider making a filler page (like congratulations) 
+                  with a button for the user to click which would then redirect them to "login" instead */
+                }
+            }
+            signUpResult();
         }
     };
 
@@ -105,7 +117,7 @@ export default function register(){
                     <Text style={styles.primaryheadertext}>Register</Text>
                 </LinearGradient>
             </View>
-            <View style={{alignItems: 'center'}}>
+            <View style={{marginTop: 30, alignItems: 'center'}}>
                 <FontAwesome name="user" size={150} color="white"/>
             </View>
             <View style={styles.accountbody}>

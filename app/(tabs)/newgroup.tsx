@@ -3,7 +3,10 @@ import { View, Text, Button, StyleSheet, TextInput, ScrollView, TouchableOpacity
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../../hooks/supabase';
 import styles from '../../assets/styles';
+import { TouchableHighlight } from 'react-native-gesture-handler';
+import { Link, useRouter } from 'expo-router';
 
 export default function NewGroup() {
   const navigation = useNavigation();
@@ -51,6 +54,9 @@ export default function NewGroup() {
     setSearchQuery(text);
   };
 
+  //supabase javascript client code for CRUD operations
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -65,6 +71,7 @@ export default function NewGroup() {
         <TextInput style={styles.inputText}></TextInput>
 
         <Text style={styles.descText}>Currency</Text>
+        
         <TouchableOpacity
           style={styles.currencyInputContainer}
           onPress={handleInputFocus}
@@ -92,7 +99,15 @@ export default function NewGroup() {
             ))}
           </ScrollView>
         )}
+
+        <View>
+            <TouchableOpacity style={{...styles.loginButton, backgroundColor: 'purple'}}>
+            <Text style={{fontSize: 26, color: "white", textAlign: 'center'}}> SUBMIT </Text>
+            </TouchableOpacity>
+        </View>
+
       </View>
+
     </SafeAreaView>
   );
 }

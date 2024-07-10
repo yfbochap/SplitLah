@@ -42,12 +42,13 @@ const styles = StyleSheet.create({
     loginButton: {
         color: 'purple',
         marginHorizontal: 24,
-        marginTop: 30,
+        marginVertical: 30,
     },
     hyperlink: {
         color: '#2296ec',
         fontSize: 26,
         marginHorizontal: 24,
+        marginBottom: 16,
         textAlign: 'center',
     },
     header: {

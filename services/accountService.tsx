@@ -3,6 +3,8 @@ import { Alert, StyleSheet, View } from 'react-native'
 import { supabase } from '../hooks/supabase';
 import {Simulate} from "react-dom/test-utils";
 import canPlayThrough = Simulate.canPlayThrough;
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import  * as SecureStore from 'expo-secure-store';
 
 //Function to check if the fields are empty
 function passwordCheckNotEmpty(password, confirmPassword){
@@ -127,6 +129,8 @@ async function signUpEmail(inputEmail,inputPassword,inputUsername) {
         } else if (!session) {
             Alert.alert('Please check your inbox for email verification!');
         }
+
+        return true;
     }
     catch (error){
         console.error(error);
@@ -154,7 +158,20 @@ async  function  signInEmail(inputEmail,inputPassword){
         const {data: {user}} = await supabase.auth.getUser();
         console.log(user);
         console.log(`User UID: ${user.id}`);
-        return  user.id;
+
+        // Test code for storing login uuid in secure storage
+        const storeUUID = async (uuid) => {
+            try {
+              console.log(`test: ${uuid}`);
+              await SecureStore.setItemAsync('user_uuid', uuid);
+            } catch (e) {
+              console.error('Failed to save UUID.', e);
+            }
+        };
+
+        await storeUUID(user.id);
+        return user.id;
+        
     }
 }
 
