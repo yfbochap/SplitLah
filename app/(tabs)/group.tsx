@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, ListRenderItem, Platform, StatusBar } from 'react-native';
+import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {Link, useRouter} from 'expo-router';
 import styles from '../../assets/styles';
+import { Group } from '../../classes/group';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -47,9 +49,36 @@ const calculateTotalBalance = (balances: Balance[]): number => {
 
 function FirstTab() {
   return (
-    <View style={styles.tabContent}>
-      <Text style={styles.tabText}>First Tab Content</Text>
+    <View style={styles.container}>
+      <View>
+
+      </View>
+      <View style={styles.searchFabContainer}>
+        <Link href = 'addbill' asChild>
+          <TouchableOpacity style={styles.fab}>
+            <Image source={require('../../assets/images/plus.png')} style={styles.fabIcon} />
+          </TouchableOpacity>
+        </Link>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search"
+          placeholderTextColor="#999"
+        />
+      </View>
+      <ScrollView style={styles.chatList}>
+        {['Sample Group 1', 'Sample Group 2', 'Sample Group 3', 'Sample Group 4', 'Sample Group 5'].map((group, index) => (
+          <Link href = 'bill' asChild>
+            <TouchableOpacity key={index} style={styles.chatItem}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{group.charAt(0)}</Text>
+              </View>
+              <Text style={styles.chatText}>{group}</Text>
+            </TouchableOpacity>
+          </Link>
+        ))}
+      </ScrollView>
     </View>
+    
   );
 }
 

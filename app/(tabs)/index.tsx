@@ -13,7 +13,7 @@ import  {
 } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter, useFocusEffect } from 'expo-router';
-// import { StatusBar } from 'expo-status-bar';
+import { User } from '../../classes/user';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -111,12 +111,14 @@ export default function App() {
       </View>
       <ScrollView style={styles.chatList}>
         {['Sample Group 1', 'Sample Group 2', 'Sample Group 3', 'Sample Group 4', 'Sample Group 5'].map((group, index) => (
+          <Link href = 'group' asChild>
           <TouchableOpacity key={index} style={styles.chatItem}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{group.charAt(0)}</Text>
             </View>
             <Text style={styles.chatText}>{group}</Text>
           </TouchableOpacity>
+          </Link>
         ))}
       </ScrollView>
       {isFabOpen && (
