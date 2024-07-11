@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import styles from '../../assets/styles';
-import  {
+import {
   SafeAreaView,
   SafeAreaProvider,
   SafeAreaInsetsContext,
@@ -16,6 +16,19 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { User } from '../../classes/user';
 
 SplashScreen.preventAutoHideAsync();
+
+interface GroupDetails {
+  group_id: string;
+  group_name: string;
+  description: string;
+  no_of_people: number;
+  currency: string;
+}
+
+interface Group {
+  group: GroupDetails;
+  group_id: string;
+}
 
 const getUUID = async (): Promise<string | null> => {
   try {
@@ -28,16 +41,14 @@ const getUUID = async (): Promise<string | null> => {
 };
 
 export default function App() {
-
   const [fontsLoaded, fontError] = useFonts({
     'Lobster-Regular': require('../../assets/fonts/Lobster-Regular.ttf'),
   });
 
   const [isFabOpen, setIsFabOpen] = useState(false);
-  //Test feature for checking login status
-
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [groups, setGroups] = useState<Group[]>([]); // Use the Group interface
   const router = useRouter();
 
   useFocusEffect(
@@ -60,6 +71,7 @@ export default function App() {
       };
 
       checkLoginStatus();
+      retrieveGroups(); // Call the function here
     }, [])
   );
 
@@ -73,6 +85,24 @@ export default function App() {
       }
     }
   }, [isLoading, isLoggedIn]);
+
+  const retrieveGroups = async () => {
+    try {
+      const uuid = await getUUID();
+      if (uuid) {
+        const user = new User(uuid);
+        const data = await user.getGroupDetailsBasedOnUserID();
+        if (data) {
+          console.log('Groups found', data);
+          setGroups(data as Group[]); // Cast the data to Group[]
+        } else {
+          console.log('No Groups found');
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load groups', e);
+    }
+  };
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
@@ -91,10 +121,11 @@ export default function App() {
   if (isLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
-  //end of test feature
+
+  //Storing Group ID for selected group
+  
 
   return (
-    
     <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
       <LinearGradient colors={['turquoise', 'purple']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.profileBar}>
         <Text style={styles.profileText}>SplitLah!</Text>
@@ -110,16 +141,22 @@ export default function App() {
         />
       </View>
       <ScrollView style={styles.chatList}>
-        {['Sample Group 1', 'Sample Group 2', 'Sample Group 3', 'Sample Group 4', 'Sample Group 5'].map((group, index) => (
-          <Link href = 'group' asChild>
-          <TouchableOpacity key={index} style={styles.chatItem}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{group.charAt(0)}</Text>
-            </View>
-            <Text style={styles.chatText}>{group}</Text>
-          </TouchableOpacity>
-          </Link>
-        ))}
+        {groups.length > 0 ? (
+          groups.map((group, index) => (
+            <Link key={index} href='group' asChild>
+              <TouchableOpacity style={styles.chatItem}>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>
+                    {group.group.group_name ? group.group.group_name.charAt(0) : 'G'}
+                  </Text>
+                </View>
+                <Text style={styles.chatText}>{group.group.group_name || 'Unnamed Group'}</Text>
+              </TouchableOpacity>
+            </Link>
+          ))
+        ) : (
+          <Text style={styles.chatText}>No groups found.</Text>
+        )}
       </ScrollView>
       {isFabOpen && (
         <View style={styles.fabMenu}>
@@ -142,4 +179,3 @@ export default function App() {
     </SafeAreaView>
   );
 }
-

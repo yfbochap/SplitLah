@@ -35,13 +35,34 @@ export class User {
     }
 
     //  Select all group IDs based on userID
-    async getGroupDetailsBasedOnUserID() {
-        // console.log(`Group ID: ${this.groupID}`);
+    async getGroupIDsBasedOnUserID() {
+        // console.log(Group ID: ${this.groupID});
         try {
             const {data,error} = await supabase
                 .from('user_group')
-                .select("group_id, group (group_id (group_name)")
+                .select("group_id")
                 .eq('user_id',this.userID);
+            if (error){
+                Alert.alert(error.message);
+            }
+            else {
+                console.log(data);
+                return data;
+            }
+        }
+        catch (irregError){
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return null; // Handling any other unexpected errors
+        }
+    }
+    
+    //Test code for retrieving details of all groups the user is a member in
+    async getGroupDetailsBasedOnUserID() {
+        try {
+            const {data,error} = await supabase
+                .from('user_group')
+                .select("group_id, group (group_id, group_name, description, no_of_people, currency)")
+                .eq('user_id', this.userID);
             if (error){
                 Alert.alert(error.message);
             }
