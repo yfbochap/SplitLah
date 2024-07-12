@@ -167,7 +167,7 @@ export default function App() {
               </LinearGradient>
             </TouchableOpacity>
           </Link>
-          <Link href='bill' asChild>
+          <Link href='joingroup' asChild>
             <TouchableOpacity style={styles.fabMenuItem}>
               <LinearGradient colors={['rgba(236,180,10,0.7)', 'rgba(244,67,54,0.7)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fabMenuItemBackground}>
                 <Text style={styles.fabMenuText}>Join Group</Text>
