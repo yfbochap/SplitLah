@@ -98,4 +98,5 @@ export class User {
             return null; // Handling any other unexpected errors
         }
     }
+    
 }

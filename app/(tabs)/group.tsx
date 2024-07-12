@@ -1,13 +1,15 @@
-import React from 'react';
-import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image, } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useNavigation, NavigationContainer } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
-import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {Link, useRouter} from 'expo-router';
+import { Link, useRouter, useFocusEffect } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
+import { getGID } from '@/services/accountService';
+import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -19,12 +21,26 @@ interface Balance {
   receiver: string;
 }
 
+interface GroupDetails {
+  group_id: string;
+  group_name: string;
+  description: string;
+  no_of_people: number;
+  currency: string;
+}
+
+interface BillDetails {
+  bill_id: string;
+  name: string;
+  date: string;
+  amount: string;
+}
+
 const balances: Balance[] = [
   { id: '1', name: 'Alice', amount: 20, payer: 'Alice', receiver: 'Bob' },
   { id: '2', name: 'Bob', amount: -15, payer: 'Charlie', receiver: 'Alice' },
   { id: '3', name: 'Charlie', amount: 30, payer: 'Alice', receiver: 'Charlie' },
   { id: '4', name: 'Dave', amount: -10, payer: 'Dave', receiver: 'Alice' },
-  // Add more balances as needed
 ];
 
 const BalanceBar: React.FC<{ balance: Balance }> = ({ balance }) => {
@@ -47,14 +63,12 @@ const calculateTotalBalance = (balances: Balance[]): number => {
   return balances.reduce((total, item) => total + item.amount, 0);
 };
 
-function FirstTab() {
+function FirstTab({ billDetails }) {
   return (
     <View style={styles.container}>
-      <View>
-
-      </View>
+      <View></View>
       <View style={styles.searchFabContainer}>
-        <Link href = 'addbill' asChild>
+        <Link href='addbill' asChild>
           <TouchableOpacity style={styles.fab}>
             <Image source={require('../../assets/images/plus.png')} style={styles.fabIcon} />
           </TouchableOpacity>
@@ -66,19 +80,26 @@ function FirstTab() {
         />
       </View>
       <ScrollView style={styles.chatList}>
-        {['Sample Group 1', 'Sample Group 2', 'Sample Group 3', 'Sample Group 4', 'Sample Group 5'].map((group, index) => (
-          <Link href = 'bill' asChild>
-            <TouchableOpacity key={index} style={styles.chatItem}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{group.charAt(0)}</Text>
-              </View>
-              <Text style={styles.chatText}>{group}</Text>
-            </TouchableOpacity>
-          </Link>
-        ))}
+        {billDetails && billDetails.length > 0 ? (
+          billDetails.map((bill, index) => (
+            <Link href='bill' asChild key={index}>
+              <TouchableOpacity style={styles.chatItem}>
+                {/* <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>{bill.name.charAt(0)}</Text>
+                </View> */}
+                <View>
+                  <Text style={styles.chatText}>{bill.name}</Text>
+                </View>
+                <Text style={styles.chatText}>${bill.amount}</Text>
+                <Text style={styles.chatText}>{bill.date}</Text>
+              </TouchableOpacity>
+            </Link>
+          ))
+        ) : (
+          <Text>No bills available</Text>
+        )}
       </ScrollView>
     </View>
-    
   );
 }
 
@@ -99,8 +120,8 @@ function SecondTab() {
   );
 
   return (
-    <View style={{...styles.container}}>
-      <View style={{...styles.barChartContainer}}>
+    <View style={{ ...styles.container }}>
+      <View style={{ ...styles.barChartContainer }}>
         <FlatList
           data={balances}
           renderItem={renderBalanceBarItem}
@@ -118,23 +139,60 @@ function SecondTab() {
         <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(balances)}</Text>
       </View>
     </View>
- );
+  );
 }
-
 
 export default function GroupScreen() {
   const navigation = useNavigation();
+  const router = useRouter();
 
   const handleBackButtonPress = () => {
     navigation.goBack();
   };
 
+  const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
+  const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkGroupData = async () => {
+        try {
+          const gid = await getGID();
+          if (gid) {
+            console.log(`GID found: ${gid}`);
+            const group = new Group(gid);
+            const details = await group.getGroupDetails();
+            const bills = await group.getBillsBasedOnGroup();
+            console.log(`Group Details: ${JSON.stringify(details)}`);
+            console.log(`Bill Details: ${JSON.stringify(bills)}`);
+            if (details && details.length > 0) {
+              setGroupDetails(details[0]);
+            }
+            if (bills && bills.length > 0) {
+              setBillDetails(bills);
+            }
+          } else {
+            console.log('GID not found.');
+            router.replace('/');
+          }
+        } catch (e) {
+          console.error('Failed to load GID.', e);
+        }
+      };
+
+      checkGroupData();
+    }, [])
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.groupheader}>
-        <View><HeaderBackButton tintColor='white' onPress={handleBackButtonPress} /></View>
-        
-        <View style={{flex: 1, alignItems: 'center', maxWidth: 300}}><Text style={styles.headerText}>#Group-Name-Here</Text></View>
+        <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
+        <View style={{ flex: 1, alignItems: 'center', maxWidth: 300 }}>
+          <Text style={{ ...styles.headerText }}>
+            {groupDetails ? groupDetails.group_name : '#Group-Name-Here'}
+          </Text>
+        </View>
       </View>
 
       <Tab.Navigator
@@ -143,7 +201,7 @@ export default function GroupScreen() {
           tabBarStyle: { backgroundColor: 'purple' },
           tabBarIndicatorStyle: { backgroundColor: 'white' },
           tabBarLabel: ({ focused }) => {
-            let label, iconName;
+            let label;
             if (route.name === 'FirstTab') {
               label = 'Bills';
             } else if (route.name === 'SecondTab') {
@@ -152,21 +210,19 @@ export default function GroupScreen() {
             return <Text style={{ color: focused ? 'white' : 'gray' }}>{label}</Text>;
           },
           tabBarIcon: ({ color, focused }) => {
-            let iconName;
             if (route.name === 'FirstTab') {
-              iconName = focused ? 'file-text' : 'file-text-o';
-              return <FontAwesome name="anchor" size={20} color="white" />;
+              return <FontAwesome name="file-text" size={20} color="white" />;
             } else if (route.name === 'SecondTab') {
-              iconName = focused ? 'balance-scale' : 'balance-scale';
               return <FontAwesome name="balance-scale" size={20} color="white" />;
             }
           },
         })}
       >
-        <Tab.Screen name="FirstTab" component={FirstTab} />
+        <Tab.Screen name="FirstTab">
+          {() => <FirstTab billDetails={billDetails} />}
+        </Tab.Screen>
         <Tab.Screen name="SecondTab" component={SecondTab} />
       </Tab.Navigator>
     </SafeAreaView>
   );
 }
-
