@@ -217,4 +217,34 @@ async function checkSession(){
     return userId;
 }
 
+async function getUUID(): Promise<string | null> {
+    try {
+        const uuid = await SecureStore.getItemAsync('user_uuid');
+        return uuid;
+    } catch (e) {
+        console.error('Failed to retrieve UUID.', e);
+        return null;
+    }
+};
+
+async function storeGID(gid: string){
+    try {
+        await AsyncStorage.setItem('group_uuid', gid);
+        console.log(gid);
+    } catch (e) {
+        console.error('Failed to save GID.', e);
+    }
+};
+
+async function getGID(): Promise<string | null> {
+    try {
+        const gid = await AsyncStorage.getItem('group_uuid');
+        return gid;
+    } catch (e) {
+        console.error('Failed to retrieve UUID.', e);
+        return null;
+    }
+};
+
 export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail, signInEmail, signOutEmail, checkSession};
+export { getUUID, getGID, storeGID};

@@ -14,6 +14,7 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { User } from '../../classes/user';
+import {getUUID, getGID, storeGID} from "@/services/accountService";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,16 +30,6 @@ interface Group {
   group: GroupDetails;
   group_id: string;
 }
-
-const getUUID = async (): Promise<string | null> => {
-  try {
-    const uuid = await SecureStore.getItemAsync('user_uuid');
-    return uuid;
-  } catch (e) {
-    console.error('Failed to retrieve UUID.', e);
-    return null;
-  }
-};
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
@@ -143,8 +134,7 @@ export default function App() {
       <ScrollView style={styles.chatList}>
         {groups.length > 0 ? (
           groups.map((group, index) => (
-            <Link key={index} href='group' asChild>
-              <TouchableOpacity style={styles.chatItem}>
+              <TouchableOpacity style={styles.chatItem} onPress={async () => {await storeGID(group.group.group_id); router.push('group');}}>
                 <View style={styles.avatar}>
                   <Text style={styles.avatarText}>
                     {group.group.group_name ? group.group.group_name.charAt(0) : 'G'}
@@ -152,7 +142,6 @@ export default function App() {
                 </View>
                 <Text style={styles.chatText}>{group.group.group_name || 'Unnamed Group'}</Text>
               </TouchableOpacity>
-            </Link>
           ))
         ) : (
           <Text style={styles.chatText}>No groups found.</Text>

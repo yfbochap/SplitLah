@@ -102,6 +102,26 @@ export class Group {
         }
     }
 
+    // Select all Bills based on GID
+    async getBillsBasedOnGroup() {
+        try {
+            const {data,error} = await supabase
+                .from('bill')
+                .select('bill_id, name, date, amount')
+                .eq('group_id',this.groupID);
+            if (error){
+                Alert.alert(error.message);
+            }
+            else {
+                console.log(data);
+                return data;
+            }
+        }
+        catch (irregError){
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return null; // Handling any other unexpected errors
+        }
+    }
     // Update group occupancy by 1
     async updateOccupancyBy1(){
         const currentGroup = await this.getGroupDetails();
