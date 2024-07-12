@@ -122,5 +122,4 @@ export class Group {
             return null; // Handling any other unexpected errors
         }
     }
-
 }
