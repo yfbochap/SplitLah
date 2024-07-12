@@ -122,4 +122,25 @@ export class Group {
             return null; // Handling any other unexpected errors
         }
     }
+    // Update group occupancy by 1
+    async updateOccupancyBy1(){
+        const currentGroup = await this.getGroupDetails();
+        // console.log(currentGroup);
+        const currentCount = currentGroup.no_of_people;
+        // console.log(`current count: ${currentCount}`);
+        try{
+            const { data, error } = await supabase
+                .from('group')
+                .update({ no_of_people: currentCount+1 })
+                .eq('group_id', this.groupID);
+            if (!error){
+                console.log("successfully updated");
+            }
+        }
+        catch (irregError){
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return null; // Handling any other unexpected errors
+        }
+    }
+
 }

@@ -146,8 +146,10 @@ async  function  signInEmail(inputEmail,inputPassword){
         password: inputPassword,
     })
     if (error) {
+        
         if (error.message == "Invalid login credentials"){
             Alert.alert("email/password is wrong");
+            
         }
         else {
             Alert.alert(error.message);
