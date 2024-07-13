@@ -48,7 +48,7 @@ export class Group {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }
@@ -122,11 +122,12 @@ export class Group {
             return null; // Handling any other unexpected errors
         }
     }
+
     // Update group occupancy by 1
     async updateOccupancyBy1(){
         const currentGroup = await this.getGroupDetails();
         // console.log(currentGroup);
-        const currentCount = currentGroup.no_of_people;
+        const currentCount = currentGroup[0].no_of_people;
         // console.log(`current count: ${currentCount}`);
         try{
             const { data, error } = await supabase
@@ -135,10 +136,14 @@ export class Group {
                 .eq('group_id', this.groupID);
             if (!error){
                 console.log("successfully updated");
+                return true;
+            }
+            else {
+                console.log(error);
             }
         }
         catch (irregError){
-            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            console.log('An unexpected error occurred: ' + irregError.message);
             return null; // Handling any other unexpected errors
         }
     }
