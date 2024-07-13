@@ -50,27 +50,27 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="login"
-        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
         name="addbill"
-        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
         name="group"
-        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
         name="newgroup"
-        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
         name="joingroup"
-        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
         name="register"
-        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
         name="profile"

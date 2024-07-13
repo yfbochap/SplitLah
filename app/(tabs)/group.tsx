@@ -9,7 +9,6 @@ import { Link, useRouter, useFocusEffect } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
 import { getGID } from '@/services/accountService';
-import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -84,12 +83,12 @@ function FirstTab({ billDetails }) {
           billDetails.map((bill, index) => (
             <Link href='bill' asChild key={index}>
               <TouchableOpacity style={styles.chatItem}>
-                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
                   <View>
                     <Text style={styles.chatText1}>{bill.name}</Text>
                   </View>
                   <View>
-                    <Text style={{...styles.chatText1, textAlign: 'right', marginBottom: 4}}>${bill.amount}</Text>
+                    <Text style={{ ...styles.chatText1, textAlign: 'right', marginBottom: 4 }}>${bill.amount}</Text>
                     <Text style={styles.chatText2}>{bill.date}</Text>
                   </View>
                 </View>
@@ -158,6 +157,10 @@ export default function GroupScreen() {
     useCallback(() => {
       const checkGroupData = async () => {
         try {
+          // Clear previous group and bill details
+          setGroupDetails(null);
+          setBillDetails(null);
+
           const gid = await getGID();
           if (gid) {
             console.log(`GID found: ${gid}`);

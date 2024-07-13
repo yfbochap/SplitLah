@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../hooks/supabase';
 import styles from '../../assets/styles';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router'; // Import useFocusEffect
 import * as SecureStore from 'expo-secure-store';
+import { storeGID } from '@/services/accountService';
 
 export default function NewGroup() {
   const navigation = useNavigation();
@@ -71,6 +72,7 @@ export default function NewGroup() {
 
     const result = await createGroup(userId, groupName, description, selectedCurrency);
     if (result) {
+      const setgrp = await storeGID(result);
       router.navigate("group");  // Navigate to group page after successful creation
     }
   };
@@ -100,12 +102,23 @@ export default function NewGroup() {
         throw userGroupError;
       }
 
-      return groupData;
+      return groupId;
     } catch (error) {
       console.error('Error creating group:', error);
       return null;
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      // Reset form fields
+      setSearchQuery('');
+      setSelectedCurrency(null);
+      setIsInputFocused(false);
+      setGroupName('');
+      setDescription('');
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>

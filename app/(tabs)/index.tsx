@@ -1,6 +1,6 @@
 import { Stack, Link } from 'expo-router';
 import React, { useState, useCallback, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Image, Dimensions, StatusBar, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Image, Dimensions, StatusBar, ActivityIndicator, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -14,7 +14,7 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { User } from '../../classes/user';
-import {getUUID, getGID, storeGID} from "@/services/accountService";
+import { getUUID, getGID, storeGID } from "@/services/accountService";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -63,6 +63,7 @@ export default function App() {
 
       checkLoginStatus();
       retrieveGroups(); // Call the function here
+      setIsFabOpen(false);
     }, [])
   );
 
@@ -105,6 +106,12 @@ export default function App() {
     setIsFabOpen(!isFabOpen);
   };
 
+  const closeFabMenu = () => {
+    if (isFabOpen) {
+      setIsFabOpen(false);
+    }
+  };
+
   if (!fontsLoaded && !fontError) {
     return null;
   }
@@ -114,27 +121,31 @@ export default function App() {
   }
 
   //Storing Group ID for selected group
-  
 
   return (
-    <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
-      <LinearGradient colors={['turquoise', 'purple']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.profileBar}>
-        <Text style={styles.profileText}>SplitLah!</Text>
-      </LinearGradient>
-      <View style={styles.searchFabContainer}>
-        <TouchableOpacity style={styles.fab} onPress={toggleFab}>
-          <Image source={require('../../assets/images/plus.png')} style={styles.fabIcon} />
-        </TouchableOpacity>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search"
-          placeholderTextColor="#999"
-        />
-      </View>
-      <ScrollView style={styles.chatList}>
-        {groups.length > 0 ? (
-          groups.map((group, index) => (
-              <TouchableOpacity style={styles.chatItem} onPress={async () => {await storeGID(group.group.group_id); router.push('group');}}>
+    <TouchableWithoutFeedback onPress={closeFabMenu}>
+      <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
+        <LinearGradient colors={['turquoise', 'purple']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.profileBar}>
+          <Text style={styles.profileText}>SplitLah!</Text>
+        </LinearGradient>
+        <View style={styles.searchFabContainer}>
+          <TouchableOpacity style={styles.fab} onPress={toggleFab}>
+            <Image source={require('../../assets/images/plus.png')} style={styles.fabIcon} />
+          </TouchableOpacity>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            placeholderTextColor="#999"
+          />
+        </View>
+        <ScrollView style={styles.chatList}>
+          {groups.length > 0 ? (
+            groups.map((group, index) => (
+              <TouchableOpacity
+                key={group.group.group_id} // Adding key prop
+                style={styles.chatItem}
+                onPress={async () => { await storeGID(group.group.group_id); router.push('group'); }}
+              >
                 <View style={styles.avatar}>
                   <Text style={styles.avatarText}>
                     {group.group.group_name ? group.group.group_name.charAt(0) : 'G'}
@@ -142,29 +153,30 @@ export default function App() {
                 </View>
                 <Text style={styles.chatText}>{group.group.group_name || 'Unnamed Group'}</Text>
               </TouchableOpacity>
-          ))
-        ) : (
-          <Text style={styles.chatText}>No groups found.</Text>
+            ))
+          ) : (
+            <Text style={styles.chatText}>No groups found.</Text>
+          )}
+        </ScrollView>
+        {isFabOpen && (
+          <View style={styles.fabMenu}>
+            <Link href='newgroup' asChild>
+              <TouchableOpacity style={styles.fabMenuItem}>
+                <LinearGradient colors={['rgba(128,0,128,0.7)', 'rgba(0,0,255,0.7)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fabMenuItemBackground}>
+                  <Text style={styles.fabMenuText}>New Group</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </Link>
+            <Link href='joingroup' asChild>
+              <TouchableOpacity style={styles.fabMenuItem}>
+                <LinearGradient colors={['rgba(236,180,10,0.7)', 'rgba(244,67,54,0.7)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fabMenuItemBackground}>
+                  <Text style={styles.fabMenuText}>Join Group</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </Link>
+          </View>
         )}
-      </ScrollView>
-      {isFabOpen && (
-        <View style={styles.fabMenu}>
-          <Link href='newgroup' asChild>
-            <TouchableOpacity style={styles.fabMenuItem}>
-              <LinearGradient colors={['rgba(128,0,128,0.7)', 'rgba(0,0,255,0.7)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fabMenuItemBackground}>
-                <Text style={styles.fabMenuText}>New Group</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </Link>
-          <Link href='joingroup' asChild>
-            <TouchableOpacity style={styles.fabMenuItem}>
-              <LinearGradient colors={['rgba(236,180,10,0.7)', 'rgba(244,67,54,0.7)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fabMenuItemBackground}>
-                <Text style={styles.fabMenuText}>Join Group</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      )}
-    </SafeAreaView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
