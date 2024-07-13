@@ -113,6 +113,14 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'white',
       },
+      chatText1: {
+        fontSize: 20,
+        color: 'white',
+      },
+      chatText2: {
+        fontSize: 16,
+        color: '#818891',
+      },
       fab: {
         width: 50,
         height: 50,

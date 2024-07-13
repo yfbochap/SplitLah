@@ -143,4 +143,90 @@ export class Group {
         }
     }
 
+    async createBillUsingGroupID(inputAmount: string,inputName: string,inputDate: any, inputUserID: string) {
+        // console.log(`Group ID: ${this.groupID}`);
+        try {
+            const {data,error} = await supabase
+                .from('bill')
+                .insert({
+                    amount : inputAmount,
+                    name : inputName,
+                    date : inputDate,
+                    user_id : inputUserID,
+                    group_id : this.groupID
+                })
+                .select('bill_id');
+            if (error){
+                Alert.alert(error.message);
+            }
+            else {
+                console.log("Bill Created", data[0].bill_id);
+                return data[0].bill_id;
+            }
+        }
+        catch (irregError){
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return false; // Handling any other unexpected errors
+        }
+    }
+
+    // Get user IDs based on group ID
+    async getUserIdsByGroupId() {
+        try {
+            const { data, error } = await supabase
+                .from('user_group')
+                .select('user_id')
+                .eq('group_id', this.groupID);
+
+            if (error) {
+                throw error;
+            }
+
+            return data.map(row => row.user_id);
+        } catch (error) {
+            console.error('Error fetching user IDs:', error.message);
+            return [];
+        }
+    }
+
+    // Get user names based on array of user IDs
+    async getUserNamesByUserIds(userIds: string[]) {
+        try {
+            const { data, error } = await supabase
+                .from('user')
+                .select('user_id, user_name')
+                .in('user_id', userIds);
+
+            if (error) {
+                throw error;
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Error fetching user names:', error.message);
+            return [];
+        }
+    }
+
+    // Get user names based on group ID
+    async getUsersBasedOnGroup() {
+        try {
+            const userIds = await this.getUserIdsByGroupId();
+
+            if (userIds.length === 0) {
+                console.log('No user IDs found for this group.');
+                return [];
+            }
+
+            const userData = await this.getUserNamesByUserIds(userIds);
+
+            console.log('User Data:', userData);
+            return userData;
+        } catch (error) {
+            Alert.alert('An unexpected error occurred: ' + error.message);
+            return [];
+        }
+    }
+    
+
 }

@@ -64,4 +64,31 @@ export class Bill {
         }
     }
 
+    async StoreBillParticipants(userIds: string[]) {
+        // console.log(`Group ID: ${this.groupID}`);
+        try {
+            // Prepare the data to be inserted
+            const dataToInsert = userIds.map(userId => ({
+                user_id: userId,
+                bill_id: this.billID
+            }));
+    
+            const { data, error } = await supabase
+                .from('bill_participant')
+                .insert(dataToInsert); // Insert multiple rows
+    
+            if (error) {
+                Alert.alert(error.message);
+                return false;
+            } else {
+                console.log("Bill Participants Added");
+                return true;
+            }
+        } catch (irregError) {
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return false; // Handling any other unexpected errors
+        }
+    }
+    
+
 }

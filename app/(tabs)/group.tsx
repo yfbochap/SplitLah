@@ -84,14 +84,15 @@ function FirstTab({ billDetails }) {
           billDetails.map((bill, index) => (
             <Link href='bill' asChild key={index}>
               <TouchableOpacity style={styles.chatItem}>
-                {/* <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>{bill.name.charAt(0)}</Text>
-                </View> */}
-                <View>
-                  <Text style={styles.chatText}>{bill.name}</Text>
+                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <View>
+                    <Text style={styles.chatText1}>{bill.name}</Text>
+                  </View>
+                  <View>
+                    <Text style={{...styles.chatText1, textAlign: 'right', marginBottom: 4}}>${bill.amount}</Text>
+                    <Text style={styles.chatText2}>{bill.date}</Text>
+                  </View>
                 </View>
-                <Text style={styles.chatText}>${bill.amount}</Text>
-                <Text style={styles.chatText}>{bill.date}</Text>
               </TouchableOpacity>
             </Link>
           ))
