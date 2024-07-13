@@ -4,7 +4,7 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
+import { AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, StyleSheet } from 'react-native';
 import { Tab } from '@rneui/themed';
@@ -49,25 +49,35 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={'turquoise'} />
-          ),
-        }}
+        name="login"
+        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+      />
+      <Tabs.Screen
+        name="addbill"
+        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+      />
+      <Tabs.Screen
+        name="group"
+        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
         name="newgroup"
-        options={{ href: null, }}
+        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
+      />
+      <Tabs.Screen
+        name="joingroup"
+        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
         name="register"
-        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
+        options={{ href: null, headerShown: true, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
-        name="login"
-        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
+        name="profile"
+        options={{ title: 'profile',
+          tabBarIcon: ({ color, focused }) => (
+            <AntDesign name="profile" size={24} color={'turquoise'}  />
+          )}}
       />
     </Tabs>
   );
