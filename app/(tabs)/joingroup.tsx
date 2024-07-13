@@ -71,7 +71,7 @@ const getGroupIDBasedOnInviteCode = async () =>{
 }
 
 async function checkUserNotInGroup(inputUserID,inputGroupID){
-    
+
 }
 
 async function insertUserGroup(inputUserID,inputGroupID){
@@ -119,8 +119,7 @@ const handleJoinGroup = async () => {
     else {
         Alert.alert("Group not found");
     }
-
-}
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -129,24 +128,36 @@ const handleJoinGroup = async () => {
         <Text style={styles.headerText}>Join Group</Text>
       </View>
       
-      <View style={styles.descText}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <TextInput
-          style={styles.inputText}
-          placeholder="Enter 8-digit code"
+          style={{
+            height: 40,
+            backgroundColor: 'black',
+            borderWidth: 1,
+            paddingHorizontal: 10,
+            fontSize: 18,
+            textAlign: 'center',
+            color: 'white'
+          }}
+
+          placeholder="Click to enter 8-digit code"
+          placeholderTextColor="gray"
           value={code}
           onChangeText={(text) => setCode(text)}
           
           maxLength={8}
         />
+        <TouchableOpacity
+          style={{
+            backgroundColor: 'purple',
+            padding: 10,
+            borderRadius: 5,
+            marginTop: 20
+          }}
+        >
+          <Text style={{ fontSize: 26, color: "white", textAlign: 'center' }} onPress={handleJoinGroup}> SUBMIT </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-            style={{ ...styles.loginButton, backgroundColor: 'purple' }}
-            
-          >
-            <Text style={{ fontSize: 26, color: "white", textAlign: 'center' }} onPress={handleJoinGroup}> SUBMIT </Text>
-          </TouchableOpacity>
-    
-
     </SafeAreaView>
   );
 };
