@@ -151,7 +151,7 @@ function SecondTab() {
       </View>
     </View>
   );
-}
+
 
 
   return (
@@ -177,6 +177,7 @@ function SecondTab() {
 
   );
 }
+
 export default function GroupScreen() {
   const navigation = useNavigation();
   const router = useRouter();
