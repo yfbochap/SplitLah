@@ -303,6 +303,12 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         marginBottom: 8,
       },
+      groupidtext: {
+        color: 'white',
+        fontSize: 12,
+        textAlign: 'center',
+      },
+      
 
 });
 export default styles;
