@@ -153,6 +153,30 @@ function SecondTab() {
   );
 }
 
+
+  return (
+    <View style={{ ...styles.container }}>
+    <View style={{ ...styles.barChartContainer }}>
+      <FlatList
+        data={balances}
+        renderItem={renderBalanceBarItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.barList}
+      />
+    </View>
+    <FlatList
+      data={balances}
+      renderItem={renderBalanceItem}
+      keyExtractor={(item) => item.id}
+      style={styles.list}
+    />
+    <View style={styles.footer}>
+      <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(balances)}</Text>
+    </View>
+  </View>
+
+  );
+}
 export default function GroupScreen() {
   const navigation = useNavigation();
   const router = useRouter();
@@ -207,13 +231,10 @@ export default function GroupScreen() {
           <Text style={{ ...styles.headerText }}>
             {groupDetails ? groupDetails.group_name : ''}
           </Text>
-          <Text style={{ ...styles.groupidtext }}>
-            GroupID: {groupDetails ? groupDetails.invite_code : ''}
-          </Text>
+          
         </View>
       </View>
      
-        
        
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -227,6 +248,8 @@ export default function GroupScreen() {
             } else if (route.name === 'SecondTab') {
               label = 'Balances';
             }
+            
+            
             return <Text style={{ color: focused ? 'white' : 'gray' }}>{label}</Text>;
           },
           tabBarIcon: ({ color, focused }) => {
@@ -235,14 +258,23 @@ export default function GroupScreen() {
             } else if (route.name === 'SecondTab') {
               return <FontAwesome name="balance-scale" size={20} color="white" />;
             }
+           
           },
+          
         })}
       >
         <Tab.Screen name="FirstTab">
           {() => <FirstTab billDetails={billDetails} />}
         </Tab.Screen>
         <Tab.Screen name="SecondTab" component={SecondTab} />
+        
+        
       </Tab.Navigator>
+      <View style={styles.groupidfooter}>
+      <Text style={{ ...styles.groupidtext }}>
+      Invite code: {groupDetails ? groupDetails.invite_code : '#Group-Name-Here'}
+          </Text>
+      </View>
     </SafeAreaView>
   );
 }
