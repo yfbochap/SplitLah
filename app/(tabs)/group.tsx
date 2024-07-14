@@ -26,6 +26,7 @@ interface GroupDetails {
   description: string;
   no_of_people: number;
   currency: string;
+  invite_code: string;
 }
 
 interface BillDetails {
@@ -196,9 +197,14 @@ export default function GroupScreen() {
           <Text style={{ ...styles.headerText }}>
             {groupDetails ? groupDetails.group_name : '#Group-Name-Here'}
           </Text>
+          <Text style={{ ...styles.groupidtext }}>
+            GroupID: {groupDetails ? groupDetails.invite_code : '#Group-Name-Here'}
+          </Text>
         </View>
       </View>
-
+     
+        
+       
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarLabelStyle: { fontSize: 16, color: 'white' },
