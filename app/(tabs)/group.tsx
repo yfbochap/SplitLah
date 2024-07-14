@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image, } from 'react-native';
+import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, useRouter, useFocusEffect } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
-import { getGID } from '@/services/accountService';
+import { getGID, storeBID } from '@/services/accountService';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -62,6 +62,16 @@ const calculateTotalBalance = (balances: Balance[]): number => {
   return balances.reduce((total, item) => total + item.amount, 0);
 };
 
+const handleBill = async (inputBillID: string) => {
+  console.log('test1', inputBillID);
+  try {
+    await storeBID(inputBillID); // This is an async operation and needs to be awaited
+    console.log('BID saved successfully');
+  } catch (e) {
+    console.error('Failed to save bill ID.', e);
+  }
+};
+
 function FirstTab({ billDetails }) {
   return (
     <View style={styles.container}>
@@ -81,8 +91,8 @@ function FirstTab({ billDetails }) {
       <ScrollView style={styles.chatList}>
         {billDetails && billDetails.length > 0 ? (
           billDetails.map((bill, index) => (
-            <Link href='bill' asChild key={index}>
-              <TouchableOpacity style={styles.chatItem}>
+            <Link href = 'bill' asChild key={index}>
+              <TouchableOpacity style={styles.chatItem} onPress={() => handleBill(bill.bill_id)}>
                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
                   <View>
                     <Text style={styles.chatText1}>{bill.name}</Text>
@@ -93,7 +103,7 @@ function FirstTab({ billDetails }) {
                   </View>
                 </View>
               </TouchableOpacity>
-            </Link>
+              </Link>
           ))
         ) : (
           <Text>No bills available</Text>

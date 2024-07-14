@@ -246,5 +246,24 @@ async function getGID(): Promise<string | null> {
     }
 };
 
+async function storeBID(bid: string){
+    try {
+        await AsyncStorage.setItem('bill_uuid', bid);
+        console.log(bid);
+    } catch (e) {
+        console.error('Failed to save BID.', e);
+    }
+};
+
+async function getBID(): Promise<string | null> {
+    try {
+        const bid = await AsyncStorage.getItem('bill_uuid');
+        return bid;
+    } catch (e) {
+        console.error('Failed to retrieve UUID.', e);
+        return null;
+    }
+};
+
 export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail, signInEmail, signOutEmail, checkSession};
-export { getUUID, getGID, storeGID};
+export { getUUID, getGID, storeGID, getBID, storeBID};
