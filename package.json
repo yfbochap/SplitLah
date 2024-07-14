@@ -47,8 +47,7 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.10",
-    "secure-store": "^0.0.1",
-    "undefined": "react-native-community/checkbox"
+    "secure-store": "^0.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
