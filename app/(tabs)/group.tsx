@@ -205,10 +205,10 @@ export default function GroupScreen() {
         <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
         <View style={{ flex: 1, alignItems: 'center', maxWidth: 300 }}>
           <Text style={{ ...styles.headerText }}>
-            {groupDetails ? groupDetails.group_name : '#Group-Name-Here'}
+            {groupDetails ? groupDetails.group_name : ''}
           </Text>
           <Text style={{ ...styles.groupidtext }}>
-            GroupID: {groupDetails ? groupDetails.invite_code : '#Group-Name-Here'}
+            GroupID: {groupDetails ? groupDetails.invite_code : ''}
           </Text>
         </View>
       </View>

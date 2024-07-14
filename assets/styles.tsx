@@ -308,6 +308,30 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textAlign: 'center',
       },
+
+      //Unique Styles for bill.tsx
+      billHeader: {
+        backgroundColor: 'purple',
+        // alignItems: 'center',
+        flexDirection: 'row',
+        height: 90,
+      },
+      billHeaderText: {
+        textAlign: 'center',
+        fontSize: 36,
+        color: 'white',
+      },
+      billEditButton: {
+        color: 'white',
+        fontSize: 16,
+      },
+      descBillText: {
+        color: 'grey',
+        fontSize: 20,
+        padding: 8,
+        marginHorizontal: 5,
+        textAlign: 'center',
+      },
       
 
 });

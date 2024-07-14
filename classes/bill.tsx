@@ -37,6 +37,130 @@ export class Bill {
         }
     }
 
+    async getBillOwnerID() {
+        try {
+            const { data, error } = await supabase
+                .from('bill')
+                .select('user_id')
+                .eq('bill_id', this.billID);
+            if (error) {
+                Alert.alert(error.message);
+                return null; // Return null on error
+            } else {
+                console.log(data);
+                return data.length > 0 ? data[0].user_id : null; // Return the first user ID or null if no data
+            }
+        } catch (irregError) {
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return null; // Handling any other unexpected errors
+        }
+    }
+    
+    async getBillOwnerName(inputUserID : string) {
+        try {
+            const { data, error } = await supabase
+                .from('user')
+                .select('user_name')
+                .eq('user_id', inputUserID);
+            if (error) {
+                Alert.alert(error.message);
+                return null; // Return null on error
+            } else {
+                console.log(data);
+                return data.length > 0 ? data[0].user_name : null; // Return the user name or null if no data
+            }
+        } catch (irregError) {
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return null; // Handling any other unexpected errors
+        }
+    }
+    
+    // Combine the above two functions
+    async getBillOwnerNameViaBillID() {
+        try {
+            const userId = await this.getBillOwnerID();
+    
+            if (userId == null) {
+                console.log('No user ID found for this bill.');
+                return null; // Return null if no user ID is found
+            }
+    
+            const userData = await this.getBillOwnerName(userId);
+    
+            console.log('User Data:', userData);
+            return userData;
+        } catch (error) {
+            Alert.alert('An unexpected error occurred: ' + error.message);
+            return null; // Return null on unexpected error
+        }
+    }
+    
+
+        //  Select all participants based on billID
+        async getBillParticipantsUsingBillId() {
+            // console.log(`Group ID: ${this.groupID}`);
+            try {
+                const {data,error} = await supabase
+                    .from('bill_participant')
+                    .select('user_id')
+                    .eq('bill_id',this.billID);
+                if (error){
+                    Alert.alert(error.message);
+                    return [];
+                }
+                else {
+                    console.log(data);
+                    return data.map(row => row.user_id);
+                }
+            }
+            catch (irregError){
+                Alert.alert('An unexpected error occurred: ' + irregError.message);
+                return []; // Handling any other unexpected errors
+            }
+        }
+
+        //  Select all participants names based on userID
+        async getBillParticipantsUsingUserIds(userIds: string[]) {
+            // console.log(`Group ID: ${this.groupID}`);
+            try {
+                const {data,error} = await supabase
+                    .from('user')
+                    .select('user_name')
+                    .in('user_id', userIds);
+                if (error){
+                    Alert.alert(error.message);
+                }
+                else {
+                    console.log(data);
+                    return data;
+                }
+            }
+            catch (irregError){
+                Alert.alert('An unexpected error occurred: ' + irregError.message);
+                return []; // Handling any other unexpected errors
+            }
+        }
+
+    // Combining the above 2 functions
+    async getBillParticipantsNames() {
+        try {
+            const userIds = await this.getBillParticipantsUsingBillId();
+
+            if (userIds.length === 0) {
+                console.log('No user IDs found for this group.');
+                return [];
+            }
+
+            const userData = await this.getBillParticipantsUsingUserIds(userIds);
+
+            console.log('User Data:', userData);
+            return userData;
+        } catch (error) {
+            Alert.alert('An unexpected error occurred: ' + error.message);
+            return [];
+        }
+    }
+
     //  Create a new bill, returns true or false
     async createBill(inputAmount,inputName,inputDate, inputUserID, inputGroupID) {
         // console.log(`Group ID: ${this.groupID}`);
