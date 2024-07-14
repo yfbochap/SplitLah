@@ -304,9 +304,16 @@ const styles = StyleSheet.create({
         marginBottom: 8,
       },
       groupidtext: {
+        backgroundColor: 'purple',
         color: 'white',
-        fontSize: 12,
+        fontSize: 20,
         textAlign: 'center',
+      },
+      groupidfooter: {
+        padding: 16,
+        backgroundColor: 'black',
+        borderTopWidth: 1,
+        borderColor: 'black',
       },
       
 
