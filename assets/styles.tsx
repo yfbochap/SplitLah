@@ -308,12 +308,14 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         textAlign: 'center',
+        marginRight: 10,
       },
-      groupidfooter: {
-        padding: 16,
-        backgroundColor: 'black',
-        borderTopWidth: 1,
-        borderColor: 'black',
+      GroupIDContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'purple',
+        padding: 10,
       },
 
       //Unique Styles for bill.tsx
@@ -339,7 +341,23 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
         textAlign: 'center',
       },
+      copyIconContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'purple',
+      },
       
+      copyIcon: {
+        
+        width: 20,
+        height: 20,
+      },
+      
+      copiedText: {
+        marginTop: 10,
+        textAlign: 'center',
+        color: 'grey',
+      },
 
 });
 export default styles;

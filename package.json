@@ -47,7 +47,8 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.10",
-    "secure-store": "^0.0.1"
+    "secure-store": "^0.0.1",
+    "expo-clipboard": "~6.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

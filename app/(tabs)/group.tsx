@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image } from 'react-native';
+import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image, Button } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -9,9 +9,22 @@ import { Link, useRouter, useFocusEffect } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
 import { getGID, storeBID } from '@/services/accountService';
+import * as Clipboard from 'expo-clipboard';
+import { AntDesign } from '@expo/vector-icons';
+
 
 const Tab = createMaterialTopTabNavigator();
+export default function copied() {
+const [copiedText, setCopiedText] = React.useState('');
+const copyToClipboard = async () => {
+  await Clipboard.setStringAsync('hello world');
+};
 
+const fetchCopiedText = async () => {
+  const text = await Clipboard.getStringAsync();
+  setCopiedText(text);
+};
+}
 interface Balance {
   id: string;
   name: string;
@@ -64,12 +77,12 @@ const calculateTotalBalance = (balances: Balance[]): number => {
 };
 
 const handleBill = async (inputBillID: string) => {
-  console.log('test1', inputBillID);
+  // console.log('test1', inputBillID);
   try {
     await storeBID(inputBillID); // This is an async operation and needs to be awaited
-    console.log('BID saved successfully');
+    // console.log('BID saved successfully');
   } catch (e) {
-    console.error('Failed to save bill ID.', e);
+    // console.error('Failed to save bill ID.', e);
   }
 };
 
@@ -179,16 +192,25 @@ function SecondTab() {
 }
 
 export default function GroupScreen() {
-  const navigation = useNavigation();
-  const router = useRouter();
+    const navigation = useNavigation();
+    const router = useRouter();
 
-  const handleBackButtonPress = () => {
+    const handleBackButtonPress = () => {
     navigation.goBack();
-  };
+    };
+
+    const handleChatButtonPress = () => {
+    router.navigate('groupchat');
+    };
 
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
   const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
+  const [copiedText, setCopiedText] = React.useState('');
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(groupDetails.invite_code);
+  };
 
+ 
   useFocusEffect(
     useCallback(() => {
       const checkGroupData = async () => {
@@ -199,24 +221,26 @@ export default function GroupScreen() {
 
           const gid = await getGID();
           if (gid) {
-            console.log(`GID found: ${gid}`);
+            // console.log(`GID found: ${gid}`);
             const group = new Group(gid);
             const details = await group.getGroupDetails();
             const bills = await group.getBillsBasedOnGroup();
-            console.log(`Group Details: ${JSON.stringify(details)}`);
-            console.log(`Bill Details: ${JSON.stringify(bills)}`);
+            // console.log(`Group Details: ${JSON.stringify(details)}`);
+            // console.log(`Bill Details: ${JSON.stringify(bills)}`);
             if (details && details.length > 0) {
               setGroupDetails(details[0]);
             }
             if (bills && bills.length > 0) {
               setBillDetails(bills);
             }
+
+
           } else {
-            console.log('GID not found.');
+            // console.log('GID not found.');
             router.replace('/');
           }
         } catch (e) {
-          console.error('Failed to load GID.', e);
+          // console.error('Failed to load GID.', e);
         }
       };
 
@@ -232,7 +256,9 @@ export default function GroupScreen() {
           <Text style={{ ...styles.headerText }}>
             {groupDetails ? groupDetails.group_name : ''}
           </Text>
-          
+        <TouchableOpacity>
+            <Text style={styles.billEditButton} onPress={handleChatButtonPress}>Chat</Text>
+        </TouchableOpacity>
         </View>
       </View>
      
@@ -271,9 +297,16 @@ export default function GroupScreen() {
         
         
       </Tab.Navigator>
-      <View style={styles.groupidfooter}>
+      <View style={styles.GroupIDContainer}>
       <Text style={{ ...styles.groupidtext }}>
-      Invite code: {groupDetails ? groupDetails.invite_code : '#Group-Name-Here'}
+      Invite code: {groupDetails ? groupDetails.invite_code : '#Group-Code-Here'}
+      <View style={styles.copyIconContainer}>
+        
+      <TouchableOpacity style={styles.copyIconContainer} onPress={copyToClipboard}>
+      <AntDesign name="copy1" size={24} color="white" />
+        </TouchableOpacity>
+        
+    </View>
           </Text>
       </View>
     </SafeAreaView>

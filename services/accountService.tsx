@@ -11,7 +11,7 @@ function passwordCheckNotEmpty(password, confirmPassword){
     if (password.length!=0 && confirmPassword.length != 0){
         return true;
     }
-    console.log("Password is empty");
+    // console.log("Password is empty");
     return false;
 }
 //Function to check if password & confirm password same
@@ -19,7 +19,7 @@ function passwordCheckMatch(password, confirmPassword){
     if (password == confirmPassword){
         return true;
     }
-    console.log("Password not match");
+    // console.log("Password not match");
     return false;
 }
 
@@ -31,7 +31,7 @@ function usernameNotEmpty(username){
     if (username.length!=0){
         return true;
     }
-    console.log("Username is empty");
+    // console.log("Username is empty");
     return false;
 }
 
@@ -43,7 +43,7 @@ function usernameMore6(username){
     if (username.length>=6){
         return true;
     }
-    console.log("Username less than 6 chars");
+    // console.log("Username less than 6 chars");
     return false;
 }
 
@@ -55,7 +55,7 @@ function emailNotEmpty(email){
     if (email.length!=0){
         return true;
     }
-    console.log("Email is empty");
+    // console.log("Email is empty");
     return false;
 }
 
@@ -69,7 +69,7 @@ function emailFormatCorrect(email){
     if (emailRegex.test(email)){
         return true;
     }
-    console.log("Not a valid email");
+    // console.log("Not a valid email");
     return false;
 }
 
@@ -158,13 +158,13 @@ async  function  signInEmail(inputEmail,inputPassword){
     }
     else {
         const {data: {user}} = await supabase.auth.getUser();
-        console.log(user);
-        console.log(`User UID: ${user.id}`);
+        // console.log(user);
+        // console.log(`User UID: ${user.id}`);
 
         // Test code for storing login uuid in secure storage
         const storeUUID = async (uuid) => {
             try {
-              console.log(`test: ${uuid}`);
+              // console.log(`test: ${uuid}`);
               await SecureStore.setItemAsync('user_uuid', uuid);
             } catch (e) {
               console.error('Failed to save UUID.', e);
@@ -183,7 +183,7 @@ async function signOutEmail() {
         if (error) {
             console.error('Error signing out:', error);
         } else {
-            console.log('Signed out successfully');
+            // console.log('Signed out successfully');
         }
     } catch (error) {
         console.error('Error signing out:', error);
@@ -208,12 +208,12 @@ async function checkSession(){
     }
 
     if (!data || !data.session) {
-        console.log('No session found');
+        // console.log('No session found');
         return null;
     }
 
     const userId = data.session.user.id;
-    console.log('User ID:', userId);
+    // console.log('User ID:', userId);
     return userId;
 }
 
@@ -230,7 +230,7 @@ async function getUUID(): Promise<string | null> {
 async function storeGID(gid: string){
     try {
         await AsyncStorage.setItem('group_uuid', gid);
-        console.log(gid);
+        // console.log(gid);
     } catch (e) {
         console.error('Failed to save GID.', e);
     }
@@ -249,7 +249,7 @@ async function getGID(): Promise<string | null> {
 async function storeBID(bid: string){
     try {
         await AsyncStorage.setItem('bill_uuid', bid);
-        console.log(bid);
+        // console.log(bid);
     } catch (e) {
         console.error('Failed to save BID.', e);
     }
@@ -260,7 +260,7 @@ async function getBID(): Promise<string | null> {
         const bid = await AsyncStorage.getItem('bill_uuid');
         return bid;
     } catch (e) {
-        console.error('Failed to retrieve UUID.', e);
+        // console.error('Failed to retrieve UUID.', e);
         return null;
     }
 };
