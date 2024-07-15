@@ -83,7 +83,7 @@ const handleJoinGroup = async () =>{
             color: 'white'
           }}
 
-          placeholder="Click to enter 8-digit code"
+          placeholder="Click to enter 6-digit code"
           placeholderTextColor="gray"
           value={code}
           onChangeText={(text) => setCode(text)}
