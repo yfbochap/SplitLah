@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image } from 'react-native';
+import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image, Button } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -9,9 +9,21 @@ import { Link, useRouter, useFocusEffect } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
 import { getGID, storeBID } from '@/services/accountService';
+import * as Clipboard from 'expo-clipboard';
+import { AntDesign } from '@expo/vector-icons';
 
 const Tab = createMaterialTopTabNavigator();
+export default function copied() {
+const [copiedText, setCopiedText] = React.useState('');
+const copyToClipboard = async () => {
+  await Clipboard.setStringAsync('hello world');
+};
 
+const fetchCopiedText = async () => {
+  const text = await Clipboard.getStringAsync();
+  setCopiedText(text);
+};
+}
 interface Balance {
   id: string;
   name: string;
@@ -188,7 +200,12 @@ export default function GroupScreen() {
 
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
   const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
+  const [copiedText, setCopiedText] = React.useState('');
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(groupDetails.invite_code);
+  };
 
+ 
   useFocusEffect(
     useCallback(() => {
       const checkGroupData = async () => {
@@ -271,9 +288,16 @@ export default function GroupScreen() {
         
         
       </Tab.Navigator>
-      <View style={styles.groupidfooter}>
+      <View style={styles.GroupIDContainer}>
       <Text style={{ ...styles.groupidtext }}>
-      Invite code: {groupDetails ? groupDetails.invite_code : '#Group-Name-Here'}
+      Invite code: {groupDetails ? groupDetails.invite_code : '#Group-Code-Here'}
+      <View style={styles.copyIconContainer}>
+        
+      <TouchableOpacity style={styles.copyIconContainer} onPress={copyToClipboard}>
+      <AntDesign name="copy1" size={24} color="white" />
+        </TouchableOpacity>
+        
+    </View>
           </Text>
       </View>
     </SafeAreaView>
