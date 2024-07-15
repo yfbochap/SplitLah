@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Platform, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -27,6 +27,7 @@ export default function AddBill() {
   const [selectedMembers, setSelectedMembers] = useState({});
   const [showDropdown, setShowDropdown] = useState(false); // State for dropdown visibility
   const [selectedPaidBy, setSelectedPaidBy] = useState(null); // State for selected paid by user
+  const [amounts, setAmounts] = useState({}); // State for individual amounts
 
   const fetchGroupMembers = async () => {
     try {
@@ -36,7 +37,7 @@ export default function AddBill() {
         const members = await group.getUsersBasedOnGroup();
         setGroupMembers(members);
         const initialSelectedMembers = members.reduce((acc, member) => {
-          acc[member.user_id] = true; // Select all members by default
+          acc[member.user_id] = false; // Deselect all members by default
           return acc;
         }, {});
         setSelectedMembers(initialSelectedMembers);
@@ -72,6 +73,21 @@ export default function AddBill() {
     let formattedAmount = text.replace(/[^0-9.]/g, '');
     formattedAmount = formattedAmount.replace(/(\..*)\./g, '$1');
     setAmount(formattedAmount);
+
+    // Update individual amounts based on the number of selected members
+    const selectedCount = Object.values(selectedMembers).filter(Boolean).length;
+    if (selectedCount > 0) {
+      const splitAmount = (parseFloat(formattedAmount) / selectedCount).toFixed(2);
+      const updatedAmounts = Object.keys(selectedMembers).reduce((acc, userId) => {
+        if (selectedMembers[userId]) {
+          acc[userId] = splitAmount;
+        } else {
+          acc[userId] = '';
+        }
+        return acc;
+      }, {});
+      setAmounts(updatedAmounts);
+    }
   };
 
   const handleTitleChange = (text) => {
@@ -92,9 +108,38 @@ export default function AddBill() {
 
   // Function to handle checkbox change
   const handleCheckboxChange = (userId) => {
-    setSelectedMembers((prevSelectedMembers) => ({
-      ...prevSelectedMembers,
-      [userId]: !prevSelectedMembers[userId],
+    setSelectedMembers((prevSelectedMembers) => {
+      const updatedSelectedMembers = {
+        ...prevSelectedMembers,
+        [userId]: !prevSelectedMembers[userId],
+      };
+
+      // Update amounts
+      const selectedCount = Object.values(updatedSelectedMembers).filter(Boolean).length;
+      if (selectedCount > 0) {
+        const splitAmount = (parseFloat(amount) / selectedCount).toFixed(2);
+        const updatedAmounts = Object.keys(updatedSelectedMembers).reduce((acc, uid) => {
+          if (updatedSelectedMembers[uid]) {
+            acc[uid] = splitAmount;
+          } else {
+            acc[uid] = '';
+          }
+          return acc;
+        }, {});
+        setAmounts(updatedAmounts);
+      }
+
+      return updatedSelectedMembers;
+    });
+  };
+
+  // Function to handle amount change for individual checkboxes
+  const handleIndividualAmountChange = (userId, text) => {
+    let formattedAmount = text.replace(/[^0-9.]/g, '');
+    formattedAmount = formattedAmount.replace(/(\..*)\./g, '$1');
+    setAmounts((prevAmounts) => ({
+      ...prevAmounts,
+      [userId]: formattedAmount,
     }));
   };
 
@@ -114,7 +159,7 @@ export default function AddBill() {
     const gid = await getGID();
     if (gid) {
       const group = new Group(gid);
-      const selectedUserIds = Object.keys(selectedMembers).filter((userId) => selectedMembers[userId]);  //USE THIS FOR ADDING BILL PARTICIPANTS TO BILL_PARTICIPANTS TABLE
+      const selectedUserIds = Object.keys(selectedMembers).filter((userId) => selectedMembers[userId]);
       const currentDate = date.toISOString(); // Convert date to ISO format for storage
       const paidByUserId = selectedPaidBy.user_id; // Set the user ID of the user who paid the bill
 
@@ -124,6 +169,7 @@ export default function AddBill() {
           console.log('Bill Created Successfully');
           const bill = new Bill(result);
           const addBillParticipants = await bill.StoreBillParticipants(selectedUserIds);
+          //FILL IN FUNC HERE
           if(addBillParticipants){
             console.log('Bill Participants Stored Successfully');
           }
@@ -139,6 +185,19 @@ export default function AddBill() {
 
   // Function to handle form submission
   const handleSubmit = () => {
+    // Check if all required fields are filled
+    if (!BillTitle || !amount || !selectedPaidBy || Object.values(selectedMembers).filter(Boolean).length === 0) {
+      Alert.alert('Error', 'Please fill in all fields and select at least one member.');
+      return;
+    }
+
+    // Check if the sum of amounts matches the main amount
+    const totalAmount = Object.values(amounts).reduce((sum, value) => sum + parseFloat(value || 0), 0);
+    if (totalAmount !== parseFloat(amount)) {
+      Alert.alert('Error', 'The sum of the individual amounts does not match the total amount.');
+      return;
+    }
+
     createBill();
     // Example: Navigate to another screen after submission
     // navigation.navigate('ConfirmationScreen');
@@ -200,34 +259,22 @@ export default function AddBill() {
         )}
 
         <Text style={styles.descText}>Bill Involves</Text>
-        <ScrollView style={customStyles.membersList}>
-          {groupMembers.map((member) => (
-            <CustomCheckbox
-              key={member.user_id}
-              label={member.user_name}
-              isChecked={selectedMembers[member.user_id]}
-              onChange={() => handleCheckboxChange(member.user_id)}
-            />
-          ))}
+        <ScrollView style={styles.membersList}>
+        {groupMembers.map((member) => (
+          <CustomCheckbox
+            key={member.user_id}
+            label={member.user_name}
+            isChecked={selectedMembers[member.user_id]}
+            onChange={() => handleCheckboxChange(member.user_id)}
+            amount={amounts[member.user_id]}
+            onAmountChange={(text) => handleIndividualAmountChange(member.user_id, text)}
+          />
+        ))}
         </ScrollView>
-
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={{ ...styles.loginButton, backgroundColor: 'purple' }}
-          onPress={handleSubmit}
-        >
-          <Text style={{ fontSize: 26, color: 'white', textAlign: 'center' }}> SUBMIT </Text>
+        <TouchableOpacity style={{ ...styles.loginButton, backgroundColor: 'purple' }} onPress={handleSubmit}>
+          <Text style={{ fontSize: 26, color: 'white', textAlign: 'center' }}>SUBMIT</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
-
-const customStyles = StyleSheet.create({
-  membersList: {
-    maxHeight: 200, // Adjust the height as needed
-    borderWidth: 1,
-    borderTopColor: '#ccc',
-    marginHorizontal: 24,
-  },
-});

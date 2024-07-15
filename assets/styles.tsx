@@ -317,6 +317,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'purple',
         padding: 10,
       },
+      membersList: {
+        maxHeight: 200, // Adjust the height as needed
+        borderWidth: 1,
+        borderTopColor: '#ccc',
+        marginHorizontal: 24,
+      },
 
       //Unique Styles for bill.tsx
       billHeader: {

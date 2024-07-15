@@ -1,16 +1,25 @@
-// CustomCheckbox.js
 import React from 'react';
-import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, TextInput } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const CustomCheckbox = ({ label, isChecked, onChange }) => {
+const CustomCheckbox = ({ label, isChecked, onChange, amount, onAmountChange }) => {
   return (
-    <TouchableOpacity onPress={onChange} style={styles.checkboxContainer}>
-      <View style={[styles.checkbox, isChecked && styles.checkedCheckbox]}>
-        {isChecked && <MaterialIcons name="check" size={20} color="#fff" />}
-      </View>
+    <View style={styles.checkboxContainer}>
+      <TouchableOpacity onPress={onChange} style={styles.checkbox}>
+        <View style={[styles.checkbox, isChecked && styles.checkedCheckbox]}>
+          {isChecked && <MaterialIcons name="check" size={20} color="#fff" />}
+        </View>
+      </TouchableOpacity>
       <Text style={styles.label}>{label}</Text>
-    </TouchableOpacity>
+      {isChecked && (
+        <TextInput
+          style={styles.amountInput}
+          value={amount}
+          onChangeText={onAmountChange}
+          keyboardType="numeric"
+        />
+      )}
+    </View>
   );
 };
 
@@ -31,15 +40,25 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
     backgroundColor: '#fff', // White fill when unchecked
   },
   checkedCheckbox: {
     backgroundColor: '#800080', // Purple fill when checked
   },
   label: {
+    marginLeft: 8,
     fontSize: 16,
     color: '#fff', // Set the text color to white
+    flex: 1, // Make label take up remaining space
+  },
+  amountInput: {
+    width: 60, // Adjust width as needed
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 5,
+    backgroundColor: '#fff',
+    color: '#000',
   },
 });
 

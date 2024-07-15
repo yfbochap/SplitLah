@@ -1,10 +1,11 @@
 import {Image, StyleSheet, Platform, FlatList, ScrollView} from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,  useCallback } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {supabase} from "@/hooks/supabase";
 import {getGID, getUUID} from "@/services/accountService";
 import { getPreviousMessages, parseRawMessage, sendMessage } from "@/services/groupchatService";
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function GroupChatScreen(){
@@ -45,6 +46,13 @@ export default function GroupChatScreen(){
     useEffect(() => {
         openSubscription();
     }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchPreviousCleanedMessages();
+            openSubscription();
+        }, [])
+    );
 
     // Checks if the rawIncomingMessage has something then take it out append it to the current messages then remove the message
     // The deps part is to tell this useEffect to run everytime incomingRawMessage changes
