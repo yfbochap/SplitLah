@@ -1,4 +1,5 @@
 import { supabase } from '../hooks/supabase';
+import { User } from './user';
 
 interface Balance {
     id: string;
@@ -13,7 +14,7 @@ interface GroupBalance {
 }
 
 // gets the balance in each group based on the groupid of the group
-export const getGroupBalance = async (groupId: string): Promise<{ userId: string; owedTo: string; amount: number }[]> => {
+export const getGroupBalance = async (groupId: string): Promise<{ userName: string; owedTo: string; amount: number }[]> => {
     const { data, error } = await supabase
       .from('balances')
       .select('user_id, owed_to, amount')
@@ -24,32 +25,38 @@ export const getGroupBalance = async (groupId: string): Promise<{ userId: string
       return [];
     }
   
-    const balances: { userId: string; owedTo: string; amount: number }[] = [];
-  
-    data.forEach((bill) => {
+    const balances: { userName: string; owedTo: string; amount: number }[] = [];
+
+    for (const bill of data) {
       const lenderId = bill.owed_to;
+      const lender = new User(lenderId);
+      const lenderName1 = await lender.getUserName();
+      const lenderName = lenderName1[0].user_name;
       const borrowerId = bill.user_id;
+      const borrower = new User(borrowerId);
+      const borrowerName1 = await borrower.getUserName();
+      const borrowerName = borrowerName1[0].user_name;
       const amount = bill.amount;
   
-      balances.push({ userId: borrowerId, owedTo: lenderId, amount });
-      balances.push({ userId: lenderId, owedTo: borrowerId, amount: -amount });
-    });
-  
+      balances.push({ userName: borrowerName, owedTo: lenderName, amount });
+      balances.push({ userName: lenderName, owedTo: borrowerName, amount: -amount });
+    }
+
     return balances;
   };
 
 
-export const getOverallGroupBalance = (balances: { userId: string; owedTo: string; amount: number }[]) => {
+export const getOverallGroupBalance = (balances: { userName: string; owedTo: string; amount: number }[]) => {
     const overallBalances: { [userId: string]: number } = {};
 
     balances.forEach((balance) => {
-        const userId = balance.userId;
+        const userName = balance.userName;
         const amount = balance.amount;
 
-        if (overallBalances[userId]) {
-        overallBalances[userId] += -amount;
+        if (overallBalances[userName]) {
+        overallBalances[userName] += -amount;
         } else {
-        overallBalances[userId] = -amount;
+        overallBalances[userName] = -amount;
         }
     });
 
