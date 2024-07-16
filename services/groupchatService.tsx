@@ -4,6 +4,19 @@ import {Group} from "@/classes/group";
 import {User} from "@/classes/user";
 import {getUUID, getGID} from "./accountService";
 
+function padZero(num) {
+    return (num < 10 ? '0' : '') + num;
+}
+
+function formatTime(date) {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours % 12 || 12;
+
+    return `${padZero(hours12)}:${padZero(minutes)} ${ampm}`;
+}
+
 // Function to get existing messages
 async function getPreviousMessages(){
     try {
@@ -34,8 +47,9 @@ async function parseRawMessage(rawMesssage){
     const userName = userDetails[0].user_name;
     const userEmail = userDetails[0].user_email;
     const message = rawMesssage.message;
-    const timeStamp = rawMesssage.time_stamp;
-    const cleanedMessage = {user_name: userName, user_email: userEmail, message: message, time_stamp: timeStamp};
+    const timeStamp = new Date(rawMesssage.time_stamp);
+    const formattedDate = `${timeStamp.getFullYear()}-${padZero(timeStamp.getMonth() + 1)}-${padZero(timeStamp.getDate())} ${formatTime(timeStamp)}`;
+    const cleanedMessage = {user_name: userName, user_email: userEmail, message: message, time_stamp: formattedDate};
     // console.log(cleanedMessage);
     return cleanedMessage;
 }

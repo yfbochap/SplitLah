@@ -41,7 +41,8 @@ export class User {
             const {data,error} = await supabase
                 .from('user_group')
                 .select("group_id")
-                .eq('user_id',this.userID);
+                .eq('user_id',this.userID)
+                .order('group_name',{ascending: true});
             if (error){
                 Alert.alert(error.message);
             }
