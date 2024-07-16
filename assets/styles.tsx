@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'purple',
         // alignItems: 'center',
         flexDirection: 'row',
-        height: 90,
+        height: 95,
       },
       billHeaderText: {
         textAlign: 'center',

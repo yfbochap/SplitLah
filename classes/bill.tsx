@@ -209,10 +209,51 @@ export class Bill {
                 return true;
             }
         } catch (irregError) {
-            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            Alert.alert('An unexpected storing error occurred: ' + irregError.message);
             return false; // Handling any other unexpected errors
         }
     }
+    
+    async updateBillUsingBillID(amount, name, date, paidByUserId) {
+        try {
+          const { data, error } = await supabase
+            .from('bill')
+            .update({ amount, name, date, user_id: paidByUserId })
+            .eq('bill_id', this.billID);
+    
+          if (error) {
+            console.error('updateBillUsingBillID error:', error.message);
+            return false;
+          }
+    
+          console.log('updateBillUsingBillID data:', data);
+          return true; // Return true if update was successful
+        } catch (error) {
+          console.error('updateBillUsingBillID catch error:', error.message);
+          return false;
+        }
+      }
+    
+    async DeleteBillParticipants() {
+        try {
+            const { data, error } = await supabase
+                .from('bill_participant')
+                .delete()
+                .eq('bill_id', this.billID); // Ensure we are deleting entries matching bill_id
+    
+            if (error) {
+                Alert.alert(error.message);
+                return false;
+            } else {
+                console.log("Bill Participants Deleted");
+                return true;
+            }
+        } catch (irregError) {
+            Alert.alert('An unexpected deletion error occurred: ' + irregError.message);
+            return false; // Handling any other unexpected errors
+        }
+    }
+    
     
 
 }

@@ -50,9 +50,7 @@ const BillScreen = () => {
         if (details) {
           setBillDetails(details[0]);
         }
-        if (participants && participants.length > 0) {
-          setParticipants(participants);
-        }
+        setParticipants(participants && participants.length > 0 ? participants : []);
         if (owner) {
             setOwner(owner);
         }
