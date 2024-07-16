@@ -12,7 +12,15 @@ interface GroupBalance {
     group_id: string;
     balance: Array<Balance>;
 }
+interface BalanceData {
+  [key: string]: number;
+}
 
+interface FormattedData {
+  value: number;
+  label: string;
+  
+}
 // gets the balance in each group based on the groupid of the group
 export const getGroupBalance = async (groupId: string): Promise<{ userName: string; owedTo: string; amount: number }[]> => {
     const { data, error } = await supabase
@@ -76,3 +84,16 @@ export const getOverallGroupBalance = (balances: { userName: string; owedTo: str
       return `You are not owed any money`;
     }
   };
+ 
+export const transformData = (data: BalanceData): FormattedData[] => {
+  return Object.entries(data).map(([label, value]) => {
+    const positiveValue = Math.abs(value);
+    return {
+      value: positiveValue,
+      label,
+      frontColor: value > 0 ? 'green' : 'red', // Set frontColor based on original value
+      labelTextStyle: { color: 'white' }
+    };
+  });
+};
+  
