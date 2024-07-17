@@ -6,14 +6,20 @@ import {supabase} from "@/hooks/supabase";
 import {getGID, getUUID} from "@/services/accountService";
 import { getPreviousMessages, parseRawMessage, sendMessage } from "@/services/groupchatService";
 import {useFocusEffect} from "@react-navigation/native";
-import {useKeyboardAvoidingView} from "expo-key"
-
+import styles from '@/assets/styles';
+import {HeaderBackButton} from "@react-navigation/elements";
+import { useNavigation } from '@react-navigation/native';
 
 export default function GroupChatScreen(){
     const [messages, setMessages] = useState([]);
     const [incomingRawMessage, setIncomingRawMessage] = useState(null);
     const [newMessage, setNewMessage] = useState('');
     const scrollViewRef = useRef(null);
+
+    const navigation = useNavigation();
+    const handleBackButtonPress = () => {
+        navigation.navigate('group');
+    };
 
     async function fetchPreviousCleanedMessages() {
         const pastMessages = await getPreviousMessages();
@@ -104,38 +110,44 @@ export default function GroupChatScreen(){
 
     return (
 
-        <SafeAreaView style={styles.container}>
-            <View style={styles.messageListContainer} >
-                <ScrollView contentContainerStyle={styles.scrollViewContent} ref={scrollViewRef} onContentSizeChange={handleAutoScroll}>
+        <SafeAreaView style={groupchatStyle.container}>
+            <View style={styles.groupheader}>
+                <View>
+                    <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
+                </View>
+            </View>
+            <View style={groupchatStyle.messageListContainer} >
+                <ScrollView contentContainerStyle={groupchatStyle.scrollViewContent} ref={scrollViewRef} onContentSizeChange={handleAutoScroll}>
                     {messages.map((message, index) => (
-                        <View key={index} style={styles.messageContainer}>
-                            <Text style={styles.receivedName}>{message.user_name} ({message.time_stamp})</Text>
-                            <Text style={styles.receivedMessage}>{message.message}</Text>
+                        <View key={index} style={groupchatStyle.messageContainer}>
+                            <Text style={groupchatStyle.receivedName}>{message.user_name} ({message.time_stamp})</Text>
+                            <Text style={groupchatStyle.receivedMessage}>{message.message}</Text>
                         </View>
                     ))}
                 </ScrollView>
             </View>
-            <View style={styles.inputContainer}>
+            <KeyboardAvoidingView style={groupchatStyle.inputContainer}>
                 <TextInput
-                    style={styles.textInput}
+                    style={groupchatStyle.textInput}
                     value={newMessage}
                     onChangeText={setNewMessage}
                     placeholder="Type a message..."
+                    placeholderTextColor= "#E6E6FA"
                     onFocus={handleTextInputFocus}
                     multiline={true}
                     numberOfLines={1}
                 />
                 <TouchableOpacity
-                    style={styles.sendButton}
+                    style={groupchatStyle.sendButton}
                     onPress={handleSendMessage}
                 >
-                    <Text style={styles.sendButtonText}>Send</Text>
+                    <Text style={groupchatStyle.sendButtonText}>Send</Text>
                 </TouchableOpacity>
-            </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
-const styles = StyleSheet.create({
+const groupchatStyle = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'black'
@@ -151,35 +163,41 @@ const styles = StyleSheet.create({
         marginVertical: 1,
         padding: 10,
         borderRadius: 5,
-        backgroundColor: '#f2f2f2',
+        backgroundColor: '#333333',
     },
     receivedName: {
         fontSize: 14,
-        color: '#666',
+        color: '#D3D3D3',
         marginBottom: 4,
     },
     receivedMessage: {
         fontSize: 20,
-        color: '#333',
+        color: '#E6E6FA',
     },
     inputContainer: {
         flex: 0.07,
         padding: 10,
-        backgroundColor: 'grey',
+        backgroundColor: '#4c4949',
         flexDirection: 'row',
     },
     textInput: {
         height: 40,
         paddingHorizontal: 10,
         borderRadius: 5,
-        backgroundColor: '#fff',
-        flex: 1
+        backgroundColor: '#4c4949',
+        flex: .85,
+        flexDirection: 'column',
+        color: '#E6E6FA',
+
     },
     sendButton:{
-        backgroundColor: '#007AFF',
+        height: 40,
+        backgroundColor: '#800080',
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 10,
+        flex: .15,
+        flexDirection: 'column',
     },
     sendButtonText:{
         color: '#fff',
