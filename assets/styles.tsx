@@ -164,11 +164,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'purple',
         alignItems: 'center',
         flexDirection: 'row',
-        height: 50,
+        height: 80,
       },
       headerText: {
         textAlign: 'center',
-        fontSize: 26,
+        fontSize: 36,
         color: 'white',
       },
       tabContent: {

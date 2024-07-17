@@ -354,11 +354,15 @@ export default function GroupScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.groupheader}>
-        <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
+        <View>
+          <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
+        </View>
         <View style={{ flex: 1, alignItems: 'center', maxWidth: 300 }}>
           <Text style={{ ...styles.headerText }}>
             {groupDetails ? groupDetails.group_name : ''}
           </Text>
+        </View>
+        <View style={{ marginRight: 15}}>
           <TouchableOpacity>
             <Text style={styles.billEditButton} onPress={handleChatButtonPress}>Chat</Text>
           </TouchableOpacity>

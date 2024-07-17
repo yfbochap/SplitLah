@@ -124,7 +124,6 @@ useFocusEffect(
     fetchData();
   }, [])
 );
-
   
 
   // Function to handle changes in amount input
@@ -154,11 +153,29 @@ useFocusEffect(
 
   // Function to handle checkbox change
   const handleCheckboxChange = (userId) => {
-    setSelectedMembers((prevSelectedMembers) => ({
-      ...prevSelectedMembers,
-      [userId]: !prevSelectedMembers[userId],
-    }));
-    console.log('voodoooo');
+    setSelectedMembers((prevSelectedMembers) => {
+      const updatedSelectedMembers = {
+        ...prevSelectedMembers,
+        [userId]: !prevSelectedMembers[userId],
+      };
+
+      // Update amounts
+      const selectedCount = Object.values(updatedSelectedMembers).filter(Boolean).length;
+      if (selectedCount > 0) {
+        const splitAmount = (parseFloat(amount) / selectedCount).toFixed(2);
+        const updatedAmounts = Object.keys(updatedSelectedMembers).reduce((acc, uid) => {
+          if (updatedSelectedMembers[uid]) {
+            acc[uid] = splitAmount;
+          } else {
+            acc[uid] = '';
+          }
+          return acc;
+        }, {});
+        setAmounts(updatedAmounts);
+      }
+
+      return updatedSelectedMembers;
+    });
   };
 
   // Function to handle amount change for individual checkboxes
@@ -186,6 +203,7 @@ useFocusEffect(
   // Function to update bill
   const updateBill = async () => {
     const bid = await getBID();
+    const gid = await getGID();
     if (bid) {
       const bill = new Bill(bid);
       const paidByUserId = selectedPaidBy; // Set the user ID of the user who paid the bill
@@ -225,7 +243,7 @@ useFocusEffect(
           console.log('Failed to delete bill balances.');
         }
 
-        const addBillBalances = await bill.StoreBillBalances(bid, balanceIds, filteredAmounts, paidByUserId);
+        const addBillBalances = await bill.StoreBillBalances(gid, balanceIds, filteredAmounts, paidByUserId);
         if (!addBillBalances) {
           console.error('Failed to add bill balances.');
           return;

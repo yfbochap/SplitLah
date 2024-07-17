@@ -263,13 +263,15 @@ export class Bill {
                 amount: amounts[userId],
                 creditor_id: creditorId,
             }));
-    
+            console.log('Test', dataToInsert);
+
             const { data, error } = await supabase
                 .from('balance')
                 .insert(dataToInsert); // Insert multiple rows
     
             if (error) {
                 Alert.alert(error.message);
+                console.log(error.message);
                 return false;
             } else {
                 console.log("Balances Added");
@@ -387,9 +389,9 @@ export class Bill {
             .eq('user_id', billOwnerID)
             .eq('bill_id', this.billID)
             .single();
-            if(error){
-                throw error;
-            }
+            // if(error){
+            //     throw error;
+            // }
             console.log(!!data);
             return !!data;
         } catch (error) {
@@ -398,6 +400,24 @@ export class Bill {
         }
       }
 
+      async DeleteBill() {
+        try {
+            const { data, error } = await supabase
+                .from('bill')
+                .delete()
+                .eq('bill_id', this.billID); // Ensure we are deleting entries matching bill_id
     
+            if (error) {
+                Alert.alert(error.message);
+                return false;
+            } else {
+                console.log("Bill Deleted");
+                return true;
+            }
+        } catch (irregError) {
+            Alert.alert('An unexpected deletion error occurred: ' + irregError.message);
+            return false; // Handling any other unexpected errors
+        }
+    }
 
 }

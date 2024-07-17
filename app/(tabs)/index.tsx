@@ -120,8 +120,18 @@ export default function App() {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  //Storing Group ID for selected group
+  const rainbowColors = [
+    '#FF0000', // Red
+    '#FF7F00', // Orange
+    '#f1c232', // Gold
+    '#00baa2', // Turquoise
+    '#0000FF', // Blue
+    '#4B0082', // Indigo
+    '#054e13', // Dark Green
+    '#9400D3', // Violet
+  ];
 
+  //Storing Group ID for selected group
   return (
     <TouchableWithoutFeedback onPress={closeFabMenu}>
       <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
@@ -146,7 +156,7 @@ export default function App() {
                 style={styles.chatItem}
                 onPress={async () => { await storeGID(group.group.group_id); router.push('group'); }}
               >
-                <View style={styles.avatar}>
+                <View style={[styles.avatar, { backgroundColor: rainbowColors[index % rainbowColors.length] }]}>
                   <Text style={styles.avatarText}>
                     {group.group.group_name ? group.group.group_name.charAt(0) : 'G'}
                   </Text>

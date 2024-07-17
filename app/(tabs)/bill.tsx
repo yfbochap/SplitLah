@@ -34,7 +34,7 @@ const BillScreen = () => {
   const navigation = useNavigation();
   const [billDetails, setBillDetails] = useState<BillDetails | null>(null);
   const [participants, setParticipants] = useState<BillParticipantNames[] | null>(null);
-  const [owner, setOwner] = useState<BillParticipantNames | null>(null);
+  const [owner, setOwner] = useState(String);
   const [ownerAmount, setOwnerAmount] = useState<number | null>(null);
   const [participantAmounts, setParticipantAmounts] = useState<{ [userId: string]: number }>({});
 
@@ -44,6 +44,15 @@ const BillScreen = () => {
 
   const handleEditButtonPress = () => {
     router.navigate('updatebill');
+  };
+
+  const handleDelete = async () => {
+    const billID = await getBID();
+    if(billID){
+      const billToDelete = new Bill(billID);
+      await billToDelete.DeleteBill();
+    }
+    router.navigate('group');
   };
 
   const fetchBillData = useCallback(async () => {
@@ -61,8 +70,8 @@ const BillScreen = () => {
           setBillDetails(details[0]);
         }
         setParticipants(participants && participants.length > 0 ? participants : []);
-        if (owner) {
-          setOwner(participants.find(participant => participant.user_name === owner) ?? null);
+        if (owner !== null) {
+          setOwner(owner);
         }
         if (ownerAmount !== null) {
           setOwnerAmount(ownerAmount);
@@ -101,7 +110,7 @@ const BillScreen = () => {
         <View style={{ flex: 1, alignItems: 'center', maxWidth: 300, marginTop: 50 }}>
           <Text style={styles.billHeaderText}>{billDetails ? billDetails.name : ''}</Text>
         </View>
-        <View style={{ marginTop: 15 }}>
+        <View style={{ marginTop: 15, marginRight: 15}}>
           <TouchableOpacity onPress={handleEditButtonPress}>
             <Text style={styles.billEditButton}>Edit</Text>
           </TouchableOpacity>
@@ -111,7 +120,7 @@ const BillScreen = () => {
       <View style={{ ...styles.billHeader, justifyContent: 'space-between', height: 70 }}>
         <View style={{ flexDirection: 'column', justifyContent: 'flex-end' }}>
           <Text style={{ ...styles.billEditButton, padding: 12 }}>
-            Paid By: {owner ? owner.user_name : ''}
+            Paid By: {owner}
           </Text>
         </View>
         <View style={{ flexDirection: 'column', justifyContent: 'flex-end' }}>
@@ -133,7 +142,7 @@ const BillScreen = () => {
                 </View>
                 <View>
                   <Text style={{ ...styles.chatText1, textAlign: 'right', marginBottom: 4 }}>
-                    {participant.user_id === owner?.user_id
+                    {participant.user_name == owner
                       ? `$${ownerAmount?.toFixed(2) ?? '0.00'}`
                       : `$${participantAmounts[participant.user_id]?.toFixed(2) ?? '0.00'}`}
                   </Text>
@@ -145,6 +154,15 @@ const BillScreen = () => {
           <Text style={styles.descBillText}>No participants found.</Text>
         )}
       </ScrollView>
+
+      <View style={{...styles.GroupIDContainer, }}>
+        <TouchableOpacity onPress={handleDelete}>
+          <Text style={{ ...styles.groupidtext }}>
+            Delete Bill
+          </Text>
+        </TouchableOpacity>
+      </View>
+
     </SafeAreaView>
   );
 };
