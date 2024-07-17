@@ -1,6 +1,6 @@
 import { supabase } from '../hooks/supabase';
 import { User } from './user';
-
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 interface Balance {
     id: string;
     amount: number;
@@ -19,7 +19,11 @@ interface BalanceData {
 interface FormattedData {
   value: number;
   label: string;
-  
+}
+interface Owedmoney {
+  amount: number;
+  owedTo: string;
+  userName: string;
 }
 // gets the balance in each group based on the groupid of the group
 export const getGroupBalance = async (groupId: string): Promise<{ userName: string; owedTo: string; amount: number }[]> => {
@@ -98,4 +102,55 @@ export const transformData = (data: BalanceData): FormattedData[] => {
     };
   });
 };
-  
+const GroupBalanceList: React.FC = () => {
+  const renderItem = ({ item }: { item: Owedmoney }) => {
+    const positiveValue = Math.abs(item.amount);
+    const textColor = item.amount > 0 ? 'green' : 'red';
+
+    return (
+      <View style={styles.itemContainer}>
+        <Text style={styles.itemText}>
+          {item.userName} owes {item.owedTo}
+        </Text>
+        <Text style={[styles.itemValue, { color: textColor }]}>
+          {positiveValue}
+        </Text>
+      </View>
+    );
+  };
+
+  return (
+    <FlatList
+      data={OwedMoney}
+      renderItem={renderItem}
+      keyExtractor={(item, index) => index.toString()}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  itemContainer: {
+    padding: 16,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2
+  },
+  itemText: {
+    fontSize: 16
+  },
+  itemValue: {
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
+});
+
+export default GroupBalanceList;
