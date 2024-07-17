@@ -1,6 +1,6 @@
 import { supabase } from '../hooks/supabase';
 import { User } from './user';
-
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 interface Balance {
     id: string;
     amount: number;
@@ -19,7 +19,11 @@ interface BalanceData {
 interface FormattedData {
   value: number;
   label: string;
-  
+}
+interface Owedmoney {
+  amount: number;
+  owedTo: string;
+  userName: string;
 }
 // gets the balance in each group based on the groupid of the group
 export const getGroupBalance = async (groupId: string): Promise<{ userName: string; owedTo: string; amount: number }[]> => {
@@ -38,12 +42,10 @@ export const getGroupBalance = async (groupId: string): Promise<{ userName: stri
     for (const bill of data) {
       const lenderId = bill.owed_to;
       const lender = new User(lenderId);
-      const lenderName1 = await lender.getUserName();
-      const lenderName = lenderName1[0].user_name;
+      const lenderName = await lender.getUserName();
       const borrowerId = bill.user_id;
       const borrower = new User(borrowerId);
-      const borrowerName1 = await borrower.getUserName();
-      const borrowerName = borrowerName1[0].user_name;
+      const borrowerName = await borrower.getUserName();
       const amount = bill.amount;
   
       balances.push({ userName: borrowerName, owedTo: lenderName, amount });
@@ -71,18 +73,22 @@ export const getOverallGroupBalance = (balances: { userName: string; owedTo: str
     return overallBalances;
   };
 
-  export const getUserBalanceMessage = (overallBalances: { [userId: string]: number }, userId: string) => {
-    const userBalance = overallBalances[userId];
+export const getUserBalanceMessage = async (overallBalances: { [userName: string]: number }, userId: string) => {
+    const user = new User(userId);
+    const userName = await user.getUserName();
+    const userBalance = overallBalances[userName];
   
-    if (userBalance!== undefined) {
+    let message;
+    if (userBalance !== undefined) {
       if (userBalance < 0) {
-        return `You owe $${Math.abs(userBalance)} amount of money`;
+        message = `You owe $${Math.abs(userBalance)} amount of money`;
       } else if (userBalance > 0) {
-        return `You are owed $${userBalance} amount of money`;
+        message = `You are owed $${userBalance} amount of money`;
       }
     } else {
-      return `You are not owed any money`;
+      message = `You are not owed any money`;
     }
+    return message; // <--- Add this return statement
   };
  
 export const transformData = (data: BalanceData): FormattedData[] => {
@@ -96,4 +102,55 @@ export const transformData = (data: BalanceData): FormattedData[] => {
     };
   });
 };
-  
+const GroupBalanceList: React.FC = () => {
+  const renderItem = ({ item }: { item: Owedmoney }) => {
+    const positiveValue = Math.abs(item.amount);
+    const textColor = item.amount > 0 ? 'green' : 'red';
+
+    return (
+      <View style={styles.itemContainer}>
+        <Text style={styles.itemText}>
+          {item.userName} owes {item.owedTo}
+        </Text>
+        <Text style={[styles.itemValue, { color: textColor }]}>
+          {positiveValue}
+        </Text>
+      </View>
+    );
+  };
+
+  return (
+    <FlatList
+      data={OwedMoney}
+      renderItem={renderItem}
+      keyExtractor={(item, index) => index.toString()}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  itemContainer: {
+    padding: 16,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2
+  },
+  itemText: {
+    fontSize: 16
+  },
+  itemValue: {
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
+});
+
+export default GroupBalanceList;

@@ -1,5 +1,5 @@
 import React, { useEffect,useState, useCallback } from 'react';
-import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image, Button } from 'react-native';
+import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image, Button, StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -8,11 +8,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, useRouter, useFocusEffect } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
-import { getGID, storeBID } from '@/services/accountService';
+import { getGID, storeBID, getUUID } from '@/services/accountService';
 import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons';
 import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
-import { getGroupBalance, getOverallGroupBalance,transformData } from '../../classes/balance';
+import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, GroupBalanceList, transformData} from '../../classes/balance';
 
 
 
@@ -56,6 +56,12 @@ interface FormattedData {
   value : number;
   label : string;
 }
+
+interface Owedmoney {
+  amount: number;
+  owedTo: string;
+  userName: string;
+}
 // const balances: Balance[] = [
 //   { id: '1', name: 'Alice', amount: 20, payer: 'Alice', receiver: 'Bob' },
 //   { id: '2', name: 'Bob', amount: -15, payer: 'Charlie', receiver: 'Alice' },
@@ -63,21 +69,7 @@ interface FormattedData {
 //   { id: '4', name: 'Dave', amount: -10, payer: 'Dave', receiver: 'Alice' },
 // ];
 
-const BalanceBar: React.FC<{ balance: Balance }> = ({ balance }) => {
-  const isPositive = balance.amount >= 0;
-  const barStyle = isPositive ? styles.positiveBar : styles.negativeBar;
 
-  return (
-    <View style={styles.balanceContainer}>
-      <Text style={styles.userName}>{balance.name}</Text>
-      <View style={styles.divider} />
-      <View style={styles.barWrapper}>
-        <View style={[styles.bar, barStyle, { width: `${Math.abs(balance.amount)}%` }]} />
-        <Text style={styles.amountText}>${Math.abs(balance.amount)}</Text>
-      </View>
-    </View>
-  );
-};
 
 const calculateTotalBalance = (balances: Balance[]): number => {
   return balances.reduce((total, item) => total + item.amount, 0);
@@ -137,13 +129,40 @@ function FirstTab({ billDetails }) {
 function SecondTab() {
   const navigation = useNavigation();
   const router = useRouter();
+  
   const handleBackButtonPress = () => {
     navigation.goBack();
   };
+  const [groupbalance, setOwedMoney] = useState<Owedmoney[] | null>(null);
   const [FormattedData,setFormattedData] = useState<FormattedData[] | null>(null);
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
   const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
   const [copiedText, setCopiedText] = React.useState('');
+  const GroupBalanceList: React.FC = () => {
+    const renderItem = ({ item }: { item: Owedmoney }) => {
+      const positiveValue = Math.abs(item.amount);
+      const textColor = item.amount > 0 ? 'green' : 'red';
+  
+      return (
+        <View style={styles2.itemContainer}>
+          <Text style={styles2.itemText}>
+            {item.userName} owes {item.owedTo}
+          </Text>
+          <Text style={[styles2.itemValue, { color: textColor }]}>
+            {positiveValue}
+          </Text>
+        </View>
+      );
+    };
+  
+    return (
+      <FlatList
+        data={groupbalance}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    );
+  };
   useFocusEffect(
     useCallback(() => {
       const checkGroupData = async () => {
@@ -165,7 +184,8 @@ function SecondTab() {
             console.log('overall', getOverallGroupBalance(grpbalance));
             console.log(inputData);
             setFormattedData(inputData);
-
+            setOwedMoney(grpbalance);
+            
             // console.log(`Group Details: ${JSON.stringify(details)}`);
             // console.log(`Bill Details: ${JSON.stringify(bills)}`);
 
@@ -191,15 +211,7 @@ function SecondTab() {
     }, [])
   );
   
-  
-  const renderBalanceBarItem: ListRenderItem<Balance> = ({ item }) => <BalanceBar balance={item} />;
-  const renderBalanceItem: ListRenderItem<Balance> = ({ item }) => (
-    <View style={styles.balanceItem}>
-      <Text style={styles.balanceText}>
-        {item.name} owes {item.receiver} ${Math.abs(item.amount)}
-      </Text>
-    </View>
-  );
+ 
 
   return (
     
@@ -224,7 +236,7 @@ function SecondTab() {
           showGradient
           gradientColor={'#fc84ff'}
           hideYAxisText
-          yAxisThickness={20}
+          yAxisThickness={0}
           xAxisThickness={0}
           xAxisColor={'#c919ff'}
           frontColor={'transparent'}
@@ -239,6 +251,9 @@ function SecondTab() {
             shadowRadius: 8,
             elevation: 10,
           }}
+          xAxisLabelsVerticalShift={10}
+          labelWidth={30}
+          
           autoShiftLabels
           hideRules
           height={120}
@@ -248,6 +263,7 @@ function SecondTab() {
             return (
               <View
                 style={{
+                  
                   marginBottom: 20,
                   marginLeft: -6,
                   backgroundColor: '#ffcefe',
@@ -257,37 +273,58 @@ function SecondTab() {
                 }}>
                 <Text>{item.value}</Text>
               </View>
+              
             );
+            
           }}
-          
+        
+
         />
-       <View>
-       <Text style={{color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10}}>Transactions</Text>
-       </View>
+
+       {/* <View style={{ ...styles.container }}>
+          
+      <FlatList
+        data={OwedMoney}
+        renderItem={renderBalanceItem}
+        keyExtractor={(item) => item.id}
+        style={styles.list}
+      />
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(OwedMoney)}</Text>
       </View>
     </View>
+       <Text style={{color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10}}>Transactions</Text>
+        */}
+        
+       </View>
+       <Text style={{ color: 'black', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
+          Transactions
+        </Text>
+        <GroupBalanceList />
+      </View>
+    
   );
 
-  //   <View style={{ ...styles.container }}>
-  //     <View style={{ ...styles.barChartContainer }}>
+    <View style={{ ...styles.container }}>
+      <View style={{ ...styles.barChartContainer }}>
       
-  //       <FlatList
-  //         data={balances}
-  //         renderItem={renderBalanceBarItem}
-  //         keyExtractor={(item) => item.id}
-  //         contentContainerStyle={styles.barList}
-  //       />
-  //     </View>
-  //     <FlatList
-  //       data={balances}
-  //       renderItem={renderBalanceItem}
-  //       keyExtractor={(item) => item.id}
-  //       style={styles.list}
-  //     />
-  //     <View style={styles.footer}>
-  //       <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(balances)}</Text>
-  //     </View>
-  //   </View>
+        <FlatList
+          data={balances}
+          renderItem={renderBalanceBarItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.barList}
+        />
+      </View>
+      <FlatList
+        data={balances}
+        renderItem={renderBalanceItem}
+        keyExtractor={(item) => item.id}
+        style={styles.list}
+      />
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(balances)}</Text>
+      </View>
+    </View>
   
 }
 
@@ -323,9 +360,18 @@ export default function GroupScreen() {
           if (gid) {
             // console.log(`GID found: ${gid}`);
             const group = new Group(gid);
+            const uid = await getUUID();
             const details = await group.getGroupDetails();
             const bills = await group.getBillsBasedOnGroup();
             const grpbalance = await getGroupBalance(gid);
+            console.log('groupbalance', grpbalance);
+            const overallBalances = getOverallGroupBalance(grpbalance);
+            console.log('overall', getOverallGroupBalance(grpbalance));
+            console.log(uid);
+            const usermessage = getUserBalanceMessage(overallBalances, uid);
+            getUserBalanceMessage(overallBalances, uid).then((message) => {
+              console.log(message); // This should log the actual message
+            });
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);
             // console.log(`Bill Details: ${JSON.stringify(bills)}`);
@@ -419,3 +465,31 @@ export default function GroupScreen() {
     </SafeAreaView>
   );
 }
+const styles2 = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff'
+  },
+  itemContainer: {
+    padding: 16,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2
+  },
+  itemText: {
+    fontSize: 16
+  },
+  itemValue: {
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
+});
