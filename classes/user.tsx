@@ -41,7 +41,8 @@ export class User {
             const {data,error} = await supabase
                 .from('user_group')
                 .select("group_id")
-                .eq('user_id',this.userID);
+                .eq('user_id',this.userID)
+                .order('group_name',{ascending: true});
             if (error){
                 Alert.alert(error.message);
             }
@@ -90,6 +91,25 @@ export class User {
             }
             else {
                 // console.log(data);
+                return data;
+            }
+        }
+        catch (irregError){
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return null; // Handling any other unexpected errors
+        }
+    }
+    async getUserName() {
+        // console.log(`Group ID: ${this.groupID}`);
+        try {
+            const {data,error} = await supabase
+                .from('user')
+                .select('user_name')
+                .eq('user_id',this.userID);
+            if (error){
+                Alert.alert(error.message);
+            }
+            else {
                 return data;
             }
         }
