@@ -100,23 +100,21 @@ export class User {
         }
     }
     async getUserName() {
-        // console.log(`Group ID: ${this.groupID}`);
         try {
-            const {data,error} = await supabase
-                .from('user')
-                .select('user_name')
-                .eq('user_id',this.userID);
-            if (error){
-                Alert.alert(error.message);
-            }
-            else {
-                return data;
-            }
+          const { data, error } = await supabase
+            .from('user')
+            .select('user_name')
+            .eq('user_id', this.userID);
+          if (error) {
+            Alert.alert(error.message);
+            return null; // or throw error, depending on your app's requirements
+          } else {
+            return data[0].user_name; // return the user_name string
+          }
+        } catch (irregError) {
+          Alert.alert('An unexpected error occurred: ' + irregError.message);
+          return null; // Handling any other unexpected errors
         }
-        catch (irregError){
-            Alert.alert('An unexpected error occurred: ' + irregError.message);
-            return null; // Handling any other unexpected errors
-        }
-    }
+      }
     
 }

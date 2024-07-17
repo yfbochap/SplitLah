@@ -8,12 +8,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, useRouter, useFocusEffect } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
-import { getGID, storeBID } from '@/services/accountService';
+import { getGID, storeBID, getUUID } from '@/services/accountService';
 import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons';
 import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
-import { getGroupBalance, getOverallGroupBalance,transformData } from '../../classes/balance';
-
+import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, transformData} from '../../classes/balance';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -323,9 +322,18 @@ export default function GroupScreen() {
           if (gid) {
             // console.log(`GID found: ${gid}`);
             const group = new Group(gid);
+            const uid = await getUUID();
             const details = await group.getGroupDetails();
             const bills = await group.getBillsBasedOnGroup();
             const grpbalance = await getGroupBalance(gid);
+            console.log('groupbalance', grpbalance);
+            const overallBalances = getOverallGroupBalance(grpbalance);
+            console.log('overall', getOverallGroupBalance(grpbalance));
+            console.log(uid);
+            const usermessage = getUserBalanceMessage(overallBalances, uid);
+            getUserBalanceMessage(overallBalances, uid).then((message) => {
+              console.log(message); // This should log the actual message
+            });
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);
             // console.log(`Bill Details: ${JSON.stringify(bills)}`);

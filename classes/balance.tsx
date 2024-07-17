@@ -38,12 +38,10 @@ export const getGroupBalance = async (groupId: string): Promise<{ userName: stri
     for (const bill of data) {
       const lenderId = bill.owed_to;
       const lender = new User(lenderId);
-      const lenderName1 = await lender.getUserName();
-      const lenderName = lenderName1[0].user_name;
+      const lenderName = await lender.getUserName();
       const borrowerId = bill.user_id;
       const borrower = new User(borrowerId);
-      const borrowerName1 = await borrower.getUserName();
-      const borrowerName = borrowerName1[0].user_name;
+      const borrowerName = await borrower.getUserName();
       const amount = bill.amount;
   
       balances.push({ userName: borrowerName, owedTo: lenderName, amount });
@@ -71,18 +69,22 @@ export const getOverallGroupBalance = (balances: { userName: string; owedTo: str
     return overallBalances;
   };
 
-  export const getUserBalanceMessage = (overallBalances: { [userId: string]: number }, userId: string) => {
-    const userBalance = overallBalances[userId];
+export const getUserBalanceMessage = async (overallBalances: { [userName: string]: number }, userId: string) => {
+    const user = new User(userId);
+    const userName = await user.getUserName();
+    const userBalance = overallBalances[userName];
   
-    if (userBalance!== undefined) {
+    let message;
+    if (userBalance !== undefined) {
       if (userBalance < 0) {
-        return `You owe $${Math.abs(userBalance)} amount of money`;
+        message = `You owe $${Math.abs(userBalance)} amount of money`;
       } else if (userBalance > 0) {
-        return `You are owed $${userBalance} amount of money`;
+        message = `You are owed $${userBalance} amount of money`;
       }
     } else {
-      return `You are not owed any money`;
+      message = `You are not owed any money`;
     }
+    return message; // <--- Add this return statement
   };
  
 export const transformData = (data: BalanceData): FormattedData[] => {
