@@ -8,8 +8,9 @@ import {SUPABASE_URL,SUPABASE_KEY} from '@env'
 // const supabaseUrl = process.env.SUPABASE_URL;
 // const supabaseAnonKey = process.env.SUPABASE_KEY;
 
-const supabaseUrl = "https://gfclcjgbzgzdwhrkxpxk.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmY2xjamdiemd6ZHdocmt4cHhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTkyOTcxNDQsImV4cCI6MjAzNDg3MzE0NH0.0vI3m4jciF3QPoCQhOuACaTnm8pxWPuDcK82flGnPhM";
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_KEY;
+
 // All of this is ripped off: https://supabase.com/docs/guides/auth/quickstarts/react-native
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {

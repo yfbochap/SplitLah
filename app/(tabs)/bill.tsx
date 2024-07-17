@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, ListRenderItem, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,6 +18,15 @@ interface BillDetails {
 
 interface BillParticipantNames {
   user_name: string;
+  user_id: string;
+}
+
+interface Balances {
+  bill_id: string;
+  group_id: string;
+  debtor_id: string;
+  amount: string;
+  creditor_id: string;
 }
 
 const BillScreen = () => {
@@ -25,7 +34,9 @@ const BillScreen = () => {
   const navigation = useNavigation();
   const [billDetails, setBillDetails] = useState<BillDetails | null>(null);
   const [participants, setParticipants] = useState<BillParticipantNames[] | null>(null);
-  const [owner, setOwner] = useState('');
+  const [owner, setOwner] = useState<BillParticipantNames | null>(null);
+  const [ownerAmount, setOwnerAmount] = useState<number | null>(null);
+  const [participantAmounts, setParticipantAmounts] = useState<{ [userId: string]: number }>({});
 
   const handleBackButtonPress = () => {
     router.navigate('group');
@@ -43,17 +54,25 @@ const BillScreen = () => {
         const details = await bill.getBillDetails();
         const participants = await bill.getBillParticipantsNames();
         const owner = await bill.getBillOwnerNameViaBillID();
-        console.log('Details', details);
-        console.log('Participants', participants);
-        console.log('Owner', owner);
+        const ownerAmount = await bill.GetOwnerSum();
+        const balances: Balances[] = await bill.GetBillBalances();
 
         if (details) {
           setBillDetails(details[0]);
         }
         setParticipants(participants && participants.length > 0 ? participants : []);
         if (owner) {
-            setOwner(owner);
+          setOwner(participants.find(participant => participant.user_name === owner) ?? null);
         }
+        if (ownerAmount !== null) {
+          setOwnerAmount(ownerAmount);
+        }
+
+        const amounts: { [userId: string]: number } = {};
+        balances.forEach((balance) => {
+          amounts[balance.debtor_id] = parseFloat(balance.amount);
+        });
+        setParticipantAmounts(amounts);
       } else {
         console.log('Bill ID not found.');
         navigation.goBack();
@@ -69,10 +88,14 @@ const BillScreen = () => {
     }, [fetchBillData])
   );
 
+  useEffect(() => {
+    fetchBillData();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.billHeader}>
-        <View style={{ marginTop: 10}}>
+        <View style={{ marginTop: 10 }}>
           <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
         </View>
         <View style={{ flex: 1, alignItems: 'center', maxWidth: 300, marginTop: 50 }}>
@@ -85,12 +108,14 @@ const BillScreen = () => {
         </View>
       </View>
 
-      <View style={{...styles.billHeader, justifyContent: 'space-between', height: 70}}>
-        <View style={{ flexDirection: 'column', justifyContent: 'flex-end'}}>
-            <Text style={{...styles.billEditButton, padding: 12}}>Paid By: {owner}</Text>
+      <View style={{ ...styles.billHeader, justifyContent: 'space-between', height: 70 }}>
+        <View style={{ flexDirection: 'column', justifyContent: 'flex-end' }}>
+          <Text style={{ ...styles.billEditButton, padding: 12 }}>
+            Paid By: {owner ? owner.user_name : ''}
+          </Text>
         </View>
-        <View style={{ flexDirection: 'column', justifyContent: 'flex-end'}}>
-            <Text style={{...styles.billEditButton, padding: 12}}>{billDetails ? billDetails.date : ''}</Text>
+        <View style={{ flexDirection: 'column', justifyContent: 'flex-end' }}>
+          <Text style={{ ...styles.billEditButton, padding: 12 }}>{billDetails ? billDetails.date : ''}</Text>
         </View>
       </View>
 
@@ -107,13 +132,17 @@ const BillScreen = () => {
                   <Text style={styles.chatText1}>{participant.user_name}</Text>
                 </View>
                 <View>
-                  <Text style={{ ...styles.chatText1, textAlign: 'right', marginBottom: 4 }}>$*insert amt here*</Text>
+                  <Text style={{ ...styles.chatText1, textAlign: 'right', marginBottom: 4 }}>
+                    {participant.user_id === owner?.user_id
+                      ? `$${ownerAmount?.toFixed(2) ?? '0.00'}`
+                      : `$${participantAmounts[participant.user_id]?.toFixed(2) ?? '0.00'}`}
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={styles.descBillText}></Text>
+          <Text style={styles.descBillText}>No participants found.</Text>
         )}
       </ScrollView>
     </SafeAreaView>

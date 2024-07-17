@@ -125,7 +125,7 @@ export class Bill {
             try {
                 const {data,error} = await supabase
                     .from('user')
-                    .select('user_name')
+                    .select('user_name, user_id')
                     .in('user_id', userIds);
                 if (error){
                     Alert.alert(error.message);
@@ -254,6 +254,150 @@ export class Bill {
         }
     }
     
+    async StoreBillBalances(gid: string, userIds: string[], amounts: { [userId: string]: string }, creditorId: string) {
+        try {
+            const dataToInsert = userIds.map(userId => ({
+                bill_id: this.billID,
+                group_id: gid,
+                debtor_id: userId,
+                amount: amounts[userId],
+                creditor_id: creditorId,
+            }));
+    
+            const { data, error } = await supabase
+                .from('balance')
+                .insert(dataToInsert); // Insert multiple rows
+    
+            if (error) {
+                Alert.alert(error.message);
+                return false;
+            } else {
+                console.log("Balances Added");
+                return true;
+            }
+        } catch (irregError) {
+            Alert.alert('An unexpected storing error occurred: ' + irregError.message);
+            return false; // Handling any other unexpected errors
+        }
+    }
+
+    async GetBillBalances() {
+        try {
+            const {data,error} = await supabase
+                .from('balance')
+                .select()
+                .eq('bill_id', this.billID);
+            if (error){
+                Alert.alert(error.message);
+            }
+            else {
+                console.log(data);
+                return data;
+            }
+        }
+        catch (irregError){
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return []; // Handling any other unexpected errors
+        }
+    }
+
+    async DeleteBillBalances() {
+        try {
+            const { data, error } = await supabase
+                .from('balance')
+                .delete()
+                .eq('bill_id', this.billID); // Ensure we are deleting entries matching bill_id
+    
+            if (error) {
+                Alert.alert(error.message);
+                return false;
+            } else {
+                console.log("Bill Balances Deleted");
+                return true;
+            }
+        } catch (irregError) {
+            Alert.alert('An unexpected deletion error occurred: ' + irregError.message);
+            return false; // Handling any other unexpected errors
+        }
+    }
+    
+    async GetBalanceSum() {
+        try {
+            const { data, error } = await supabase
+                .from('balance')
+                .select('amount.sum()')
+                .eq('bill_id', this.billID)
+                .single();
+    
+            if (error) {
+                throw new Error(error.message);
+            }
+    
+            let balanceSum: number = 0;
+    
+            if (typeof data?.sum === 'string') {
+                balanceSum = parseFloat(data.sum);
+            } else if (typeof data?.sum === 'number') {
+                balanceSum = data.sum;
+            } else {
+                throw new Error('Unexpected data type returned for balance sum.');
+            }
+    
+            if (isNaN(balanceSum)) {
+                throw new Error('Failed to parse balance sum.');
+            }
+    
+            return balanceSum;
+        } catch (error) {
+            Alert.alert('An unexpected error occurred 2: ' + error.message);
+            throw error; // Rethrow the error to propagate it further if necessary
+        }
+    }
+    
+    
+    async GetOwnerSum() {
+        try {
+            const { data, error } = await supabase
+                .from('bill')
+                .select('amount')
+                .eq('bill_id', this.billID)
+                .single();
+    
+            if (error) {
+                throw new Error(error.message);
+            }
+    
+            const billamt = data?.amount ?? 0; // Use optional chaining and nullish coalescing operator
+            const balanceSum = await this.GetBalanceSum();
+            const remainingAmount = billamt - balanceSum;
+            return remainingAmount;
+        } catch (error) {
+            Alert.alert('An unexpected error occurred 3: ' + error.message);
+            throw error; // Rethrow the error to propagate it further if necessary
+        }
+    }
+
+    async isOwnerBillParticipant(): Promise<boolean> {
+        try {
+            const billOwnerID = await this.getBillOwnerID();
+            console.log('THIS WORKKKKKKKSSSS', billOwnerID);
+            const { data, error } = await supabase
+            .from('bill_participant')
+            .select('user_id')
+            .eq('user_id', billOwnerID)
+            .eq('bill_id', this.billID)
+            .single();
+            if(error){
+                throw error;
+            }
+            console.log(!!data);
+            return !!data;
+        } catch (error) {
+          console.error('Error checking owner participant:', error);
+          return false; // Return false in case of error or no participation
+        }
+      }
+
     
 
 }

@@ -159,21 +159,29 @@ export default function AddBill() {
     const gid = await getGID();
     if (gid) {
       const group = new Group(gid);
-      const selectedUserIds = Object.keys(selectedMembers).filter((userId) => selectedMembers[userId]);
-      const currentDate = date.toISOString(); // Convert date to ISO format for storage
       const paidByUserId = selectedPaidBy.user_id; // Set the user ID of the user who paid the bill
+      const selectedUserIds = Object.keys(selectedMembers).filter((userId) => selectedMembers[userId]);
+      const balanceIds = Object.keys(selectedMembers).filter((userId) => selectedMembers[userId] && userId !== paidByUserId);
+      const currentDate = date.toISOString(); // Convert date to ISO format for storage
+      const filteredAmounts = Object.fromEntries(Object.entries(amounts).filter(([userId, amount]) => amount !== '' && userId !== paidByUserId)) as { [userId: string]: string };
+
 
       try {
         const result = await group.createBillUsingGroupID(amount, BillTitle, currentDate, paidByUserId);
         if (result) {
           console.log('Bill Created Successfully');
           const bill = new Bill(result);
+
           const addBillParticipants = await bill.StoreBillParticipants(selectedUserIds);
-          //FILL IN FUNC HERE
           if(addBillParticipants){
             console.log('Bill Participants Stored Successfully');
           }
-          // Optionally navigate to a confirmation screen or perform another action
+
+          const addBillBalances = await bill.StoreBillBalances(gid, balanceIds, filteredAmounts, paidByUserId);
+          if(addBillBalances){
+            console.log('Bill Balances Stored Successfully');
+          }
+
         } else {
           console.error('Failed to create bill.');
         }
