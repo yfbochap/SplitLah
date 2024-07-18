@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -45,6 +45,16 @@ const BillScreen = () => {
   const handleEditButtonPress = () => {
     router.navigate('updatebill');
   };
+
+  const deleteButton = async () => {
+    Alert.alert('Delete Bill', 'Are you sure about deleting this bill? You will not be able to get it back!',
+      [
+        {text: 'Cancel'},
+        {text: 'Ok', onPress: () => handleDelete()},
+      ],
+      {cancelable: true}
+    )
+  }
 
   const handleDelete = async () => {
     const billID = await getBID();
@@ -156,7 +166,7 @@ const BillScreen = () => {
       </ScrollView>
 
       <View style={{...styles.GroupIDContainer, }}>
-        <TouchableOpacity onPress={handleDelete}>
+        <TouchableOpacity onPress={deleteButton}>
           <Text style={{ ...styles.groupidtext }}>
             Delete Bill
           </Text>
