@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -13,33 +13,35 @@ import {
 import { HeaderBackButton } from '@react-navigation/elements';
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import {Link} from 'expo-router';
-import {useRouter} from 'expo-router';
+import {useRouter, useFocusEffect} from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import styles from '../../assets/styles';
 import {SUPABASE_URL,SUPABASE_KEY} from '@env'
 import {signInEmail} from "@/services/accountService";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
+import { User } from '../../classes/user';
+import { getUUID, getGID, storeGID } from "@/services/accountService";
 // import * as Updates from 'expo-updates';
 // import { useNavigation, NavigationContainer } from '@react-navigation/native'; uncomment if we want a back button on the page
 
 export default function login() {
 
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
     const router = useRouter();
 
     const handleEmailChange = (inputEmail)=> {
         setEmail(inputEmail);
     }
 
-    const handlePasswordChange = (inputPassword)=> {
-        setPassword(inputPassword);
+    const handleUsernameChange = (inputUsername)=> {
+        setUsername(inputUsername);
     }
 
-    function handleSignIn(){
-        signInEmail(email, password);
-    }
+    // function handleSignIn(){
+    //     signInEmail(email, password);
+    // }
 
     /* uncomment below if we want a back button on the page */
     // const navigation = useNavigation(); 
@@ -47,6 +49,32 @@ export default function login() {
     // const handleBackButtonPress = () => {
     //   navigation.goBack();
     // };
+
+    const getProfile = async () => {
+        const uuid = await getUUID();
+        if(uuid){
+            const user = new User(uuid);
+            const userDetails = await user.getUserDetails();
+            if(userDetails){
+                try{
+                    setUsername(userDetails[0].user_name);
+                    setEmail(userDetails[0].user_email);
+                }
+                catch{
+                    console.log('Error displaying user details');
+                }
+            }
+            console.log('Error retrieving user details');
+
+        }
+        
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            getProfile();
+        }, [])
+    );
 
     const clearStorage = async () => {
         try {
@@ -74,8 +102,10 @@ export default function login() {
                     <FontAwesome name="user" size={150} color="white"/>
                 </View>
                 <View style={styles.accountbody}>
-                    <Text style={{...styles.inputText, marginTop: 24}}>Username: </Text>
-                    <Text style={{...styles.inputText, marginTop: 24}}>Email: </Text>
+                    <Text style={styles.descText}>Username</Text>
+                    <Text style={{...styles.inputText}}>{username}</Text>
+                    <Text style={styles.descText}>Email</Text>
+                    <Text style={{...styles.inputText}}>{email}</Text>
                     <TouchableHighlight
                         style={{...styles.loginButton}}
                         underlayColor = '#ccc'
