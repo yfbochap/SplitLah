@@ -161,7 +161,14 @@ export default function App() {
                     {group.group.group_name ? group.group.group_name.charAt(0) : 'G'}
                   </Text>
                 </View>
-                <Text style={styles.chatText}>{group.group.group_name || 'Unnamed Group'}</Text>
+                <View>
+                  <View>
+                    <Text style={styles.chatText}>{group.group.group_name || 'Unnamed Group'}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.chatText2}>{group.group.description || 'Unnamed Group'}</Text>
+                  </View>
+                </View>
               </TouchableOpacity>
             ))
           ) : (

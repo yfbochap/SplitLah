@@ -414,9 +414,11 @@ export default function GroupScreen() {
           <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
         </View>
         <View style={{ flex: 1, alignItems: 'center', paddingHorizontal:'5%' }}>
+          <TouchableOpacity onPress={() => router.navigate('updategroup')}>
           <Text style={{ ...styles.headerText}}>
             {groupDetails ? groupDetails.group_name : ''}
           </Text>
+          </TouchableOpacity>
         </View>
         <View style={{ flex: 0,marginRight: '5%'}}>
             <Entypo name="chat" size={Math.min(24, Dimensions.get('window').width * 0.05)} color="white" onPress={handleChatButtonPress} />
