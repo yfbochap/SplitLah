@@ -1,6 +1,6 @@
 import {Image, StyleSheet, Platform, FlatList, ScrollView, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect, useCallback,useRef } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {supabase} from "@/hooks/supabase";
 import {getGID, getUUID} from "@/services/accountService";
@@ -17,8 +17,12 @@ export default function GroupChatScreen(){
     const scrollViewRef = useRef(null);
 
     const navigation = useNavigation();
+
+    const handleAndroidBackPress = () => {
+        navigation.goBack();
+    }
     const handleBackButtonPress = () => {
-        navigation.navigate('group');
+        navigation.goBack();
     };
 
     async function fetchPreviousCleanedMessages() {
@@ -62,7 +66,9 @@ export default function GroupChatScreen(){
         setNewMessage('');
     }
 
-    // Fetch all messages
+
+
+    // Fetch all messages on start
     useEffect(() => {
         fetchPreviousCleanedMessages();
         scrollViewRef.current.scrollToEnd({ animated: true });

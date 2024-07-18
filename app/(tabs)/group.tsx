@@ -13,7 +13,8 @@ import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons';
 import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
 import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, GroupBalanceList, transformData} from '../../classes/balance';
-
+import Entypo from '@expo/vector-icons/Entypo';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Tab = createMaterialTopTabNavigator();
 export default function copied() {
@@ -408,9 +409,7 @@ export default function GroupScreen() {
           </Text>
         </View>
         <View style={{ flex:.05,marginRight: 15}}>
-          <TouchableOpacity>
-            <Text style={styles.billEditButton} onPress={handleChatButtonPress}>Chat</Text>
-          </TouchableOpacity>
+            <Entypo name="chat" size={24} color="white" onPress={handleChatButtonPress} />
         </View>
       </View>
 
