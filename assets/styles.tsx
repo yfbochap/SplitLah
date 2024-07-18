@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         textAlign: 'center',
         height: 55,
+
     },
     accountbody: {
         marginTop: 50,

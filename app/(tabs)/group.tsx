@@ -1,5 +1,17 @@
 import React, { useEffect,useState, useCallback } from 'react';
-import { ScrollView, View, Text, TextInput, FlatList, ListRenderItem, TouchableOpacity, Image, Button, StyleSheet } from 'react-native';
+import {
+    ScrollView,
+    View,
+    Text,
+    TextInput,
+    FlatList,
+    ListRenderItem,
+    TouchableOpacity,
+    Image,
+    Button,
+    StyleSheet,
+    Dimensions
+} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -401,13 +413,13 @@ export default function GroupScreen() {
         <View>
           <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
         </View>
-        <View style={{ flex: .95, alignItems: 'center', maxWidth: 300 }}>
-          <Text style={{ ...styles.headerText }}>
+        <View style={{ flex: 1, alignItems: 'center', paddingHorizontal:'5%' }}>
+          <Text style={{ ...styles.headerText}}>
             {groupDetails ? groupDetails.group_name : ''}
           </Text>
         </View>
-        <View style={{ flex:.05,marginRight: 15}}>
-            <Entypo name="chat" size={24} color="white" onPress={handleChatButtonPress} />
+        <View style={{ flex: 0,marginRight: '5%'}}>
+            <Entypo name="chat" size={Math.min(24, Dimensions.get('window').width * 0.05)} color="white" onPress={handleChatButtonPress} />
         </View>
       </View>
 
