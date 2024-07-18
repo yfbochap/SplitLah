@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Platform, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  StyleSheet,
+  Alert,
+  BackHandler
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -10,7 +20,7 @@ import CustomCheckbox from '../../assets/checkbox'; // Adjust the import path as
 import styles from '../../assets/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
-import { useRouter } from 'expo-router';
+import {router, useRouter} from 'expo-router';
 
 export default function AddBill() {
   const router = useRouter();
@@ -18,6 +28,11 @@ export default function AddBill() {
   const handleBackButtonPress = () => {
     router.navigate('group');
   };
+
+  function handleAndroidBackButtonPress(){
+    router.navigate("group");
+    return true;
+  }
 
   const [amount, setAmount] = useState('');
   const [BillTitle, setBillTitle] = useState('');
@@ -47,6 +62,7 @@ export default function AddBill() {
     }
   };
 
+
   useEffect(() => {
     fetchGroupMembers();
   }, []);
@@ -67,6 +83,16 @@ export default function AddBill() {
       fetchGroupMembers();
     }, [])
   );
+
+  useFocusEffect(
+      useCallback(()=>{
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", handleAndroidBackButtonPress);
+
+        return () => {
+          backHandler.remove();
+        };
+      },[])
+  )
 
   // Function to handle changes in amount input
   const handleAmountChange = (text) => {

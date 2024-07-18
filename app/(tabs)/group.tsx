@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Link, useRouter, useFocusEffect } from 'expo-router';
+import { Link, useFocusEffect, router } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
 import { getGID, storeBID, getUUID } from '@/services/accountService';
@@ -122,7 +122,6 @@ function FirstTab({ billDetails }) {
 
 function SecondTab() {
   const navigation = useNavigation();
-  const router = useRouter();
   
   const handleBackButtonPress = () => {
     navigation.goBack();
@@ -327,14 +326,13 @@ function SecondTab() {
 
 export default function GroupScreen() {
   const navigation = useNavigation();
-  const router = useRouter();
 
   const handleBackButtonPress = () => {
-    navigation.goBack();
+    router.back();
   };
 
   const handleChatButtonPress = () => {
-    navigation.navigate('groupchat');
+    router.navigate('groupchat');
   };
 
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);

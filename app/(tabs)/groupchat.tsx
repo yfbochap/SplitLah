@@ -8,7 +8,7 @@ import { getPreviousMessages, parseRawMessage, sendMessage } from "@/services/gr
 import {useFocusEffect} from "@react-navigation/native";
 import styles from '@/assets/styles';
 import {HeaderBackButton} from "@react-navigation/elements";
-import { useNavigation } from '@react-navigation/native';
+import {router, useRouter} from 'expo-router';
 
 export default function GroupChatScreen(){
     const [messages, setMessages] = useState([]);
@@ -16,13 +16,14 @@ export default function GroupChatScreen(){
     const [newMessage, setNewMessage] = useState('');
     const scrollViewRef = useRef(null);
 
-    const navigation = useNavigation();
 
-    const handleAndroidBackPress = () => {
-        navigation.goBack();
+    function handleAndroidBackButtonPress(){
+        router.navigate("group");
+        return true;
     }
+
     const handleBackButtonPress = () => {
-        navigation.goBack();
+        router.navigate("group");
     };
 
     async function fetchPreviousCleanedMessages() {
@@ -86,6 +87,16 @@ export default function GroupChatScreen(){
             handleAutoScroll();
         }, [])
     );
+
+    useFocusEffect(
+        useCallback(()=>{
+            const backHandler = BackHandler.addEventListener("hardwareBackPress", handleAndroidBackButtonPress);
+
+            return () => {
+                backHandler.remove();
+            };
+        },[])
+    )
 
     // Checks if the rawIncomingMessage has something then take it out append it to the current messages then remove the message
     // The deps part is to tell this useEffect to run everytime incomingRawMessage changes

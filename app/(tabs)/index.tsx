@@ -12,7 +12,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect, router } from 'expo-router';
 import { User } from '../../classes/user';
 import { getUUID, getGID, storeGID } from "@/services/accountService";
 
@@ -40,7 +40,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]); // Use the Group interface
-  const router = useRouter();
+  // const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
