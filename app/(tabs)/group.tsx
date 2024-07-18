@@ -15,7 +15,6 @@ import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-g
 import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, GroupBalanceList, transformData} from '../../classes/balance';
 
 
-
 const Tab = createMaterialTopTabNavigator();
 export default function copied() {
   const [copiedText, setCopiedText] = React.useState('');
@@ -334,7 +333,7 @@ export default function GroupScreen() {
   };
 
   const handleChatButtonPress = () => {
-    router.navigate('groupchat');
+    navigation.navigate('groupchat');
   };
 
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
@@ -403,12 +402,12 @@ export default function GroupScreen() {
         <View>
           <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
         </View>
-        <View style={{ flex: 1, alignItems: 'center', maxWidth: 300 }}>
+        <View style={{ flex: .95, alignItems: 'center', maxWidth: 300 }}>
           <Text style={{ ...styles.headerText }}>
             {groupDetails ? groupDetails.group_name : ''}
           </Text>
         </View>
-        <View style={{ marginRight: 15}}>
+        <View style={{ flex:.05,marginRight: 15}}>
           <TouchableOpacity>
             <Text style={styles.billEditButton} onPress={handleChatButtonPress}>Chat</Text>
           </TouchableOpacity>

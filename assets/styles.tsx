@@ -365,5 +365,72 @@ const styles = StyleSheet.create({
         color: 'grey',
       },
 
+      gc_container: {
+        flex: 1,
+        backgroundColor: 'black'
+      },
+
+      gc_messageListContainer: {
+        flex: 0.93,
+        padding: 10,
+      },
+
+      gc_scrollViewContent: {
+        paddingHorizontal: 10,
+      },
+
+      gc_messageContainer: {
+        marginVertical: 1,
+        padding: 10,
+        borderRadius: 5,
+        backgroundColor: '#333333',
+      },
+
+      gc_receivedName: {
+        fontSize: 14,
+        color: '#D3D3D3',
+        marginBottom: 4,
+      },
+
+      gc_receivedMessage: {
+        fontSize: 20,
+        color: '#E6E6FA',
+      },
+
+      gc_inputContainer: {
+        flex: 0.07,
+        padding: 10,
+        backgroundColor: '#4c4949',
+        flexDirection: 'row',
+      },
+
+      gc_textInput: {
+        height: 40,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        backgroundColor: '#4c4949',
+        flex: .85,
+        flexDirection: 'column',
+        color: '#E6E6FA',
+
+      },
+
+      gc_sendButton:{
+        height: 40,
+        backgroundColor: '#800080',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 10,
+        flex: .15,
+        flexDirection: 'column',
+      },
+
+      gc_sendButtonText:{
+        color: '#fff',
+        fontSize: 16,
+        textAlign: 'center',
+        textAlignVertical:'center'
+      }
+
 });
 export default styles;
