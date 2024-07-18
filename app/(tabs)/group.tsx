@@ -62,12 +62,6 @@ interface Owedmoney {
   owedTo: string;
   userName: string;
 }
-// const balances: Balance[] = [
-//   { id: '1', name: 'Alice', amount: 20, payer: 'Alice', receiver: 'Bob' },
-//   { id: '2', name: 'Bob', amount: -15, payer: 'Charlie', receiver: 'Alice' },
-//   { id: '3', name: 'Charlie', amount: 30, payer: 'Alice', receiver: 'Charlie' },
-//   { id: '4', name: 'Dave', amount: -10, payer: 'Dave', receiver: 'Alice' },
-// ];
 
 
 
@@ -227,7 +221,8 @@ function SecondTab() {
       <View style={{marginLeft: 0}}>
         <BarChart
         showScrollIndicator
-        maxValue={ 200}
+        barBorderWidth={20}
+        maxValue={200}
           stepValue={20}
           data={FormattedData}
           horizontal
@@ -271,7 +266,9 @@ function SecondTab() {
                   paddingVertical: 4,
                   borderRadius: 4,
                 }}>
-                <Text>{item.value}</Text>
+                <Text style={{
+                  transform: [{rotate: '270deg'}],
+                }}>{item.value}</Text>
               </View>
               
             );
@@ -297,7 +294,7 @@ function SecondTab() {
         */}
         
        </View>
-       <Text style={{ color: 'black', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
+       <Text style={{ color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
           Transactions
         </Text>
         <GroupBalanceList />
@@ -343,6 +340,8 @@ export default function GroupScreen() {
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
   const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
   const [copiedText, setCopiedText] = React.useState('');
+  const [logMessage, setLogMessage] = useState<string>('');
+ 
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(groupDetails.invite_code);
   };
@@ -371,6 +370,7 @@ export default function GroupScreen() {
             const usermessage = getUserBalanceMessage(overallBalances, uid);
             getUserBalanceMessage(overallBalances, uid).then((message) => {
               console.log(message); // This should log the actual message
+              setLogMessage(message);
             });
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);
@@ -450,7 +450,11 @@ export default function GroupScreen() {
 
 
       </Tab.Navigator>
+      <View style={{ padding: 10, backgroundColor: '#FFC0CB', alignItems: 'center' }}>
+      <Text style={{ textAlign: 'center' }}>{logMessage}</Text>
+    </View>
       <View style={styles.GroupIDContainer}>
+        
         <Text style={{ ...styles.groupidtext }}>
           Invite code: {groupDetails ? groupDetails.invite_code : '#Group-Code-Here'}
           <View style={styles.copyIconContainer}>
@@ -461,7 +465,9 @@ export default function GroupScreen() {
 
           </View>
         </Text>
+        
       </View>
+      
     </SafeAreaView>
   );
 }

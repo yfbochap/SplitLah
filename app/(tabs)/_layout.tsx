@@ -57,6 +57,10 @@ export default function TabLayout() {
         options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
+        name="groupchat"
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
+      />
+      <Tabs.Screen
         name="group"
         options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
