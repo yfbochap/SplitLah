@@ -95,6 +95,9 @@ export const getUserBalanceMessage = async (overallBalances: { [userName: string
     } else if (userBalance === 0) {
       message = `You are not owed any money`;
     }
+    else {
+      message = `You are not owed any money`;
+    }
     return message; // <--- Add this return statement
   };
  

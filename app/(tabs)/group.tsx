@@ -127,7 +127,7 @@ function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
   );
 }
 
-function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGroupData }) {
+function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGroupData, highestValue }) {
   const navigation = useNavigation();
 
   const GroupBalanceList: React.FC = () => {
@@ -172,8 +172,10 @@ function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGr
         showScrollIndicator
         barWidth={20}
         barBorderRadius={4}
+        // noOfSections={60}
         maxValue={200}
           stepValue={20}
+          // stepHeight={}
           data={FormattedData}
           horizontal
           initialSpacing={0}
@@ -208,19 +210,15 @@ function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGr
           isAnimated
           renderTooltip={(item, index) => {
             return (
-              <View
-                style={{
+                  <Text style={{transform: [{rotate: '270deg', }], flex: 1, 
                   marginBottom: 20,
                   marginLeft: 0,
                   backgroundColor: '#ffcefe',
                   paddingHorizontal: 2,
                   paddingVertical: 4,
-                  borderRadius: 4,
-                }}>
-                  <Text style={{transform: [{rotate: '270deg'}],}}>
+                  borderRadius: 4}}>
                   {item.value}
                   </Text>
-              </View>
             );
           }}
         />
@@ -257,6 +255,7 @@ export default function GroupScreen() {
   const [groupbalance, setOwedMoney] = useState<Owedmoney[] | null>(null);
   const [FormattedData, setFormattedData] = useState<FormattedData[] | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [highestValue, sethighestValue ] = useState(0);
  
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(groupDetails.invite_code);
@@ -277,12 +276,16 @@ export default function GroupScreen() {
         const bills = await group.getBillsBasedOnGroup();
         const grpbalance = await getGroupBalance(gid);
         console.log('groupbalance', grpbalance);
-        const overallBalances = getOverallGroupBalance(grpbalance);
-        const transactions = getTransactions(overallBalances);
-        const inputData = transformData(overallBalances);
-        // console.log('overall', getOverallGroupBalance(grpbalance));
+        const overallBalances = await getOverallGroupBalance(grpbalance);
+        const transactions = await getTransactions(overallBalances);
+        const inputData = await transformData(overallBalances);
+        console.log('overall', getOverallGroupBalance(grpbalance));
         // console.log(uid);
         const usermessage = getUserBalanceMessage(overallBalances, uid);
+
+        const highestAbsValue = await Math.max(...Object.values(overallBalances).map(Math.abs));
+        sethighestValue(highestAbsValue);
+      
         
         // console.log('transactions', transactions);
         // getUserBalanceMessage(overallBalances, uid).then((message) => {
