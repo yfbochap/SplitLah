@@ -58,20 +58,25 @@ export const getGroupBalance = async (groupId: string): Promise<{ userName: stri
   };
 
 
-export const getOverallGroupBalance = (balances: { userName: string; owedTo: string; amount: number }[]) => {
+  export const getOverallGroupBalance = (balances: { userName: string; owedTo: string; amount: number }[]) => {
     const overallBalances: { [userId: string]: number } = {};
-
+  
     balances.forEach((balance) => {
-        const userName = balance.userName;
-        const amount = balance.amount;
-
-        if (overallBalances[userName]) {
+      const userName = balance.userName;
+      const amount = balance.amount;
+  
+      if (overallBalances[userName]) {
         overallBalances[userName] += -amount;
-        } else {
+      } else {
         overallBalances[userName] = -amount;
-        }
+      }
     });
-
+  
+    // Round amounts to 2 decimal places
+    for (const userId in overallBalances) {
+      overallBalances[userId] = parseFloat(overallBalances[userId].toFixed(2));
+    }
+  
     return overallBalances;
   };
 
@@ -159,7 +164,7 @@ export const getTransactions = (overallBalances: { [userId: string]: number }) =
     const [userNameToReceive, amountToReceive] = positiveBalances[0];
 
     let amount = Math.min(Math.abs(amountToPay), amountToReceive);
-    amount = Math.round(amount * 100) / 100; // Round to 2 decimal places
+    amount = parseFloat(amount.toFixed(2)); // Round to 2 decimal places
 
     transactions.push({
       userName: userNameToPay,
@@ -177,16 +182,6 @@ export const getTransactions = (overallBalances: { [userId: string]: number }) =
       positiveBalances.shift();
       negativeBalances.shift();
     }
-  }
-
-  // Ensure total amount owed is the same as total amount paid
-  const totalOwed = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
-  const totalPaid = Object.values(overallBalances).reduce((acc, balance) => acc + balance, 0);
-
-  if (Math.abs(totalOwed - totalPaid) > 0.01) { // Check if the difference is greater than 0.01
-    const difference = totalPaid - totalOwed;
-    const lastTransaction = transactions[transactions.length - 1];
-    lastTransaction.amount = Math.round((lastTransaction.amount + difference) * 100) / 100; // Round to 2 decimal places
   }
 
   return transactions;

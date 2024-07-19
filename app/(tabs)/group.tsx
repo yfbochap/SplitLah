@@ -329,17 +329,18 @@ export default function GroupScreen() {
             const details = await group.getGroupDetails();
             const bills = await group.getBillsBasedOnGroup();
             const grpbalance = await getGroupBalance(gid);
-            console.log('groupbalance', grpbalance);
+            // console.log('groupbalance', grpbalance);
             const overallBalances = getOverallGroupBalance(grpbalance);
-            console.log('overall', getOverallGroupBalance(grpbalance));
+            // console.log('overall', getOverallGroupBalance(grpbalance));
             // console.log(uid);
             const usermessage = getUserBalanceMessage(overallBalances, uid);
+            const transactions = getTransactions(overallBalances);
+            console.log('transactions', transactions);
+            // getUserBalanceMessage(overallBalances, uid).then((message) => {
+            //   console.log(message); // This should log the actual message
             
-            // console.log('transactions', transactions);
-            getUserBalanceMessage(overallBalances, uid).then((message) => {
-              console.log(message); // This should log the actual message
+            // });
             setLogMessage(usermessage);
-            });
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);
             // console.log(`Bill Details: ${JSON.stringify(bills)}`);
