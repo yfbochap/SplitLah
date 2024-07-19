@@ -371,7 +371,7 @@ export default function GroupScreen() {
       </Tab.Navigator>
       
       <View style={{ padding: 10, backgroundColor: '#FFC0CB', alignItems: 'center' }}>
-      <Text style={{ textAlign: 'center' }}>{logMessage}</Text>
+      <Text style={{ textAlign: 'center' , fontSize: 20}}>{logMessage}</Text>
     </View>
       <View style={styles.GroupIDContainer}>
         
