@@ -24,7 +24,7 @@ import { getGID, storeBID, getUUID } from '@/services/accountService';
 import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons';
 import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
-import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, GroupBalanceList, transformData} from '../../classes/balance';
+import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, GroupBalanceList, transformData, getTransactions} from '../../classes/balance';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -185,11 +185,12 @@ function SecondTab() {
             const grpbalance = await getGroupBalance(gid);
             const overallBalances = getOverallGroupBalance(grpbalance);
             const inputData = transformData(overallBalances);
-            console.log('groupbalance', grpbalance);
-            console.log('overall', getOverallGroupBalance(grpbalance));
-            console.log(inputData);
+            // console.log('groupbalance', grpbalance);
+            // console.log('overall', getOverallGroupBalance(grpbalance));
+            // console.log(inputData);
+            const transactions = getTransactions(overallBalances);
             setFormattedData(inputData);
-            setOwedMoney(grpbalance);
+            setOwedMoney(transactions);
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);
             // console.log(`Bill Details: ${JSON.stringify(bills)}`);
@@ -375,13 +376,15 @@ export default function GroupScreen() {
             const grpbalance = await getGroupBalance(gid);
             console.log('groupbalance', grpbalance);
             const overallBalances = getOverallGroupBalance(grpbalance);
-            console.log('overall', getOverallGroupBalance(grpbalance));
-            console.log(uid);
+            // console.log('overall', getOverallGroupBalance(grpbalance));
+            // console.log(uid);
             const usermessage = getUserBalanceMessage(overallBalances, uid);
-            getUserBalanceMessage(overallBalances, uid).then((message) => {
-              console.log(message); // This should log the actual message
-              setLogMessage(message);
-            });
+            
+            // console.log('transactions', transactions);
+            // getUserBalanceMessage(overallBalances, uid).then((message) => {
+            //   console.log(message); // This should log the actual message
+            //   setLogMessage(message);
+            // });
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);
             // console.log(`Bill Details: ${JSON.stringify(bills)}`);
