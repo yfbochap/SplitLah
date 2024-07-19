@@ -134,10 +134,7 @@ function FirstTab({ billDetails }) {
 
 function SecondTab() {
   const navigation = useNavigation();
-  
-  const handleBackButtonPress = () => {
-    navigation.goBack();
-  };
+
   const [groupbalance, setOwedMoney] = useState<Owedmoney[] | null>(null);
   const [FormattedData,setFormattedData] = useState<FormattedData[] | null>(null);
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
@@ -233,30 +230,30 @@ function SecondTab() {
       <View style={{marginLeft: 0}}>
         <BarChart
         showScrollIndicator
-        barBorderWidth={20}
+        barWidth={20}
         maxValue={200}
           stepValue={20}
           data={FormattedData}
           horizontal
           initialSpacing={0}
           barMarginBottom={0}
-          showGradient
-          gradientColor={'#fc84ff'}
+          // showGradient
+          // gradientColor={'#fc84ff'}
           hideYAxisText
           yAxisThickness={0}
           xAxisThickness={0}
-          xAxisColor={'#c919ff'}
-          frontColor={'transparent'}
-          sideColor={'#ff00d0'}
-          topColor={'#ff66f4'}
+          // xAxisColor={'#c919ff'}
+          // frontColor={'green'}
+          // sideColor={'#ff00d0'}
+          // topColor={'#ff66f4'}
           barStyle={{
-            borderWidth: 4,
-            borderColor: '#fc84ff',
-            shadowColor: '#fc84ff',
-            shadowOffset: {width: 0, height: 4},
-            shadowOpacity: 1,
-            shadowRadius: 8,
-            elevation: 10,
+            // borderWidth: 1,
+            // borderColor: '',
+            // shadowColor: '',
+            // shadowOffset: {width: 0, height: 4},
+            // shadowOpacity: 1,
+            // shadowRadius: 8,
+            // elevation: 10,
           }}
           xAxisLabelsVerticalShift={10}
           labelWidth={30}
