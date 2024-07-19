@@ -7,9 +7,10 @@ import { supabase } from '../../hooks/supabase';
 import styles from '../../assets/styles';
 import { useRouter, useFocusEffect } from 'expo-router'; // Import useFocusEffect
 import * as SecureStore from 'expo-secure-store';
-import { storeGID } from '@/services/accountService';
+import { Group } from '@/classes/group';
+import { getGID, storeGID } from '@/services/accountService';
 
-export default function NewGroup() {
+export default function EditGroup() {
   const navigation = useNavigation();
   const router = useRouter();
 
@@ -65,47 +66,54 @@ export default function NewGroup() {
       return;
     }
 
+    if (!groupName) {
+        Alert.alert('Error', 'Please enter a group name');
+        return;
+      }
+
     if (!selectedCurrency) {
       Alert.alert('Error', 'Currency is not selected');
       return;
     }
 
-    const result = await createGroup(userId, groupName, description, selectedCurrency);
+    const result = await editGroup(groupName, description, selectedCurrency);
     if (result) {
-      const setgrp = await storeGID(result);
       router.navigate("group");  // Navigate to group page after successful creation
     }
   };
 
-  const createGroup = async (userId: string, groupName: string, description: string, currency: string) => {
+  const editGroup = async (groupName: string, description: string, currency: string) => {
     try {
+      const gid = await getGID();
       const { data: groupData, error: groupError } = await supabase
         .from('group')
-        .insert([
-          { group_name: groupName, description, no_of_people: 1, currency }
+        .update([
+          { group_name: groupName, description: description, currency: currency }
         ])
-        .select();
+        .eq('group_id', gid);
 
       if (groupError) {
         throw groupError;
+        return null;
       }
-
-      const groupId = groupData[0].group_id;
-
-      const { data: userGroupData, error: userGroupError } = await supabase
-        .from('user_group')
-        .insert([
-          { user_id: userId, group_id: groupId }
-        ]);
-
-      if (userGroupError) {
-        throw userGroupError;
-      }
-
-      return groupId;
+      return true;
+      
     } catch (error) {
-      console.error('Error creating group:', error);
+      console.error('Error updating group:', error);
       return null;
+    }
+  };
+
+  const GetGroupDetails = async () => {
+    const gid = await getGID();
+    if (gid){
+        const group = new Group(gid);
+        const groupDetails = await group.getGroupDetails();
+        if (groupDetails){
+            setGroupName(groupDetails[0].group_name);
+            setDescription(groupDetails[0].description);
+            setSelectedCurrency(groupDetails[0].currency);
+        }
     }
   };
 
@@ -113,10 +121,8 @@ export default function NewGroup() {
     useCallback(() => {
       // Reset form fields
       setSearchQuery('');
-      setSelectedCurrency(null);
       setIsInputFocused(false);
-      setGroupName('');
-      setDescription('');
+      GetGroupDetails();
     }, [])
   );
 
@@ -124,8 +130,8 @@ export default function NewGroup() {
     <TouchableWithoutFeedback onPress={()=>setIsInputFocused(false)}>
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <HeaderBackButton tintColor='white' onPress={() => navigation.goBack()} />
-        <Text style={styles.headerText}>Create New Group</Text>
+        <HeaderBackButton tintColor='white' onPress={() => router.navigate('group')} />
+        <Text style={styles.headerText}>Edit Group</Text>
       </View>
       <View>
         <Text style={styles.descText}>Group Name</Text>

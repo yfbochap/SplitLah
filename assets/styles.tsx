@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
       },
       headerText: {
         textAlign: 'center',
-        fontSize: 36,
+        fontSize: 32,
         color: 'white',
       },
       tabContent: {

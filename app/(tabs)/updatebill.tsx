@@ -283,7 +283,7 @@ useFocusEffect(
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
-        <Text style={styles.headerText}>Update Bill</Text>
+        <Text style={styles.headerText}>Edit Bill</Text>
       </View>
       <View>
         <Text style={styles.descText}>Title</Text>

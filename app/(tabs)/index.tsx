@@ -156,12 +156,26 @@ export default function App() {
                 style={styles.chatItem}
                 onPress={async () => { await storeGID(group.group.group_id); router.push('group'); }}
               >
+                <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-between'}}>
+                <View style={{flexDirection: 'row'}}>
                 <View style={[styles.avatar, { backgroundColor: rainbowColors[index % rainbowColors.length] }]}>
                   <Text style={styles.avatarText}>
                     {group.group.group_name ? group.group.group_name.charAt(0) : 'G'}
                   </Text>
                 </View>
-                <Text style={styles.chatText}>{group.group.group_name || 'Unnamed Group'}</Text>
+                <View>
+                  <View>
+                    <Text style={styles.chatText}>{group.group.group_name || 'Unnamed Group'}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.chatText2}>{group.group.description || 'Unnamed Group'}</Text>
+                  </View>
+                </View>
+                </View>
+                <View style={{alignSelf: 'center'}}>
+                  <Text style={{...styles.chatText2, textAlign: 'center'}}>{group.group.currency || 'Unnamed Group'}</Text>
+                </View>
+                </View>
               </TouchableOpacity>
             ))
           ) : (

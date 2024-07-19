@@ -85,6 +85,10 @@ export default function TabLayout() {
         options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
       />
       <Tabs.Screen
+        name="updategroup"
+        options={{ href: null, headerShown: false, tabBarStyle:{ display: "none" }}}
+      />
+      <Tabs.Screen
         name="profile"
         options={{ title: 'profile',
           tabBarIcon: ({ color, focused }) => (
