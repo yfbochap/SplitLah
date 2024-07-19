@@ -94,7 +94,6 @@ const handleBill = async (inputBillID: string) => {
 function FirstTab({ billDetails }) {
   return (
     <View style={styles.container}>
-      <View></View>
       <View style={styles.searchFabContainer}>
         <Link href='addbill' asChild>
           <TouchableOpacity style={styles.fab}>
@@ -248,15 +247,7 @@ function SecondTab() {
           frontColor={'transparent'}
           sideColor={'#ff00d0'}
           topColor={'#ff66f4'}
-          barStyle={{
-            borderWidth: 4,
-            borderColor: '#fc84ff',
-            shadowColor: '#fc84ff',
-            shadowOffset: {width: 0, height: 4},
-            shadowOpacity: 1,
-            shadowRadius: 8,
-            elevation: 10,
-          }}
+         
           xAxisLabelsVerticalShift={10}
           labelWidth={30}
           
@@ -269,71 +260,27 @@ function SecondTab() {
             return (
               <View
                 style={{
-                  
                   marginBottom: 20,
-                  marginLeft: -6,
+                  marginLeft: 0,
                   backgroundColor: '#ffcefe',
                   paddingHorizontal: 2,
                   paddingVertical: 4,
                   borderRadius: 4,
                 }}>
-                <Text style={{
-                  transform: [{rotate: '270deg'}],
-                }}>{item.value}</Text>
+                  <Text style={{transform: [{rotate: '270deg'}],}}>
+                  {item.value}
+                  </Text>
               </View>
-              
             );
-            
           }}
-        
-
         />
-
-       {/* <View style={{ ...styles.container }}>
-          
-      <FlatList
-        data={OwedMoney}
-        renderItem={renderBalanceItem}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(OwedMoney)}</Text>
-      </View>
-    </View>
-       <Text style={{color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10}}>Transactions</Text>
-        */}
-        
        </View>
        <Text style={{ color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
           Transactions
         </Text>
         <GroupBalanceList />
       </View>
-    
   );
-
-    <View style={{ ...styles.container }}>
-      <View style={{ ...styles.barChartContainer }}>
-      
-        <FlatList
-          data={balances}
-          renderItem={renderBalanceBarItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.barList}
-        />
-      </View>
-      <FlatList
-        data={balances}
-        renderItem={renderBalanceItem}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(balances)}</Text>
-      </View>
-    </View>
-  
 }
 
 export default function GroupScreen() {
@@ -379,8 +326,7 @@ export default function GroupScreen() {
             console.log(uid);
             const usermessage = getUserBalanceMessage(overallBalances, uid);
             getUserBalanceMessage(overallBalances, uid).then((message) => {
-              console.log(message); // This should log the actual message
-              setLogMessage(message);
+              setLogMessage(message);// This should log the actual message
             });
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);

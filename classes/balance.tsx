@@ -19,6 +19,8 @@ interface BalanceData {
 interface FormattedData {
   value: number;
   label: string;
+  frontColor: string;
+  labelTextStyle: { color: string };
 }
 interface Owedmoney {
   amount: number;
@@ -81,9 +83,9 @@ export const getUserBalanceMessage = async (overallBalances: { [userName: string
     let message;
     if (userBalance !== undefined) {
       if (userBalance < 0) {
-        message = `You owe $${Math.abs(userBalance)} amount of money`;
+        message = `You owe $${Math.abs(userBalance)}`;
       } else if (userBalance > 0) {
-        message = `You are owed $${userBalance} amount of money`;
+        message = `You are owed $${userBalance}`;
       }
     } else {
       message = `You are not owed any money`;
@@ -98,7 +100,7 @@ export const transformData = (data: BalanceData): FormattedData[] => {
       value: positiveValue,
       label,
       frontColor: value > 0 ? 'green' : 'red', // Set frontColor based on original value
-      labelTextStyle: { color: 'white' }
+      labelTextStyle: { color: 'white' },
     };
   });
 };
