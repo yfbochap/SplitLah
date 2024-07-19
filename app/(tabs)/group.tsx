@@ -278,6 +278,8 @@ export default function GroupScreen() {
         const grpbalance = await getGroupBalance(gid);
         console.log('groupbalance', grpbalance);
         const overallBalances = getOverallGroupBalance(grpbalance);
+        const transactions = getTransactions(overallBalances);
+        const inputData = transformData(overallBalances);
         // console.log('overall', getOverallGroupBalance(grpbalance));
         // console.log(uid);
         const usermessage = getUserBalanceMessage(overallBalances, uid);
@@ -296,6 +298,10 @@ export default function GroupScreen() {
         }
         if (bills && bills.length > 0) {
           setBillDetails(bills);
+        }
+        if (grpbalance && grpbalance.length > 0) {
+          setOwedMoney(transactions);
+          setFormattedData(inputData);
         }
 
 
