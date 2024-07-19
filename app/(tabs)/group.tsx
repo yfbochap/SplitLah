@@ -94,7 +94,6 @@ const handleBill = async (inputBillID: string) => {
 function FirstTab({ billDetails }) {
   return (
     <View style={styles.container}>
-      <View></View>
       <View style={styles.searchFabContainer}>
         <Link href='addbill' asChild>
           <TouchableOpacity style={styles.fab}>
@@ -267,71 +266,27 @@ function SecondTab() {
             return (
               <View
                 style={{
-                  
                   marginBottom: 20,
-                  marginLeft: -6,
+                  marginLeft: 0,
                   backgroundColor: '#ffcefe',
                   paddingHorizontal: 2,
                   paddingVertical: 4,
                   borderRadius: 4,
                 }}>
-                <Text style={{
-                  transform: [{rotate: '270deg'}],
-                }}>{item.value}</Text>
+                  <Text style={{transform: [{rotate: '270deg'}],}}>
+                  {item.value}
+                  </Text>
               </View>
-              
             );
-            
           }}
-        
-
         />
-
-       {/* <View style={{ ...styles.container }}>
-          
-      <FlatList
-        data={OwedMoney}
-        renderItem={renderBalanceItem}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(OwedMoney)}</Text>
-      </View>
-    </View>
-       <Text style={{color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10}}>Transactions</Text>
-        */}
-        
        </View>
        <Text style={{ color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
           Transactions
         </Text>
         <GroupBalanceList />
       </View>
-    
   );
-
-    <View style={{ ...styles.container }}>
-      <View style={{ ...styles.barChartContainer }}>
-      
-        <FlatList
-          data={balances}
-          renderItem={renderBalanceBarItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.barList}
-        />
-      </View>
-      <FlatList
-        data={balances}
-        renderItem={renderBalanceItem}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Total Balance: ${calculateTotalBalance(balances)}</Text>
-      </View>
-    </View>
-  
 }
 
 export default function GroupScreen() {
