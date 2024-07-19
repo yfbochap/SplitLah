@@ -4,11 +4,11 @@
     "slug": "SplitLah",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/SplitLahIcon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/paylah.png",
+      "image": "./assets/images/SplitLahSplash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
