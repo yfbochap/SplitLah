@@ -149,7 +149,7 @@ function SecondTab() {
           <Text style={styles2.itemText}>
             {item.userName} owes {item.owedTo}
           </Text>
-          <Text style={[styles2.itemValue, { color: textColor }]}>
+          <Text style={[styles2.itemValue, { color: "black" }]}>
             {positiveValue}
           </Text>
         </View>
@@ -335,7 +335,7 @@ export default function GroupScreen() {
             // console.log('transactions', transactions);
             // getUserBalanceMessage(overallBalances, uid).then((message) => {
             //   console.log(message); // This should log the actual message
-            //   setLogMessage(message);
+              setLogMessage(usermessage);
             // });
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);
