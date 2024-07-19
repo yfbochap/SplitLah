@@ -94,11 +94,11 @@ export default function register(){
             console.log("ERROR");
         }
         else{
-            console.log("PASS");
+            // console.log("PASS");
             // var result = signUpEmail(email, password,username);
             async function signUpResult(){
                 const signUpCheck = await signUpEmail(email, password, username);
-                console.log(signUpCheck);
+                // console.log(signUpCheck);
                 if (signUpCheck) {
                   router.navigate('login');
                   /* can consider making a filler page (like congratulations) 

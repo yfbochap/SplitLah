@@ -64,7 +64,7 @@ export default function login() {
                     console.log('Error displaying user details');
                 }
             }
-            console.log('Error retrieving user details');
+            // console.log('Error retrieving user details');
 
         }
         

@@ -16,7 +16,7 @@ export class Group {
 
     //  Get group name based on group id
     async getGroupName() {
-        console.log(`Group ID: ${this.groupID}`);
+        // console.log(`Group ID: ${this.groupID}`);
         try {
             const {data,error} = await supabase
                 .from('group')
@@ -26,7 +26,7 @@ export class Group {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }
@@ -70,7 +70,7 @@ export class Group {
                 Alert.alert(error.message);
             }
             else {
-                console.log("Group has been deleted");
+                // console.log("Group has been deleted");
                 return true;
             }
         }
@@ -92,7 +92,7 @@ export class Group {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }
@@ -113,7 +113,7 @@ export class Group {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }
@@ -135,7 +135,7 @@ export class Group {
                 .update({ no_of_people: currentCount+1 })
                 .eq('group_id', this.groupID);
             if (!error){
-                console.log("successfully updated");
+                // console.log("successfully updated");
                 return true;
             }
             else {
@@ -164,7 +164,7 @@ export class Group {
                 Alert.alert(error.message);
             }
             else {
-                console.log("Bill Created", data[0].bill_id);
+                // console.log("Bill Created", data[0].bill_id);
                 return data[0].bill_id;
             }
         }
@@ -224,7 +224,7 @@ export class Group {
 
             const userData = await this.getUserNamesByUserIds(userIds);
 
-            console.log('User Data:', userData);
+            // console.log('User Data:', userData);
             return userData;
         } catch (error) {
             Alert.alert('An unexpected error occurred: ' + error.message);

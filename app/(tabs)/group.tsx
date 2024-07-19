@@ -275,11 +275,11 @@ export default function GroupScreen() {
         const details = await group.getGroupDetails();
         const bills = await group.getBillsBasedOnGroup();
         const grpbalance = await getGroupBalance(gid);
-        console.log('groupbalance', grpbalance);
+        // console.log('groupbalance', grpbalance);
         const overallBalances = await getOverallGroupBalance(grpbalance);
         const transactions = await getTransactions(overallBalances);
         const inputData = await transformData(overallBalances);
-        console.log('overall', getOverallGroupBalance(grpbalance));
+        // console.log('overall', getOverallGroupBalance(grpbalance));
         // console.log(uid);
         const usermessage = getUserBalanceMessage(overallBalances, uid);
 

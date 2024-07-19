@@ -24,7 +24,7 @@ export class User {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }
@@ -47,7 +47,7 @@ export class User {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }
@@ -68,7 +68,7 @@ export class User {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }

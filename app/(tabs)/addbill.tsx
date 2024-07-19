@@ -195,23 +195,23 @@ export default function AddBill() {
       try {
         const result = await group.createBillUsingGroupID(amount, BillTitle, currentDate, paidByUserId);
         if (result) {
-          console.log('Bill Created Successfully');
+          // console.log('Bill Created Successfully');
           const bill = new Bill(result);
 
           const addBillParticipants = await bill.StoreBillParticipants(selectedUserIds);
-          if(addBillParticipants){
-            console.log('Bill Participants Stored Successfully');
-          }
+          // if(addBillParticipants){
+          //   console.log('Bill Participants Stored Successfully');
+          // }
 
           const addBillBalances = await bill.StoreBillBalances(gid, balanceIds, filteredAmounts, paidByUserId);
-          if(addBillBalances){
-            console.log('Bill Balances Stored Successfully');
-          }
+          // if(addBillBalances){
+          //   console.log('Bill Balances Stored Successfully');
+          // }
 
-        } else {
-          console.error('Failed to create bill.');
-        }
-      } catch (error) {
+      //   } else {
+      //     console.error('Failed to create bill.');
+      //   }
+        }}catch (error) {
         console.error('Error creating bill:', error.message);
       }
     }

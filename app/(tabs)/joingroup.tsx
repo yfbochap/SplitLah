@@ -48,7 +48,7 @@ const handleJoinGroup = async () =>{
             const checkUpdateGroupSuccess = await grpClass.updateOccupancyBy1();
 
             if(checkInsertUserGroupSuccess && checkUpdateGroupSuccess){
-                console.log("Successfully done both");
+                // console.log("Successfully done both");
                 Alert.alert("Successfully joined group!");
                 navigate.goBack();
             }

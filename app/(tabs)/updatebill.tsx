@@ -102,15 +102,15 @@ useFocusEffect(
                   return acc;
                 }, {});
 
-                console.log('1', initialSelectedMembers);
-                console.log('2', billDetail);
+                // console.log('1', initialSelectedMembers);
+                // console.log('2', billDetail);
 
                 const isOwnerParticipant = await bill.isOwnerBillParticipant();
                 if (isOwnerParticipant && billDetail) {
                   initialSelectedMembers[billDetail.user_id] = true;
                 }
 
-                console.log('3', initialSelectedMembers);
+                // console.log('3', initialSelectedMembers);
                 setSelectedMembers(initialSelectedMembers);
               }
             }
@@ -136,7 +136,7 @@ useFocusEffect(
   // Function to handle title change
   const handleTitleChange = (text) => {
     setBillTitle(text);
-    console.log('6 happens');
+    // console.log('6 happens');
   };
 
   // Function to handle date picker changes
@@ -218,7 +218,7 @@ useFocusEffect(
           return;
         }
 
-        console.log('Bill Updated Successfully');
+        // console.log('Bill Updated Successfully');
 
         // Delete old bill participants and store updated ones
         const deleteOldBillParticipants = await bill.DeleteBillParticipants();
@@ -233,7 +233,7 @@ useFocusEffect(
           return;
         }
 
-        console.log('Bill Participants Updated Successfully');
+        // console.log('Bill Participants Updated Successfully');
 
         // Update balances based on new amounts
         const filteredAmounts = Object.fromEntries(Object.entries(amounts).filter(([userId, amount]) => amount !== '' && userId !== paidByUserId)) as { [userId: string]: string };
@@ -249,7 +249,7 @@ useFocusEffect(
           return;
         }
 
-        console.log('Bill Balances Updated Successfully');
+        // console.log('Bill Balances Updated Successfully');
 
         // Optionally navigate to a confirmation screen or perform another action
         navigation.navigate('group'); // Navigate after updating bill

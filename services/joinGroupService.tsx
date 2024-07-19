@@ -12,7 +12,7 @@ async function checkInvCodeValid(inputInvCode){
         }
         else {
             if (data.length == 1){
-                console.log(`${inputInvCode} is valid`);
+                // console.log(`${inputInvCode} is valid`);
                 return true;
             }
             else{
@@ -38,7 +38,7 @@ async function getGroupIDBasedOnInviteCode(inputInvCode){
             Alert.alert(error.message);
         }
         else {
-            console.log(data);
+            // console.log(data);
             return data;
         }
     }
@@ -59,7 +59,7 @@ async function insertUserGroup(inputUserID,inputGroupID){
             Alert.alert(error.message);
         }
         else {
-            console.log("Successfully inserted user group");
+            // console.log("Successfully inserted user group");
             return true;
         }
     }
@@ -77,7 +77,7 @@ async function checkUserNotInGroup(inputUserID,inputGroupID){
             .eq('group_id',inputGroupID)
             .eq('user_id',inputUserID);
         if (!error){
-            console.log(`Count of rows based on user and group: ${count}`);
+            // console.log(`Count of rows based on user and group: ${count}`);
             if (count == 0){
                 return true;
             }

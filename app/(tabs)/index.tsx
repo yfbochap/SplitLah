@@ -48,10 +48,10 @@ export default function App() {
         try {
           const uuid = await getUUID();
           if (uuid) {
-            console.log(`UUID found: ${uuid}`);
+            // console.log(`UUID found: ${uuid}`);
             setIsLoggedIn(true);
           } else {
-            console.log('UUID not found.');
+            // console.log('UUID not found.');
             router.replace('login');
           }
         } catch (e) {
@@ -72,7 +72,7 @@ export default function App() {
       if (isLoggedIn) {
         console.log('logged in');
       } else {
-        console.log('not in');
+        // console.log('not in');
         router.replace('login');
       }
     }
@@ -85,7 +85,7 @@ export default function App() {
         const user = new User(uuid);
         const data = await user.getGroupDetailsBasedOnUserID();
         if (data) {
-          console.log('Groups found', data);
+          // console.log('Groups found', data);
           setGroups(data as Group[]); // Cast the data to Group[]
         } else {
           console.log('No Groups found');

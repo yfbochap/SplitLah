@@ -27,7 +27,7 @@ export class Bill {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }
@@ -47,7 +47,7 @@ export class Bill {
                 Alert.alert(error.message);
                 return null; // Return null on error
             } else {
-                console.log(data);
+                // console.log(data);
                 return data.length > 0 ? data[0].user_id : null; // Return the first user ID or null if no data
             }
         } catch (irregError) {
@@ -66,7 +66,7 @@ export class Bill {
                 Alert.alert(error.message);
                 return null; // Return null on error
             } else {
-                console.log(data);
+                // console.log(data);
                 return data.length > 0 ? data[0].user_name : null; // Return the user name or null if no data
             }
         } catch (irregError) {
@@ -81,13 +81,13 @@ export class Bill {
             const userId = await this.getBillOwnerID();
     
             if (userId == null) {
-                console.log('No user ID found for this bill.');
+                // console.log('No user ID found for this bill.');
                 return null; // Return null if no user ID is found
             }
     
             const userData = await this.getBillOwnerName(userId);
     
-            console.log('User Data:', userData);
+            // console.log('User Data:', userData);
             return userData;
         } catch (error) {
             Alert.alert('An unexpected error occurred: ' + error.message);
@@ -109,7 +109,7 @@ export class Bill {
                     return [];
                 }
                 else {
-                    console.log(data);
+                    // console.log(data);
                     return data.map(row => row.user_id);
                 }
             }
@@ -131,7 +131,7 @@ export class Bill {
                     Alert.alert(error.message);
                 }
                 else {
-                    console.log(data);
+                    // console.log(data);
                     return data;
                 }
             }
@@ -147,13 +147,13 @@ export class Bill {
             const userIds = await this.getBillParticipantsUsingBillId();
 
             if (userIds.length === 0) {
-                console.log('No user IDs found for this group.');
+                // console.log('No user IDs found for this group.');
                 return [];
             }
 
             const userData = await this.getBillParticipantsUsingUserIds(userIds);
 
-            console.log('User Data:', userData);
+            // console.log('User Data:', userData);
             return userData;
         } catch (error) {
             Alert.alert('An unexpected error occurred: ' + error.message);
@@ -178,7 +178,7 @@ export class Bill {
                 Alert.alert(error.message);
             }
             else {
-                console.log("Bill Created");
+                // console.log("Bill Created");
                 return true;
             }
         }
@@ -205,7 +205,7 @@ export class Bill {
                 Alert.alert(error.message);
                 return false;
             } else {
-                console.log("Bill Participants Added");
+                // console.log("Bill Participants Added");
                 return true;
             }
         } catch (irregError) {
@@ -226,7 +226,7 @@ export class Bill {
             return false;
           }
     
-          console.log('updateBillUsingBillID data:', data);
+        //   console.log('updateBillUsingBillID data:', data);
           return true; // Return true if update was successful
         } catch (error) {
           console.error('updateBillUsingBillID catch error:', error.message);
@@ -245,7 +245,7 @@ export class Bill {
                 Alert.alert(error.message);
                 return false;
             } else {
-                console.log("Bill Participants Deleted");
+                // console.log("Bill Participants Deleted");
                 return true;
             }
         } catch (irregError) {
@@ -263,7 +263,7 @@ export class Bill {
                 amount: amounts[userId],
                 creditor_id: creditorId,
             }));
-            console.log('Test', dataToInsert);
+            // console.log('Test', dataToInsert);
 
             const { data, error } = await supabase
                 .from('balance')
@@ -271,10 +271,10 @@ export class Bill {
     
             if (error) {
                 Alert.alert(error.message);
-                console.log(error.message);
+                // console.log(error.message);
                 return false;
             } else {
-                console.log("Balances Added");
+                // console.log("Balances Added");
                 return true;
             }
         } catch (irregError) {
@@ -293,7 +293,7 @@ export class Bill {
                 Alert.alert(error.message);
             }
             else {
-                console.log(data);
+                // console.log(data);
                 return data;
             }
         }
@@ -314,7 +314,7 @@ export class Bill {
                 Alert.alert(error.message);
                 return false;
             } else {
-                console.log("Bill Balances Deleted");
+                // console.log("Bill Balances Deleted");
                 return true;
             }
         } catch (irregError) {
@@ -382,7 +382,7 @@ export class Bill {
     async isOwnerBillParticipant(): Promise<boolean> {
         try {
             const billOwnerID = await this.getBillOwnerID();
-            console.log('THIS WORKKKKKKKSSSS', billOwnerID);
+            // console.log('THIS WORKKKKKKKSSSS', billOwnerID);
             const { data, error } = await supabase
             .from('bill_participant')
             .select('user_id')
@@ -392,7 +392,7 @@ export class Bill {
             // if(error){
             //     throw error;
             // }
-            console.log(!!data);
+            // console.log(!!data);
             return !!data;
         } catch (error) {
           console.error('Error checking owner participant:', error);
@@ -411,7 +411,7 @@ export class Bill {
                 Alert.alert(error.message);
                 return false;
             } else {
-                console.log("Bill Deleted");
+                // console.log("Bill Deleted");
                 return true;
             }
         } catch (irregError) {
