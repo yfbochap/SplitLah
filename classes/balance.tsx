@@ -87,7 +87,7 @@ export const getUserBalanceMessage = async (overallBalances: { [userName: string
       } else if (userBalance > 0) {
         message = `You are owed $${userBalance}`;
       }
-    } else {
+    } else if (userBalance === 0) {
       message = `You are not owed any money`;
     }
     return message; // <--- Add this return statement
@@ -158,10 +158,13 @@ export const getTransactions = (overallBalances: { [userId: string]: number }) =
     const [userNameToPay, amountToPay] = negativeBalances[0];
     const [userNameToReceive, amountToReceive] = positiveBalances[0];
 
+    let amount = Math.min(Math.abs(amountToPay), amountToReceive);
+    amount = Math.round(amount * 100) / 100; // Round to 2 decimal places
+
     transactions.push({
       userName: userNameToPay,
       owedTo: userNameToReceive,
-      amount: Math.min(Math.abs(amountToPay), amountToReceive),
+      amount,
     });
 
     if (Math.abs(amountToPay) > amountToReceive) {
@@ -175,6 +178,17 @@ export const getTransactions = (overallBalances: { [userId: string]: number }) =
       negativeBalances.shift();
     }
   }
+
+  // Ensure total amount owed is the same as total amount paid
+  const totalOwed = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
+  const totalPaid = Object.values(overallBalances).reduce((acc, balance) => acc + balance, 0);
+
+  if (Math.abs(totalOwed - totalPaid) > 0.01) { // Check if the difference is greater than 0.01
+    const difference = totalPaid - totalOwed;
+    const lastTransaction = transactions[transactions.length - 1];
+    lastTransaction.amount = Math.round((lastTransaction.amount + difference) * 100) / 100; // Round to 2 decimal places
+  }
+
   return transactions;
 };
 

@@ -328,15 +328,15 @@ export default function GroupScreen() {
             const grpbalance = await getGroupBalance(gid);
             console.log('groupbalance', grpbalance);
             const overallBalances = getOverallGroupBalance(grpbalance);
-            // console.log('overall', getOverallGroupBalance(grpbalance));
+            console.log('overall', getOverallGroupBalance(grpbalance));
             // console.log(uid);
             const usermessage = getUserBalanceMessage(overallBalances, uid);
             
             // console.log('transactions', transactions);
-            // getUserBalanceMessage(overallBalances, uid).then((message) => {
-            //   console.log(message); // This should log the actual message
-              setLogMessage(usermessage);
-            // });
+            getUserBalanceMessage(overallBalances, uid).then((message) => {
+              console.log(message); // This should log the actual message
+            setLogMessage(usermessage);
+            });
             
             // console.log(`Group Details: ${JSON.stringify(details)}`);
             // console.log(`Bill Details: ${JSON.stringify(bills)}`);
@@ -416,7 +416,7 @@ export default function GroupScreen() {
 
       </Tab.Navigator>
       <View style={{ padding: 10, backgroundColor: '#FFC0CB', alignItems: 'center' }}>
-      <Text style={{ textAlign: 'center' }}>{logMessage}</Text>
+      <Text style={{ textAlign: 'center' , fontSize: 20}}>{logMessage}</Text>
     </View>
       <View style={styles.GroupIDContainer}>
         
