@@ -150,7 +150,7 @@ function SecondTab() {
             {item.userName} owes {item.owedTo}
           </Text>
           <Text style={[styles2.itemValue, { color: "black" }]}>
-            {positiveValue}
+            ${positiveValue}
           </Text>
         </View>
       );
@@ -230,6 +230,7 @@ function SecondTab() {
         <BarChart
         showScrollIndicator
         barWidth={20}
+        barBorderRadius={4}
         maxValue={200}
           stepValue={20}
           data={FormattedData}
@@ -241,6 +242,7 @@ function SecondTab() {
           hideYAxisText
           yAxisThickness={0}
           xAxisThickness={0}
+          
           // xAxisColor={'#c919ff'}
           // frontColor={'green'}
           // sideColor={'#ff00d0'}
@@ -253,13 +255,14 @@ function SecondTab() {
             // shadowOpacity: 1,
             // shadowRadius: 8,
             // elevation: 10,
+            
           }}
           xAxisLabelsVerticalShift={10}
           labelWidth={30}
           
           autoShiftLabels
           hideRules
-          height={120}
+          height={140}
           barWidth={20}
           isAnimated
           renderTooltip={(item, index) => {
