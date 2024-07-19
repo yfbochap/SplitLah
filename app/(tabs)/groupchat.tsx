@@ -7,6 +7,7 @@ import {getGID, getUUID} from "@/services/accountService";
 import { getPreviousMessages, parseRawMessage, sendMessage } from "@/services/groupchatService";
 import {useFocusEffect} from "@react-navigation/native";
 import styles from '@/assets/styles';
+import { Group } from '@/classes/group';
 import {HeaderBackButton} from "@react-navigation/elements";
 import {router, useRouter} from 'expo-router';
 
@@ -14,6 +15,7 @@ export default function GroupChatScreen(){
     const [messages, setMessages] = useState([]);
     const [incomingRawMessage, setIncomingRawMessage] = useState(null);
     const [newMessage, setNewMessage] = useState('');
+    const [groupName, setGroupName] = useState('');
     const scrollViewRef = useRef(null);
 
 
@@ -85,6 +87,7 @@ export default function GroupChatScreen(){
             fetchPreviousCleanedMessages();
             openSubscription();
             handleAutoScroll();
+            getGroupData();
         }, [])
     );
 
@@ -123,6 +126,16 @@ export default function GroupChatScreen(){
         }, 1500);
     }, []);
 
+    const getGroupData = async () => {
+        const gid = await getGID();
+        if (gid){
+            const group = new Group(gid);
+            const groupData = await group.getGroupDetails();
+            if (groupData){
+                setGroupName(groupData[0].group_name);
+            }
+        }
+    };
 
 
     return (
@@ -131,6 +144,11 @@ export default function GroupChatScreen(){
             <View style={styles.groupheader}>
                 <View>
                     <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
+                </View>
+                <View style={{ flex: 1, alignItems: 'center', paddingHorizontal:'5%' }}>
+                    <Text style={{ ...styles.headerText}}>
+                        {groupName}
+                    </Text>
                 </View>
             </View>
             <View style={styles.gc_messageListContainer} >

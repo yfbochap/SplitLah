@@ -1,4 +1,4 @@
-import React, { useEffect,useState, useCallback } from 'react';
+import React, { useEffect,useState, useCallback, } from 'react';
 import {
     ScrollView,
     View,
@@ -10,7 +10,8 @@ import {
     Image,
     Button,
     StyleSheet,
-    Dimensions
+    Dimensions,
+    RefreshControl
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from '@react-navigation/native';
@@ -29,17 +30,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Tab = createMaterialTopTabNavigator();
-export default function copied() {
-  const [copiedText, setCopiedText] = React.useState('');
-  const copyToClipboard = async () => {
-    await Clipboard.setStringAsync('hello world');
-  };
 
-  const fetchCopiedText = async () => {
-    const text = await Clipboard.getStringAsync();
-    setCopiedText(text);
-  };
-}
 interface Balance {
   id: string;
   name: string;
@@ -91,7 +82,9 @@ const handleBill = async (inputBillID: string) => {
   }
 };
 
-function FirstTab({ billDetails }) {
+
+function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
+
   return (
     <View style={styles.container}>
       <View style={styles.searchFabContainer}>
@@ -106,7 +99,10 @@ function FirstTab({ billDetails }) {
           placeholderTextColor="#999"
         />
       </View>
-      <ScrollView style={styles.chatList}>
+      <ScrollView contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        } style={styles.chatList}>
         {billDetails && billDetails.length > 0 ? (
           billDetails.map((bill, index) => (
             <Link href='bill' asChild key={index}>
@@ -131,14 +127,9 @@ function FirstTab({ billDetails }) {
   );
 }
 
-function SecondTab() {
+function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGroupData }) {
   const navigation = useNavigation();
 
-  const [groupbalance, setOwedMoney] = useState<Owedmoney[] | null>(null);
-  const [FormattedData,setFormattedData] = useState<FormattedData[] | null>(null);
-  const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
-  const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
-  const [copiedText, setCopiedText] = React.useState('');
   const GroupBalanceList: React.FC = () => {
     const renderItem = ({ item }: { item: Owedmoney }) => {
       const positiveValue = Math.abs(item.amount);
@@ -164,57 +155,7 @@ function SecondTab() {
       />
     );
   };
-  useFocusEffect(
-    useCallback(() => {
-      const checkGroupData = async () => {
-        try {
-          // Clear previous group and bill details
-          setGroupDetails(null);
-          setBillDetails(null);
-
-          const gid = await getGID();
-          if (gid) {
-            // console.log(`GID found: ${gid}`);
-            const group = new Group(gid);
-            const details = await group.getGroupDetails();
-            const bills = await group.getBillsBasedOnGroup();
-            const grpbalance = await getGroupBalance(gid);
-            const overallBalances = getOverallGroupBalance(grpbalance);
-            const inputData = transformData(overallBalances);
-            // console.log('groupbalance', grpbalance);
-            // console.log('overall', getOverallGroupBalance(grpbalance));
-            // console.log(inputData);
-            const transactions = getTransactions(overallBalances);
-            setFormattedData(inputData);
-            setOwedMoney(transactions);
-            
-            // console.log(`Group Details: ${JSON.stringify(details)}`);
-            // console.log(`Bill Details: ${JSON.stringify(bills)}`);
-
-            
-            if (details && details.length > 0) {
-              setGroupDetails(details[0]);
-            }
-            if (bills && bills.length > 0) {
-              setBillDetails(bills);
-            }
-
-
-          } else {
-            // console.log('GID not found.');
-            router.replace('/');
-          }
-        } catch (e) {
-          // console.error('Failed to load GID.', e);
-        }
-      };
-
-      checkGroupData();
-    }, [])
-  );
-  
- 
-
+   
   return (
     
     <View
@@ -303,67 +244,75 @@ export default function GroupScreen() {
     router.navigate('groupchat');
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      checkGroupData();
+    }, [])
+  );
+
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
   const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
   const [copiedText, setCopiedText] = React.useState('');
   const [logMessage, setLogMessage] = useState<string>('');
+  const [groupbalance, setOwedMoney] = useState<Owedmoney[] | null>(null);
+  const [FormattedData, setFormattedData] = useState<FormattedData[] | null>(null);
+  const [refreshing, setRefreshing] = React.useState(false);
  
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(groupDetails.invite_code);
   };
 
+  const checkGroupData = async () => {
+    try {
+      // Clear previous group and bill details
+      setGroupDetails(null);
+      setBillDetails(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      const checkGroupData = async () => {
-        try {
-          // Clear previous group and bill details
-          setGroupDetails(null);
-          setBillDetails(null);
+      const gid = await getGID();
+      if (gid) {
+        // console.log(`GID found: ${gid}`);
+        const group = new Group(gid);
+        const uid = await getUUID();
+        const details = await group.getGroupDetails();
+        const bills = await group.getBillsBasedOnGroup();
+        const grpbalance = await getGroupBalance(gid);
+        console.log('groupbalance', grpbalance);
+        const overallBalances = getOverallGroupBalance(grpbalance);
+        // console.log('overall', getOverallGroupBalance(grpbalance));
+        // console.log(uid);
+        const usermessage = getUserBalanceMessage(overallBalances, uid);
+        
+        // console.log('transactions', transactions);
+        // getUserBalanceMessage(overallBalances, uid).then((message) => {
+        //   console.log(message); // This should log the actual message
+          setLogMessage(usermessage);
+        // });
+        
+        // console.log(`Group Details: ${JSON.stringify(details)}`);
+        // console.log(`Bill Details: ${JSON.stringify(bills)}`);
 
-          const gid = await getGID();
-          if (gid) {
-            // console.log(`GID found: ${gid}`);
-            const group = new Group(gid);
-            const uid = await getUUID();
-            const details = await group.getGroupDetails();
-            const bills = await group.getBillsBasedOnGroup();
-            const grpbalance = await getGroupBalance(gid);
-            console.log('groupbalance', grpbalance);
-            const overallBalances = getOverallGroupBalance(grpbalance);
-            // console.log('overall', getOverallGroupBalance(grpbalance));
-            // console.log(uid);
-            const usermessage = getUserBalanceMessage(overallBalances, uid);
-            
-            // console.log('transactions', transactions);
-            // getUserBalanceMessage(overallBalances, uid).then((message) => {
-            //   console.log(message); // This should log the actual message
-              setLogMessage(usermessage);
-            // });
-            
-            // console.log(`Group Details: ${JSON.stringify(details)}`);
-            // console.log(`Bill Details: ${JSON.stringify(bills)}`);
-
-            if (details && details.length > 0) {
-              setGroupDetails(details[0]);
-            }
-            if (bills && bills.length > 0) {
-              setBillDetails(bills);
-            }
-
-
-          } else {
-            // console.log('GID not found.');
-            router.replace('/');
-          }
-        } catch (e) {
-          // console.error('Failed to load GID.', e);
+        if (details && details.length > 0) {
+          setGroupDetails(details[0]);
         }
-      };
+        if (bills && bills.length > 0) {
+          setBillDetails(bills);
+        }
 
-      checkGroupData();
-    }, [])
-  );
+
+      } else {
+        // console.log('GID not found.');
+        router.replace('/');
+      }
+    } catch (e) {
+      // console.error('Failed to load GID.', e);
+    }
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    checkGroupData();
+    setRefreshing(false);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -412,12 +361,15 @@ export default function GroupScreen() {
         })}
       >
         <Tab.Screen name="FirstTab">
-          {() => <FirstTab billDetails={billDetails} />}
+          {() => <FirstTab billDetails={billDetails} checkGroupData={checkGroupData} refreshing={refreshing} onRefresh={onRefresh} />}
         </Tab.Screen>
-        <Tab.Screen name="SecondTab" component={SecondTab} />
+        <Tab.Screen name="SecondTab">
+          {() => <SecondTab groupbalance={groupbalance} FormattedData={FormattedData} checkGroupData={checkGroupData} refreshing={refreshing} onRefresh={onRefresh} />}
+        </Tab.Screen>
 
 
       </Tab.Navigator>
+      
       <View style={{ padding: 10, backgroundColor: '#FFC0CB', alignItems: 'center' }}>
       <Text style={{ textAlign: 'center' }}>{logMessage}</Text>
     </View>
@@ -435,7 +387,6 @@ export default function GroupScreen() {
         </Text>
         
       </View>
-      
     </SafeAreaView>
   );
 }

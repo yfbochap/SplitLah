@@ -121,10 +121,10 @@ export default function register(){
                 <FontAwesome name="user" size={150} color="white"/>
             </View>
             <View style={styles.accountbody}>
-                <TextInput placeholder='username' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} onChangeText={handleUsernameChange}>joe_danger</TextInput>
-                <TextInput placeholder='email' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} onChangeText={handleEmailChange}>test@email.com</TextInput>
-                <TextInput placeholder='Password' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} secureTextEntry={true} onChangeText={handlePasswordChange}>password123</TextInput>
-                <TextInput placeholder='Confirm Password' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} secureTextEntry={true} onChangeText={handleConfirmPasswordChange}>password123</TextInput>
+                <TextInput placeholder='username' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} onChangeText={handleUsernameChange}></TextInput>
+                <TextInput placeholder='email' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} onChangeText={handleEmailChange}></TextInput>
+                <TextInput placeholder='Password' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} secureTextEntry={true} onChangeText={handlePasswordChange}></TextInput>
+                <TextInput placeholder='Confirm Password' placeholderTextColor={'grey'} style={{...styles.inputText, marginTop: 24}} secureTextEntry={true} onChangeText={handleConfirmPasswordChange}></TextInput>
                 <TouchableHighlight
                 style={{...styles.loginButton}}
                 underlayColor = '#ccc'
