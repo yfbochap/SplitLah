@@ -179,7 +179,7 @@ export default function App() {
               </TouchableOpacity>
             ))
           ) : (
-            <Text style={styles.chatText}>No groups found.</Text>
+            <Text style={{marginTop: 20, color: 'white', fontSize: 24, textAlign: 'center'}}>No groups found.</Text>
           )}
         </ScrollView>
         {isFabOpen && (

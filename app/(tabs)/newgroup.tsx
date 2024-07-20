@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, TouchableWithoutFeedback } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../hooks/supabase';
 import styles from '../../assets/styles';
-import { useRouter, useFocusEffect } from 'expo-router'; // Import useFocusEffect
+import { router, useFocusEffect } from 'expo-router'; // Import useFocusEffect
 import * as SecureStore from 'expo-secure-store';
 import { storeGID } from '@/services/accountService';
 
-export default function NewGroup() {
-  const navigation = useNavigation();
-  const router = useRouter();
 
+export default function NewGroup() {
+  //Declaring block-scoped variables
   const [searchQuery, setSearchQuery] = useState('');
   const [currencies, setCurrencies] = useState<string[]>([]);
   const [selectedCurrency, setSelectedCurrency] = useState<string | null>(null);
@@ -21,6 +19,7 @@ export default function NewGroup() {
   const [groupName, setGroupName] = useState('');
   const [description, setDescription] = useState('');
 
+  //Fetches the list of currencies from a public API (will run only on first mounting of component)
   useEffect(() => {
     fetchCurrencies();
   }, []);
@@ -36,40 +35,53 @@ export default function NewGroup() {
     }
   };
 
+  //Function for filtering the user's search query for currencies
   const filterCurrencies = () => {
     return currencies.filter((currency) =>
       currency.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
-
+  //Function for handling changes to the currency variable state
   const handleCurrencySelect = (currency: string) => {
     setSelectedCurrency(currency); // Set the selected currency
     setSearchQuery(''); // Clear the search query
     setIsInputFocused(false); // Hide the currency list
   };
-
+  //Function for tracking the user's current focus point on the screen
   const handleInputFocus = () => {
     setIsInputFocused(true);
   };
-
+  //Function for handling user's search query
   const handleInputChange = (text: string) => {
     setSearchQuery(text);
     setSelectedCurrency(null); // Clear selected currency when typing
   };
-
+ //Function that runs when the user presses the submit button
   const handleSubmit = async (): Promise<void> => {
-    const userId: string | null = await SecureStore.getItemAsync('user_uuid');
-
+    const userId: string | null = await SecureStore.getItemAsync('user_uuid'); // Retrieves the user_id from inside android's local secure storage environment
+    const trimmedGroupName = groupName.trim();
+    const trimmedDescription = description.trim();
+    
     if (!userId) {
       console.error('User ID is not available');
       return;
     }
 
-    if (!selectedCurrency) {
-      Alert.alert('Error', 'Currency is not selected');
+    if (trimmedGroupName==='') {
+      Alert.alert('Error', 'Please enter a group name');
       return;
     }
 
+    if (trimmedDescription==='') {
+      Alert.alert('Error', 'Please enter a description');
+      return;
+    }
+
+    if (!selectedCurrency) {
+      Alert.alert('Error', 'Please select a currency');
+      return;
+    }
+    //If all checks are passed, proceed to run request for group creation
     const result = await createGroup(userId, groupName, description, selectedCurrency);
     if (result) {
       const setgrp = await storeGID(result);
@@ -77,20 +89,22 @@ export default function NewGroup() {
     }
   };
 
+
+  //Function for interacting with supabase javascript client to create new entry in table 'group'
   const createGroup = async (userId: string, groupName: string, description: string, currency: string) => {
     try {
-      const { data: groupData, error: groupError } = await supabase
+      const { data: groupData, error: groupError } = await supabase  // supabase's way of sanitising and paramterising the input data to protect from sql injections
         .from('group')
         .insert([
           { group_name: groupName, description, no_of_people: 1, currency }
         ])
-        .select();
+        .select(); // After creating entry, returns the data to the 'groupData' variable.
 
       if (groupError) {
         throw groupError;
       }
 
-      const groupId = groupData[0].group_id;
+      const groupId = groupData[0].group_id; //Isolates the supabase-generated 'group_id' for further use
 
       const { data: userGroupData, error: userGroupError } = await supabase
         .from('user_group')
@@ -109,9 +123,9 @@ export default function NewGroup() {
     }
   };
 
+  // Reset form fields whenever the user navigates to this screen
   useFocusEffect(
     useCallback(() => {
-      // Reset form fields
       setSearchQuery('');
       setSelectedCurrency(null);
       setIsInputFocused(false);
@@ -124,7 +138,7 @@ export default function NewGroup() {
     <TouchableWithoutFeedback onPress={()=>setIsInputFocused(false)}>
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <HeaderBackButton tintColor='white' onPress={() => navigation.goBack()} />
+        <HeaderBackButton tintColor='white' onPress={() => router.navigate('/')} />
         <Text style={styles.headerText}>Create New Group</Text>
       </View>
       <View>

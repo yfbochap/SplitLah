@@ -1,64 +1,31 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-    View,
-    Text,
-    Button,
-    StyleSheet,
-    TextInput,
-    ScrollView,
-    TouchableHighlight,
-    Pressable,
-    Linking,
-} from 'react-native';
-import { HeaderBackButton } from '@react-navigation/elements';
-import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import {Link} from 'expo-router';
-import {useRouter, useFocusEffect} from 'expo-router';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableHighlight } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import {router, useFocusEffect} from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import styles from '../../assets/styles';
-import {SUPABASE_URL,SUPABASE_KEY} from '@env'
-import {signInEmail} from "@/services/accountService";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import { User } from '../../classes/user';
-import { getUUID, getGID, storeGID } from "@/services/accountService";
-// import * as Updates from 'expo-updates';
-// import { useNavigation, NavigationContainer } from '@react-navigation/native'; uncomment if we want a back button on the page
+import { getUUID } from "@/services/accountService";
+
 
 export default function login() {
 
+    // Declaring block-scoped variables
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
-    const router = useRouter();
 
-    const handleEmailChange = (inputEmail)=> {
-        setEmail(inputEmail);
-    }
-
-    const handleUsernameChange = (inputUsername)=> {
-        setUsername(inputUsername);
-    }
-
-    // function handleSignIn(){
-    //     signInEmail(email, password);
-    // }
-
-    /* uncomment below if we want a back button on the page */
-    // const navigation = useNavigation(); 
-
-    // const handleBackButtonPress = () => {
-    //   navigation.goBack();
-    // };
-
+    // Function to retrieve the user details and store the username and email
     const getProfile = async () => {
-        const uuid = await getUUID();
+        const uuid = await getUUID(); //Retrieves logged-in user credentials
         if(uuid){
             const user = new User(uuid);
-            const userDetails = await user.getUserDetails();
+            const userDetails = await user.getUserDetails(); //Retrieves user details using user id
             if(userDetails){
                 try{
-                    setUsername(userDetails[0].user_name);
-                    setEmail(userDetails[0].user_email);
+                    setUsername(userDetails[0].user_name); //Stores the username
+                    setEmail(userDetails[0].user_email); // Stores the email
                 }
                 catch{
                     console.log('Error displaying user details');
@@ -70,17 +37,18 @@ export default function login() {
         
     }
 
+    //Runs the function everytime the screen is focused
     useFocusEffect(
         useCallback(() => {
             getProfile();
         }, [])
     );
 
+    //Removes user credentials from secure storage, used when user signs out
     const clearStorage = async () => {
         try {
           await SecureStore.deleteItemAsync('user_uuid');
           console.log('Storage cleared successfully');
-        //   await Updates.reloadAsync();
           router.navigate('/');
         } catch (error) {
           console.error('Error clearing storage', error);
@@ -93,8 +61,6 @@ export default function login() {
                 <ScrollView>
                 <View style={styles.primaryheader}>
                     <LinearGradient colors={['turquoise', 'purple']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                        {/* uncomment below if we want a back button on the page */}
-                        {/* <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} /> */}
                         <Text style={styles.primaryheadertext}>Profile</Text>
                     </LinearGradient>
                 </View>

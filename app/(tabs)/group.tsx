@@ -1,14 +1,12 @@
-import React, { useEffect,useState, useCallback, } from 'react';
+import React, { useState, useCallback, } from 'react';
 import {
     ScrollView,
     View,
     Text,
     TextInput,
     FlatList,
-    ListRenderItem,
     TouchableOpacity,
     Image,
-    Button,
     StyleSheet,
     Dimensions,
     RefreshControl
@@ -24,13 +22,14 @@ import { Group } from '../../classes/group';
 import { getGID, storeBID, getUUID } from '@/services/accountService';
 import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons';
-import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
+import { BarChart } from "react-native-gifted-charts";
 import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, GroupBalanceList, transformData, getTransactions} from '../../classes/balance';
 import Entypo from '@expo/vector-icons/Entypo';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
+//Declares the top navigation bar for 'Bills' and 'Balances'
 const Tab = createMaterialTopTabNavigator();
 
+//Declares the necessary interfaces (helps define the object and the type of data within in)
 interface Balance {
   id: string;
   name: string;
@@ -68,9 +67,9 @@ interface Owedmoney {
 
 
 
-const calculateTotalBalance = (balances: Balance[]): number => {
-  return balances.reduce((total, item) => total + item.amount, 0);
-};
+// const calculateTotalBalance = (balances: Balance[]): number => {
+//   return balances.reduce((total, item) => total + item.amount, 0);
+// };
 
 const handleBill = async (inputBillID: string) => {
   // console.log('test1', inputBillID);
@@ -82,9 +81,10 @@ const handleBill = async (inputBillID: string) => {
   }
 };
 
-
+// Defines the 'Bills' tab, with the relevant props being passed from default function 'GroupScreen'
 function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
 
+  //Renders the view for the 'Bills' tab
   return (
     <View style={styles.container}>
       <View style={styles.searchFabContainer}>
@@ -101,7 +101,7 @@ function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
       </View>
       <ScrollView contentContainerStyle={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> //User can refresh the display by pulling the scrollview down
         } style={styles.chatList}>
         {billDetails && billDetails.length > 0 ? (
           billDetails.map((bill, index) => (
@@ -120,7 +120,7 @@ function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
             </Link>
           ))
         ) : (
-          <Text>No bills available</Text>
+            <Text style={{marginTop: 20, color: 'white', fontSize: 24, textAlign: 'center'}}>No bills available</Text> //Displays this message if there are no groups found
         )}
       </ScrollView>
     </View>
@@ -250,12 +250,11 @@ export default function GroupScreen() {
 
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
   const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
-  const [copiedText, setCopiedText] = React.useState('');
   const [logMessage, setLogMessage] = useState<string>('');
   const [groupbalance, setOwedMoney] = useState<Owedmoney[] | null>(null);
   const [FormattedData, setFormattedData] = useState<FormattedData[] | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
-  const [highestValue, sethighestValue ] = useState(0);
+  const [highestValue, sethighestValue ] = useState(0); //Variable for Experimental Feature
  
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(groupDetails.invite_code);
