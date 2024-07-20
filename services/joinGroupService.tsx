@@ -1,6 +1,7 @@
 import { Alert, StyleSheet, View } from 'react-native'
 import { supabase } from '../hooks/supabase';
 
+// Checks whether the invite code is in the table
 async function checkInvCodeValid(inputInvCode){
     try {
         const {data,error} = await supabase
@@ -12,11 +13,9 @@ async function checkInvCodeValid(inputInvCode){
         }
         else {
             if (data.length == 1){
-                // console.log(`${inputInvCode} is valid`);
                 return true;
             }
             else{
-                console.log(`${inputInvCode} is invalid`);
                 Alert.alert("Group not found");
                 return false;
             }
@@ -28,6 +27,7 @@ async function checkInvCodeValid(inputInvCode){
     }
 }
 
+// Gets the Group ID with the invite code
 async function getGroupIDBasedOnInviteCode(inputInvCode){
     try {
         const {data,error} = await supabase
@@ -38,7 +38,6 @@ async function getGroupIDBasedOnInviteCode(inputInvCode){
             Alert.alert(error.message);
         }
         else {
-            // console.log(data);
             return data;
         }
     }
@@ -48,6 +47,7 @@ async function getGroupIDBasedOnInviteCode(inputInvCode){
     }
 }
 
+// Adds a row in user_group table
 async function insertUserGroup(inputUserID,inputGroupID){
     try {
         const { error } = await supabase
@@ -59,7 +59,6 @@ async function insertUserGroup(inputUserID,inputGroupID){
             Alert.alert(error.message);
         }
         else {
-            // console.log("Successfully inserted user group");
             return true;
         }
     }
@@ -69,6 +68,7 @@ async function insertUserGroup(inputUserID,inputGroupID){
     return false;
 }
 
+// Checks whether a user is already in the group
 async function checkUserNotInGroup(inputUserID,inputGroupID){
     try {
         const {count,error} = await supabase
@@ -87,7 +87,7 @@ async function checkUserNotInGroup(inputUserID,inputGroupID){
             }
         }
         else {
-            console.log(`Error: ${error.message}`);
+            // console.log(`Error: ${error.message}`);
         }
 
     }

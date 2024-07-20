@@ -1,73 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { router } from 'expo-router';
 import styles from '../../assets/styles';
-import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase } from '../../hooks/supabase';
-import {getGID,getUUID} from '../../services/accountService';
-import {User} from "@/classes/user";
+import { getUUID } from '../../services/accountService';
 import {Group} from "@/classes/group";
 import { checkInvCodeValid,getGroupIDBasedOnInviteCode,insertUserGroup,checkUserNotInGroup } from '@/services/joinGroupService';
 
 interface Props {
-  
   navigation: any;
 }
 
 const JoinGroupPage: React.FC<Props> = ({navigation }) => {
-const [code, setCode] = useState('');
-const [joining, setJoining] = useState(false);
-const [error, setError] = useState(null);
-const router = useRouter();
-const navigate = useNavigation();
+    const [code, setCode] = useState('');
 
 
-// check if invite code is valid
-    // check if user is not in the group
-        // run the update + insert into user group
-        // check if both successful
-            // alert success join group
-            // navigate back
-    // else
-        // alert user already in group
-// else
-    // alert invite code invalid
-
-const handleJoinGroup = async () =>{
-    const checkResult = await checkInvCodeValid(code);
-    if (checkResult){
-        const grpIDRaw = await getGroupIDBasedOnInviteCode(code);
-        const grpID = grpIDRaw[0].group_id;
-        const userID = await getUUID();
-        const checkNotinGroup = await checkUserNotInGroup(userID,grpID);
-        if (checkNotinGroup){
-            const checkInsertUserGroupSuccess = await insertUserGroup(userID,grpID);
-            const grpClass = new Group(grpID);
-            const checkUpdateGroupSuccess = await grpClass.updateOccupancyBy1();
-
-            if(checkInsertUserGroupSuccess && checkUpdateGroupSuccess){
-                // console.log("Successfully done both");
-                Alert.alert("Successfully joined group!");
-                navigate.goBack();
+    // Runs 3 checks after a user submits invite code. If pass all checks then adds to user_group row and updates group table occupancy column
+    const handleJoinGroup = async () =>{
+        const checkResult = await checkInvCodeValid(code);
+        if (checkResult){
+            const grpIDRaw = await getGroupIDBasedOnInviteCode(code);
+            const grpID = grpIDRaw[0].group_id;
+            const userID = await getUUID();
+            const checkNotinGroup = await checkUserNotInGroup(userID,grpID);
+            if (checkNotinGroup){
+                const checkInsertUserGroupSuccess = await insertUserGroup(userID,grpID);
+                const grpClass = new Group(grpID);
+                const checkUpdateGroupSuccess = await grpClass.updateOccupancyBy1();
+                if(checkInsertUserGroupSuccess && checkUpdateGroupSuccess){
+                    Alert.alert("Successfully joined group!");
+                    router.back();
+                }
             }
         }
     }
-}
-
-// const handleJoinGroup = async() => {
-//     const grpIDRaw = await getGroupIDBasedOnInviteCode(code);
-//     const grpID = grpIDRaw[0].group_id;
-//     const userID = await getUUID();
-//     const checkIngrpAlrdy = await checkUserNotInGroup(userID,grpID);
-// }
-
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <HeaderBackButton tintColor='white' onPress={() => navigate.goBack()} />
+        <HeaderBackButton tintColor='white' onPress={() => router.back()} />
         <Text style={styles.headerText}>Join Group</Text>
       </View>
       

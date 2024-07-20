@@ -2,62 +2,45 @@ import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
-    Button,
-    StyleSheet,
     TextInput,
     ScrollView,
-    TouchableHighlight,
-    Pressable,
-    Linking,
-    Modal,
+    TouchableHighlight
 } from 'react-native';
-import { HeaderBackButton } from '@react-navigation/elements';
-import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import {Link, useRouter} from 'expo-router';
+import { FontAwesome } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import styles from '../../assets/styles';
 import {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail} from '../../services/accountService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function register(){
-    const router = useRouter();
 
     // Set up the useState starting with empty fields, the first field is the var name, the 2nd field is the updaterFunction when changed
     const [password, inputtedPassword] = useState("");
     const [confirmPassword,inputtedConfirmPassword] = useState("");
-    // For the password error msg
-    const [checkPasswordError, setPasswordErrorMsg] = useState(false);
+    const [checkPasswordError, setPasswordErrorMsg] = useState(false); // For the password error msg
+    const [username, setUsername] = useState(''); // For Username
+    const [checkUsernameError, setCheckUsernameError] = useState(false); // For username error msg
+    const [email, setEmail] = useState(''); // For Email
+    const [checkEmailError, setCheckEmailError] = useState(false); // For Email error msg
 
-    // For Username
-    const [username, setUsername] = useState('');
-    // For username error msg
-    const [checkUsernameError, setCheckUsernameError] = useState(false);
-
-    // For Email
-    const [email, setEmail] = useState('');
-    // For Email error msg
-    const [checkEmailError, setCheckEmailError] = useState(false);
-
-    // Sort of updates when user changes the status of the fields
+    // updates consts when user changes the status of the fields
     const handlePasswordChange = (pass) => {
         inputtedPassword(pass);
     };
     const handleConfirmPasswordChange = (confirmPass) => {
         inputtedConfirmPassword(confirmPass);
     };
-
-    // handle username input
     const handleUsernameChange = (username) => {
       setUsername(username);
     };
-
-    // handle email input
     const handleEmailChange = (email)=> {
         setEmail(email);
     }
 
+
+    // Handles register, places inputs into multiple checks and will register when all checks passed
     const handleRegister = () => {
-        // console.log("IN HANDLE");
         var counter = 0;
         if(!passwordTotalCheck(password,confirmPassword)) {
             setPasswordErrorMsg(true);
@@ -66,9 +49,7 @@ export default function register(){
             setPasswordErrorMsg(false);
             counter++;
         }
-    //  Check if email does not pass the checks
-    //      set the email error to true
-    //  Else counter increase by 1
+
         if(!emailTotalCheck(email)){
             setCheckEmailError(true);
         }
@@ -76,9 +57,7 @@ export default function register(){
             setCheckEmailError(false);
             counter++;
         }
-    //  Check if username does not pass the checks
-    //      set username error to true
-    //   Else counter increase by 1
+
         if(!usernameTotalCheck(username)){
             setCheckUsernameError(true);
         }
@@ -87,22 +66,11 @@ export default function register(){
             counter++;
         }
 
-    //  Check if the counter == 3
-    //      add the user into auth db
-    //      redirect to home page w/ uid? (C if can j take from somewhere)
-        if (counter !=3){
-            console.log("ERROR");
-        }
-        else{
-            // console.log("PASS");
-            // var result = signUpEmail(email, password,username);
+        if (counter == 3){
             async function signUpResult(){
                 const signUpCheck = await signUpEmail(email, password, username);
-                // console.log(signUpCheck);
                 if (signUpCheck) {
                   router.navigate('login');
-                  /* can consider making a filler page (like congratulations) 
-                  with a button for the user to click which would then redirect them to "login" instead */
                 }
             }
             signUpResult();
