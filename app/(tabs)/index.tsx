@@ -16,6 +16,7 @@ import { useRouter, useFocusEffect, router } from 'expo-router';
 import { User } from '../../classes/user';
 import { getUUID, getGID, storeGID } from "@/services/accountService";
 
+// Prevent the splash screen from auto-hiding until fonts are loaded
 SplashScreen.preventAutoHideAsync();
 
 interface GroupDetails {
@@ -42,6 +43,7 @@ export default function App() {
   const [groups, setGroups] = useState<Group[]>([]); // Use the Group interface
   // const router = useRouter();
 
+  // useFocusEffect to handle component focus events
   useFocusEffect(
     useCallback(() => {
       const checkLoginStatus = async () => {
@@ -63,10 +65,10 @@ export default function App() {
 
       checkLoginStatus();
       retrieveGroups(); // Call the function here
-      setIsFabOpen(false);
+      setIsFabOpen(false);// Close the FAB menu on focus
     }, [])
   );
-
+ // useEffect to handle side effects when isLoading or isLoggedIn state changes
   useEffect(() => {
     if (!isLoading) {
       if (isLoggedIn) {
@@ -77,7 +79,7 @@ export default function App() {
       }
     }
   }, [isLoading, isLoggedIn]);
-
+  // Function to retrieve groups associated with the user
   const retrieveGroups = async () => {
     try {
       const uuid = await getUUID();
@@ -95,17 +97,17 @@ export default function App() {
       console.error('Failed to load groups', e);
     }
   };
-
+  // Hide the splash screen once fonts are loaded
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
       await SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
-
+   // Function to open the FAB menu
   const toggleFab = () => {
     setIsFabOpen(!isFabOpen);
   };
-
+  // Function close the FAB menu
   const closeFabMenu = () => {
     if (isFabOpen) {
       setIsFabOpen(false);
