@@ -21,8 +21,8 @@ import { Group } from '../../classes/group';
 import { getGID, storeBID, getUUID } from '@/services/accountService';
 import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons';
-import { BarChart } from "react-native-gifted-charts";
-import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, transformData, getTransactions} from '../../classes/balance';
+import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
+import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, transformData, getTransactions} from '../../services/balance';
 import Entypo from '@expo/vector-icons/Entypo';
 
 //Declares the top navigation bar for 'Bills' and 'Balances'
@@ -64,11 +64,6 @@ interface Owedmoney {
   userName: string;
 }
 
-
-
-// const calculateTotalBalance = (balances: Balance[]): number => {
-//   return balances.reduce((total, item) => total + item.amount, 0);
-// };
 
 const handleBill = async (inputBillID: string) => {
   // console.log('test1', inputBillID);
@@ -215,6 +210,7 @@ function SecondTab({ groupbalance, FormattedData, highestValue }) {
       }}
         />
        </View>
+       {/* Display amount of money owed to/ owed by the group memebers */}
        <Text style={{ color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
           Transactions
         </Text>
@@ -321,6 +317,7 @@ export default function GroupScreen() {
   }, []);
 
   return (
+    // Display the header and the two tabs for bills and balances
     <SafeAreaView style={styles.container}>
       <View style={styles.groupheader}>
         <View>
@@ -351,8 +348,6 @@ export default function GroupScreen() {
             } else if (route.name === 'SecondTab') {
               label = 'Balances';
             }
-
-
             return <Text style={{ color: focused ? 'white' : 'gray' }}>{label}</Text>;
           },
           tabBarIcon: ({ color, focused }) => {
@@ -366,6 +361,7 @@ export default function GroupScreen() {
 
         })}
       >
+        {/* refresh function by pulling the items in bill down to check for new bills */}
         <Tab.Screen name="FirstTab">
           {() => <FirstTab billDetails={billDetails} checkGroupData={checkGroupData} refreshing={refreshing} onRefresh={onRefresh} />}
         </Tab.Screen>
