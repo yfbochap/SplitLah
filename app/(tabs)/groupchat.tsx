@@ -1,6 +1,6 @@
 import { ScrollView, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect, useCallback,useRef } from 'react';
-import { View, Text, TextInput, BackHandler } from 'react-native';
+import { View, Text, TextInput, BackHandler, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {supabase} from "@/hooks/supabase";
 import {getGID, getUUID} from "@/services/accountService";
@@ -10,6 +10,7 @@ import styles from '@/assets/styles';
 import { Group } from '@/classes/group';
 import {HeaderBackButton} from "@react-navigation/elements";
 import { router } from 'expo-router';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function GroupChatScreen(){
     const [messages, setMessages] = useState([]);
@@ -153,6 +154,11 @@ export default function GroupChatScreen(){
                     <Text style={{ ...styles.headerText}}>
                         {groupName}
                     </Text>
+                </View>
+                <View style={{marginRight: '5%'}}>
+                    <TouchableOpacity onPress={()=>router.navigate('/')}>
+                        <AntDesign name="home" size={Math.min(32, Dimensions.get('window').width * 0.065)} color="white"/>
+                    </TouchableOpacity>
                 </View>
             </View>
             <View style={styles.gc_messageListContainer} >
