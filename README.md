@@ -59,5 +59,6 @@ Download the APK file [here](https://expo.dev/accounts/wongyh/projects/SplitLah/
 8. If asked to log in to your Expo account then sign in
 9. For Android:
    Open your Expo Go app and scan the QR code shown in your terminal
+   <br>
    For IOS:
    Open Camera App and scan the QR code shown in your terminal and you should be redirected to the      Expo Go app
