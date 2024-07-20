@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, View } from 'react-native'
+import { Alert } from 'react-native'
 import { supabase } from '../hooks/supabase';
 
 // Checks whether the invite code is in the table

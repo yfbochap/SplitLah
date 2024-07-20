@@ -1,8 +1,7 @@
 import {supabase} from "@/hooks/supabase";
 import {Alert} from "react-native";
-import {Group} from "@/classes/group";
 import {User} from "@/classes/user";
-import {getUUID, getGID} from "./accountService";
+import { getGID } from "./accountService";
 
 // Function to append 0 to the time if not 2 digit
 function padZero(num) {
