@@ -216,6 +216,7 @@ function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGr
       }}
         />
        </View>
+       {/* Display amount of money owed to/ owed by the group memebers */}
        <Text style={{ color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
           Transactions
         </Text>
@@ -317,6 +318,7 @@ export default function GroupScreen() {
   }, []);
 
   return (
+    // Display the header and the two tabs for bills and balances
     <SafeAreaView style={styles.container}>
       <View style={styles.groupheader}>
         <View>
@@ -347,8 +349,6 @@ export default function GroupScreen() {
             } else if (route.name === 'SecondTab') {
               label = 'Balances';
             }
-
-
             return <Text style={{ color: focused ? 'white' : 'gray' }}>{label}</Text>;
           },
           tabBarIcon: ({ color, focused }) => {
@@ -362,6 +362,7 @@ export default function GroupScreen() {
 
         })}
       >
+        {/* refresh function by pulling the items in bill down to check for new bills */}
         <Tab.Screen name="FirstTab">
           {() => <FirstTab billDetails={billDetails} checkGroupData={checkGroupData} refreshing={refreshing} onRefresh={onRefresh} />}
         </Tab.Screen>

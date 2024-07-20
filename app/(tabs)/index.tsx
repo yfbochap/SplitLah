@@ -137,11 +137,13 @@ export default function App() {
   return (
     <TouchableWithoutFeedback onPress={closeFabMenu}>
       <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
+        {/* Header */}
         <LinearGradient colors={['turquoise', 'purple']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.profileBar}>
           <Text style={styles.profileText}>SplitLah!</Text>
         </LinearGradient>
         <View style={styles.searchFabContainer}>
           <TouchableOpacity style={styles.fab} onPress={toggleFab}>
+          {/* Join/create group icon */}
             <Image source={require('../../assets/images/plus.png')} style={styles.fabIcon} />
           </TouchableOpacity>
           <TextInput
@@ -150,6 +152,7 @@ export default function App() {
             placeholderTextColor="#999"
           />
         </View>
+        {/* Displays chat list together with the description and the currency being used in the group */}
         <ScrollView style={styles.chatList}>
           {groups.length > 0 ? (
             groups.map((group, index) => (
