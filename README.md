@@ -57,8 +57,7 @@ Download the APK file [here](https://expo.dev/accounts/wongyh/projects/SplitLah/
 6. Download Expo Go app on App Store or Play Store (WARNING: Some features do not work well on IOS devices)
 7. Make sure you are in the SplitLah project directory in terminal and run `npx expo start`
 8. If asked to log in to your Expo account then sign in
-9. 
-For Android:
-Open your Expo Go app and scan the QR code shown in your terminal
-For IOS:
-Open Camera App and scan the QR code shown in your terminal and you should be redirected to the Expo Go app
+9. For Android:
+   Open your Expo Go app and scan the QR code shown in your terminal
+   For IOS:
+   Open Camera App and scan the QR code shown in your terminal and you should be redirected to the      Expo Go app
