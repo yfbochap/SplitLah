@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Platform, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Group } from '../../classes/group';
@@ -9,7 +8,7 @@ import { getGID, getBID } from "@/services/accountService";
 import CustomCheckbox from '../../assets/checkbox'; // Adjust the import path as needed
 import styles from '../../assets/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, router } from 'expo-router';
 
 interface BillDetails {
   bill_id: string;
@@ -28,12 +27,12 @@ interface BalanceDetails {
 }
 
 export default function EditBill() {
-  const navigation = useNavigation();
 
   const handleBackButtonPress = () => {
-    navigation.navigate('group');
+    router.navigate('group');
   };
 
+  //Declares block-scope variables
   const [amount, setAmount] = useState('');
   const [billTitle, setBillTitle] = useState('');
   const [date, setDate] = useState(new Date());
@@ -47,12 +46,7 @@ export default function EditBill() {
   const [paidByName, setPaidByName] = useState(''); // State for storing the bill owner's name
   const [amounts, setAmounts] = useState<{ [userId: string]: string }>({}); // State for individual amounts
 
-  const [forceUpdate, setForceUpdate] = useState(false);
-
-const updateComponent = () => {
-  setForceUpdate(prevState => !prevState);
-};
-
+//Runs the following whenever the user navigates to this screen
 useFocusEffect(
   useCallback(() => {
     const fetchData = async () => {
@@ -95,7 +89,7 @@ useFocusEffect(
                   setAmounts(initialAmounts);
                 }
 
-                // Ensure `balanceDetails` and `billDetails` are updated before setting `initialSelectedMembers`
+                // Ensures only members involved in the bil are selected
                 const initialSelectedMembers = members.reduce((acc, member) => {
                   const foundBalance = balances.find(balance => balance.debtor_id === member.user_id);
                   acc[member.user_id] = foundBalance !== undefined;
@@ -105,6 +99,7 @@ useFocusEffect(
                 // console.log('1', initialSelectedMembers);
                 // console.log('2', billDetail);
 
+                // Checks if the owner of the bill is involved
                 const isOwnerParticipant = await bill.isOwnerBillParticipant();
                 if (isOwnerParticipant && billDetail) {
                   initialSelectedMembers[billDetail.user_id] = true;
@@ -251,8 +246,7 @@ useFocusEffect(
 
         // console.log('Bill Balances Updated Successfully');
 
-        // Optionally navigate to a confirmation screen or perform another action
-        navigation.navigate('group'); // Navigate after updating bill
+        router.navigate('group'); // Navigate after updating bill
       } catch (error) {
         console.error('Error updating bill:', error.message);
       }

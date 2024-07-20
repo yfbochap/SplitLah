@@ -2,6 +2,8 @@ import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet, TextInput } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
+
+//Custom checkbox for use in bill pages (selection of involved members)
 const CustomCheckbox = ({ label, isChecked, onChange, amount, onAmountChange }) => {
   return (
     <View style={styles.checkboxContainer}>

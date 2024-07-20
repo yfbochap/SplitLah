@@ -12,7 +12,6 @@ import {
     RefreshControl
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,7 +22,7 @@ import { getGID, storeBID, getUUID } from '@/services/accountService';
 import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons';
 import { BarChart } from "react-native-gifted-charts";
-import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, GroupBalanceList, transformData, getTransactions} from '../../classes/balance';
+import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, transformData, getTransactions} from '../../classes/balance';
 import Entypo from '@expo/vector-icons/Entypo';
 
 //Declares the top navigation bar for 'Bills' and 'Balances'
@@ -82,10 +81,10 @@ const handleBill = async (inputBillID: string) => {
 };
 
 // Defines the 'Bills' tab, with the relevant props being passed from default function 'GroupScreen'
-function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
+function FirstTab({ billDetails, refreshing, onRefresh }) {
 
-  //Renders the view for the 'Bills' tab
   return (
+    //Renders the search bar and the plus button for creating a new bill
     <View style={styles.container}>
       <View style={styles.searchFabContainer}>
         <Link href='addbill' asChild>
@@ -99,7 +98,7 @@ function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
           placeholderTextColor="#999"
         />
       </View>
-      <ScrollView contentContainerStyle={styles.scrollView}
+      <ScrollView contentContainerStyle={styles.scrollView} //Renders the scrollable list of bills for the user
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> //User can refresh the display by pulling the scrollview down
         } style={styles.chatList}>
@@ -120,15 +119,15 @@ function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
             </Link>
           ))
         ) : (
-            <Text style={{marginTop: 20, color: 'white', fontSize: 24, textAlign: 'center'}}>No bills available</Text> //Displays this message if there are no groups found
+            <Text style={{marginTop: 20, color: 'white', fontSize: 24, textAlign: 'center'}}>No bills available</Text> //Displays this message if there are no bills found
         )}
       </ScrollView>
     </View>
   );
 }
 
-function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGroupData, highestValue }) {
-  const navigation = useNavigation();
+// Defines the 'Balances' tab, with the relevant props being passed from default function 'GroupScreen'
+function SecondTab({ groupbalance, FormattedData, highestValue }) {
   // Inner component to display the list of group balances
   const GroupBalanceList: React.FC = () => {
     const renderItem = ({ item }: { item: Owedmoney }) => {
@@ -225,10 +224,8 @@ function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGr
 }
 
 export default function GroupScreen() {
-  const navigation = useNavigation();
-
   const handleBackButtonPress = () => {
-    router.back();
+    router.navigate('/');
   };
 
   const handleChatButtonPress = () => {
@@ -241,6 +238,7 @@ export default function GroupScreen() {
     }, [])
   );
 
+  //Declaring block-scoped variables
   const [groupDetails, setGroupDetails] = useState<GroupDetails | null>(null);
   const [billDetails, setBillDetails] = useState<BillDetails[] | null>(null);
   const [logMessage, setLogMessage] = useState<string>('');
@@ -249,15 +247,21 @@ export default function GroupScreen() {
   const [refreshing, setRefreshing] = React.useState(false);
   const [highestValue, sethighestValue ] = useState(0); //Variable for Experimental Feature
  
+  //Function for assisting the user in copying the group code
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(groupDetails.invite_code);
   };
 
+  //Retrieves and processes all relevant group data (based on the stored 'group_id')
   const checkGroupData = async () => {
     try {
       // Clear previous group and bill details
       setGroupDetails(null);
       setBillDetails(null);
+      setLogMessage('');
+      setOwedMoney(null);
+      setFormattedData(null);
+      setRefreshing(false);
 
       const gid = await getGID();
       if (gid) {
@@ -309,6 +313,7 @@ export default function GroupScreen() {
     }
   };
 
+  //Function for handling the user's manual refreshing of the screen
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     checkGroupData();
@@ -334,7 +339,7 @@ export default function GroupScreen() {
       </View>
 
 
-      <Tab.Navigator
+      <Tab.Navigator //Renders the top navigation bar
         screenOptions={({ route }) => ({
           tabBarLabelStyle: { fontSize: 16, color: 'white' },
           tabBarStyle: { backgroundColor: 'purple' },
@@ -392,7 +397,7 @@ export default function GroupScreen() {
   );
 }
 
-
+//Experimental styles used for rendering the barchart and associated data
 const styles2 = StyleSheet.create({
   container: {
     flex: 1,

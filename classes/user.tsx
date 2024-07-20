@@ -57,7 +57,7 @@ export class User {
         }
     }
     
-    //Test code for retrieving details of all groups the user is a member in
+    // Retrieves details of all groups the user is a member in
     async getGroupDetailsBasedOnUserID() {
         try {
             const {data,error} = await supabase
@@ -78,9 +78,8 @@ export class User {
         }
     }
 
-    //    Get all details of user based on ID
+    // Get all details of user based on user ID
     async getUserDetails() {
-        // console.log(`Group ID: ${this.groupID}`);
         try {
             const {data,error} = await supabase
                 .from('user')
@@ -99,6 +98,8 @@ export class User {
             return null; // Handling any other unexpected errors
         }
     }
+
+    //Retrieves username based on user ID
     async getUserName() {
         try {
           const { data, error } = await supabase

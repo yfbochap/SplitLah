@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -6,8 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from '../../assets/styles';
 import { getBID } from '@/services/accountService';
 import { Bill } from '../../classes/bill';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 
+//Declares the necessary interfaces
 interface BillDetails {
   bill_id: string;
   name: string;
@@ -30,7 +31,7 @@ interface Balances {
 }
 
 const BillScreen = () => {
-  const router = useRouter();
+  // Declares block-scoped variables
   const navigation = useNavigation();
   const [billDetails, setBillDetails] = useState<BillDetails | null>(null);
   const [participants, setParticipants] = useState<BillParticipantNames[] | null>(null);
@@ -46,6 +47,7 @@ const BillScreen = () => {
     router.navigate('updatebill');
   };
 
+  // Function to handle the user pressing the 'delete' button
   const deleteButton = async () => {
     Alert.alert('Delete Bill', 'Are you sure about deleting this bill? You will not be able to get it back!',
       [
@@ -56,6 +58,7 @@ const BillScreen = () => {
     )
   }
 
+  // Function to delete bill
   const handleDelete = async () => {
     const billID = await getBID();
     if(billID){
@@ -65,6 +68,7 @@ const BillScreen = () => {
     router.navigate('group');
   };
 
+  // Function to retrieve bill data and store in relevant variables
   const fetchBillData = useCallback(async () => {
     try {
       const billID = await getBID();
@@ -104,12 +108,8 @@ const BillScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchBillData();
-    }, [fetchBillData])
+    }, [])
   );
-
-  useEffect(() => {
-    fetchBillData();
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

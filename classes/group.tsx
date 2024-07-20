@@ -147,6 +147,8 @@ export class Group {
             return null; // Handling any other unexpected errors
         }
     }
+    
+    // Create new bill based on the group ID
     async createBillUsingGroupID(inputAmount: string,inputName: string,inputDate: any, inputUserID: string) {
         // console.log(`Group ID: ${this.groupID}`);
         try {

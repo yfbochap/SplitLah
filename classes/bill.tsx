@@ -37,6 +37,7 @@ export class Bill {
         }
     }
 
+    //Select the bill owner's ID
     async getBillOwnerID() {
         try {
             const { data, error } = await supabase
@@ -56,6 +57,7 @@ export class Bill {
         }
     }
     
+    //Selects a name using a given user_id
     async getBillOwnerName(inputUserID : string) {
         try {
             const { data, error } = await supabase
@@ -75,7 +77,7 @@ export class Bill {
         }
     }
     
-    // Combine the above two functions
+    // Combination of functions (getBillOwnerID, getBillOwnerName) to get the Bill Owner's name
     async getBillOwnerNameViaBillID() {
         try {
             const userId = await this.getBillOwnerID();
@@ -96,52 +98,52 @@ export class Bill {
     }
     
 
-        //  Select all participants based on billID
-        async getBillParticipantsUsingBillId() {
-            // console.log(`Group ID: ${this.groupID}`);
-            try {
-                const {data,error} = await supabase
-                    .from('bill_participant')
-                    .select('user_id')
-                    .eq('bill_id',this.billID);
-                if (error){
-                    Alert.alert(error.message);
-                    return [];
-                }
-                else {
-                    // console.log(data);
-                    return data.map(row => row.user_id);
-                }
+    //  Select all participants based on billID
+    async getBillParticipantsUsingBillId() {
+        // console.log(`Group ID: ${this.groupID}`);
+        try {
+            const {data,error} = await supabase
+                .from('bill_participant')
+                .select('user_id')
+                .eq('bill_id',this.billID);
+            if (error){
+                Alert.alert(error.message);
+                return [];
             }
-            catch (irregError){
-                Alert.alert('An unexpected error occurred: ' + irregError.message);
-                return []; // Handling any other unexpected errors
+            else {
+                // console.log(data);
+                return data.map(row => row.user_id);
             }
         }
+        catch (irregError){
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return []; // Handling any other unexpected errors
+        }
+    }
 
-        //  Select all participants names based on userID
-        async getBillParticipantsUsingUserIds(userIds: string[]) {
-            // console.log(`Group ID: ${this.groupID}`);
-            try {
-                const {data,error} = await supabase
-                    .from('user')
-                    .select('user_name, user_id')
-                    .in('user_id', userIds);
-                if (error){
-                    Alert.alert(error.message);
-                }
-                else {
-                    // console.log(data);
-                    return data;
-                }
+    //  Select all participants names based on an array of userIDs
+    async getBillParticipantsUsingUserIds(userIds: string[]) {
+        // console.log(`Group ID: ${this.groupID}`);
+        try {
+            const {data,error} = await supabase
+                .from('user')
+                .select('user_name, user_id')
+                .in('user_id', userIds);
+            if (error){
+                Alert.alert(error.message);
             }
-            catch (irregError){
-                Alert.alert('An unexpected error occurred: ' + irregError.message);
-                return []; // Handling any other unexpected errors
+            else {
+                // console.log(data);
+                return data;
             }
         }
+        catch (irregError){
+            Alert.alert('An unexpected error occurred: ' + irregError.message);
+            return []; // Handling any other unexpected errors
+        }
+    }
 
-    // Combining the above 2 functions
+    // Combination of functions (getBillParticipantsUsingBillId, getBillParticipantsUsingUserIds) to get all bill participants' names
     async getBillParticipantsNames() {
         try {
             const userIds = await this.getBillParticipantsUsingBillId();
@@ -188,6 +190,7 @@ export class Bill {
         }
     }
 
+    // Stores bill participants in the relevant table
     async StoreBillParticipants(userIds: string[]) {
         // console.log(`Group ID: ${this.groupID}`);
         try {
@@ -214,6 +217,7 @@ export class Bill {
         }
     }
     
+    // Updates the relevant using the Bill ID
     async updateBillUsingBillID(amount, name, date, paidByUserId) {
         try {
           const { data, error } = await supabase
@@ -234,6 +238,7 @@ export class Bill {
         }
       }
     
+    // Deletes all entries in the 'bill_participant' table associated with the given Bill ID
     async DeleteBillParticipants() {
         try {
             const { data, error } = await supabase
@@ -254,6 +259,7 @@ export class Bill {
         }
     }
     
+    //Stores the calculated bill balances in the 'balance' table
     async StoreBillBalances(gid: string, userIds: string[], amounts: { [userId: string]: string }, creditorId: string) {
         try {
             const dataToInsert = userIds.map(userId => ({
@@ -283,6 +289,7 @@ export class Bill {
         }
     }
 
+    // Retrieves the bill balances
     async GetBillBalances() {
         try {
             const {data,error} = await supabase
@@ -303,6 +310,7 @@ export class Bill {
         }
     }
 
+    // Deletes the bill balances
     async DeleteBillBalances() {
         try {
             const { data, error } = await supabase
@@ -323,6 +331,7 @@ export class Bill {
         }
     }
     
+    // Retrieves the total amount associated with a bill in the 'balance' table
     async GetBalanceSum() {
         try {
             const { data, error } = await supabase
@@ -356,7 +365,7 @@ export class Bill {
         }
     }
     
-    
+    // Retrieves the total amount associated with a bill in the 'bill' table
     async GetOwnerSum() {
         try {
             const { data, error } = await supabase
@@ -370,8 +379,8 @@ export class Bill {
             }
     
             const billamt = data?.amount ?? 0; // Use optional chaining and nullish coalescing operator
-            const balanceSum = await this.GetBalanceSum();
-            const remainingAmount = billamt - balanceSum;
+            const balanceSum = await this.GetBalanceSum(); // Retrieves the total amount associated with the bill in the 'balance' table
+            const remainingAmount = billamt - balanceSum; // Compare the difference between the two amounts to derive the amount associated with the bill owner
             return remainingAmount;
         } catch (error) {
             Alert.alert('An unexpected error occurred 3: ' + error.message);
@@ -379,6 +388,7 @@ export class Bill {
         }
     }
 
+    // Checks if the owner is a participant in the bill
     async isOwnerBillParticipant(): Promise<boolean> {
         try {
             const billOwnerID = await this.getBillOwnerID();

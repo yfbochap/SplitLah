@@ -181,7 +181,7 @@ export default function App() {
               </TouchableOpacity>
             ))
           ) : (
-            <Text style={{marginTop: 20, color: 'white', fontSize: 24, textAlign: 'center'}}>No groups found.</Text>
+            <Text style={{marginTop: 20, color: 'white', fontSize: 24, textAlign: 'center'}}>No groups found.</Text> //Displays this if the user is not part of a group
           )}
         </ScrollView>
         {isFabOpen && (

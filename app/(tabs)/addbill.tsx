@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
-  StyleSheet,
   Alert,
   BackHandler
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Group } from '../../classes/group';
@@ -20,10 +18,9 @@ import CustomCheckbox from '../../assets/checkbox'; // Adjust the import path as
 import styles from '../../assets/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
-import {router, useRouter} from 'expo-router';
+import {router} from 'expo-router';
 
 export default function AddBill() {
-  const router = useRouter();
 
   const handleBackButtonPress = () => {
     router.navigate('group');
@@ -34,16 +31,18 @@ export default function AddBill() {
     return true;
   }
 
+  //Declares block-scoped variables
   const [amount, setAmount] = useState('');
   const [BillTitle, setBillTitle] = useState('');
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [groupMembers, setGroupMembers] = useState([]);
-  const [selectedMembers, setSelectedMembers] = useState({});
+  const [selectedMembers, setSelectedMembers] = useState({}); // State for selected members (via the checkboxes)
   const [showDropdown, setShowDropdown] = useState(false); // State for dropdown visibility
   const [selectedPaidBy, setSelectedPaidBy] = useState(null); // State for selected paid by user
   const [amounts, setAmounts] = useState({}); // State for individual amounts
 
+  //Function to retrieve list of group members
   const fetchGroupMembers = async () => {
     try {
       const gid = await getGID();
@@ -63,13 +62,14 @@ export default function AddBill() {
   };
 
 
-  useEffect(() => {
-    fetchGroupMembers();
-  }, []);
+  // useEffect(() => {
+  //   fetchGroupMembers();
+  // }, []);
 
-  // Reset form fields when the screen is focused
+  // Retrieves data on group members and resets form fields when the screen is focused
   useFocusEffect(
     useCallback(() => {
+      fetchGroupMembers();
       // Reset form fields
       setAmount('');
       setBillTitle('');
@@ -79,20 +79,13 @@ export default function AddBill() {
       setShowDropdown(false);
       setSelectedPaidBy(null);
 
-      // Optionally re-fetch group members if needed
-      fetchGroupMembers();
+      //Function to handle the android hardware back button being pressed
+      const backHandler = BackHandler.addEventListener("hardwareBackPress", handleAndroidBackButtonPress);
+      return () => {
+        backHandler.remove();
+      };
     }, [])
   );
-
-  useFocusEffect(
-      useCallback(()=>{
-        const backHandler = BackHandler.addEventListener("hardwareBackPress", handleAndroidBackButtonPress);
-
-        return () => {
-          backHandler.remove();
-        };
-      },[])
-  )
 
   // Function to handle changes in amount input
   const handleAmountChange = (text) => {
@@ -100,7 +93,7 @@ export default function AddBill() {
     formattedAmount = formattedAmount.replace(/(\..*)\./g, '$1');
     setAmount(formattedAmount);
 
-    // Update individual amounts based on the number of selected members
+    // Update individual amounts based on the number of selected members (this one helps change the individual amount for users when the total amount is changed)
     const selectedCount = Object.values(selectedMembers).filter(Boolean).length;
     if (selectedCount > 0) {
       const splitAmount = (parseFloat(formattedAmount) / selectedCount).toFixed(2);
@@ -116,6 +109,7 @@ export default function AddBill() {
     }
   };
 
+  // Function to handle title changes
   const handleTitleChange = (text) => {
     setBillTitle(text);
   };
@@ -140,7 +134,7 @@ export default function AddBill() {
         [userId]: !prevSelectedMembers[userId],
       };
 
-      // Update amounts
+      // Update individual amounts based on the number of selected members (this one helps the change the individual amounts per member whenever a checkbox is selected/deselected)
       const selectedCount = Object.values(updatedSelectedMembers).filter(Boolean).length;
       if (selectedCount > 0) {
         const splitAmount = (parseFloat(amount) / selectedCount).toFixed(2);
@@ -162,7 +156,7 @@ export default function AddBill() {
   // Function to handle amount change for individual checkboxes
   const handleIndividualAmountChange = (userId, text) => {
     let formattedAmount = text.replace(/[^0-9.]/g, '');
-    formattedAmount = formattedAmount.replace(/(\..*)\./g, '$1');
+    formattedAmount = formattedAmount.replace(/(\..*)\./g, '$1');  
     setAmounts((prevAmounts) => ({
       ...prevAmounts,
       [userId]: formattedAmount,
@@ -233,8 +227,6 @@ export default function AddBill() {
     }
 
     createBill();
-    // Example: Navigate to another screen after submission
-    // navigation.navigate('ConfirmationScreen');
     router.navigate('group');
   };
 
@@ -275,7 +267,7 @@ export default function AddBill() {
             style={styles.currencyInput}
             placeholder="Select paid by..."
             value={selectedPaidBy ? selectedPaidBy.user_name : ''}
-            editable={false}
+            editable={false} // Raw text is not allowed, a user must be selected from the dropdown box
           />
         </TouchableOpacity>
         {showDropdown && (
@@ -302,7 +294,7 @@ export default function AddBill() {
             onChange={() => handleCheckboxChange(member.user_id)}
             amount={amounts[member.user_id]}
             onAmountChange={(text) => handleIndividualAmountChange(member.user_id, text)}
-          />
+          /> //Updates the relevant variables whenever a checkbox is checked
         ))}
         </ScrollView>
         <TouchableOpacity style={{ ...styles.loginButton, backgroundColor: 'purple' }} onPress={handleSubmit}>
