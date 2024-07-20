@@ -220,14 +220,32 @@ export default function AddBill() {
     }
 
     // Check if the sum of amounts matches the main amount
-    const totalAmount = Object.values(amounts).reduce((sum, value) => sum + parseFloat(value || 0), 0);
-    if (totalAmount !== parseFloat(amount)) {
-      Alert.alert('Error', 'The sum of the individual amounts does not match the total amount.');
+    const totalAmount = Object.values(amounts).reduce((sum, value) => sum + parseFloat(value || 0), 0).toFixed(2);
+    if (totalAmount !== parseFloat(amount).toFixed(2)) {
+      const difference = totalAmount - parseFloat(amount)
+      const differenceString = difference.toFixed(2)
+      console.log(amounts, '|', totalAmount, '|', amount, '|', parseFloat(amount));
+      Alert.alert('Error', `The sum of the individual amounts does not match the total amount. There is a difference of ${differenceString}.`);
       return;
     }
 
     createBill();
     router.navigate('group');
+  };
+
+  //Function to select all members in the group as bill participants (checks all boxes)
+  const checkAllMembers = () => {
+    // Create a new object with all members selected
+    const updatedSelectedMembers = {};
+    const updatedAmounts = {};
+  
+    groupMembers.forEach(member => {
+      updatedSelectedMembers[member.user_id] = true;
+      updatedAmounts[member.user_id] = (parseFloat(amount) / groupMembers.length).toFixed(2);
+    });
+  
+    setSelectedMembers(updatedSelectedMembers);
+    setAmounts(updatedAmounts);
   };
 
   return (
@@ -284,7 +302,13 @@ export default function AddBill() {
           </ScrollView>
         )}
 
-        <Text style={styles.descText}>Bill Involves</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.descText}>Bill Involves</Text>
+          <TouchableOpacity onPress={checkAllMembers}>
+            <Text style={{...styles.descText, color: 'white'}}>Select All Members</Text>
+          </TouchableOpacity>
+        </View>
+
         <ScrollView style={styles.membersList}>
         {groupMembers.map((member) => (
           <CustomCheckbox

@@ -273,6 +273,21 @@ useFocusEffect(
     updateBill();
   };
 
+  //Function to select all members in the group as bill participants (checks all boxes)
+  const checkAllMembers = () => {
+    // Create a new object with all members selected
+    const updatedSelectedMembers = {};
+    const updatedAmounts = {};
+  
+    groupMembers.forEach(member => {
+      updatedSelectedMembers[member.user_id] = true;
+      updatedAmounts[member.user_id] = (parseFloat(amount) / groupMembers.length).toFixed(2);
+    });
+  
+    setSelectedMembers(updatedSelectedMembers);
+    setAmounts(updatedAmounts);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -327,7 +342,13 @@ useFocusEffect(
           </ScrollView>
         )}
 
-        <Text style={styles.descText}>Bill Involves</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.descText}>Bill Involves</Text>
+          <TouchableOpacity onPress={checkAllMembers}>
+            <Text style={{...styles.descText, color: 'white'}}>Select All Members</Text>
+          </TouchableOpacity>
+        </View>
+
         <ScrollView style={customStyles.membersList}>
           {groupMembers.map((member) => (
             <CustomCheckbox
