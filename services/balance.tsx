@@ -1,17 +1,6 @@
 import { supabase } from '../hooks/supabase';
-import { User } from './user';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-interface Balance {
-    id: string;
-    amount: number;
-    userId: string;
-    owedTo: string;
-}
-  
-interface GroupBalance {
-    group_id: string;
-    balance: Array<Balance>;
-}
+import { User } from '../classes/user';
+
 interface BalanceData {
   [key: string]: number;
 }
@@ -22,11 +11,7 @@ interface FormattedData {
   frontColor: string;
   labelTextStyle: { color: string };
 }
-interface Owedmoney {
-  amount: number;
-  owedTo: string;
-  userName: string;
-}
+
 // gets the balance in each group based on the groupid of the group
 export const getGroupBalance = async (groupId: string): Promise<{ userName: string; owedTo: string; amount: number }[]> => {
     const { data, error } = await supabase
@@ -57,8 +42,8 @@ export const getGroupBalance = async (groupId: string): Promise<{ userName: stri
     return balances;
   };
 
-
-  export const getOverallGroupBalance = (balances: { userName: string; owedTo: string; amount: number }[]) => {
+// gets how much each person owes or is owed based on the balances in the group
+export const getOverallGroupBalance = (balances: { userName: string; owedTo: string; amount: number }[]) => {
     const overallBalances: { [userId: string]: number } = {};
   
     balances.forEach((balance) => {
@@ -80,6 +65,7 @@ export const getGroupBalance = async (groupId: string): Promise<{ userName: stri
     return overallBalances;
   };
 
+// gets the message of how much a user owes or is owed
 export const getUserBalanceMessage = async (overallBalances: { [userName: string]: number }, userId: string) => {
     const user = new User(userId);
     const userName = await user.getUserName();
@@ -98,8 +84,9 @@ export const getUserBalanceMessage = async (overallBalances: { [userName: string
     else {
       message = `You are not owed any money`;
     }
-    return message; // <--- Add this return statement
+    return message; 
   };
+
 //transforms data to fit the format of the bar chart
 export const transformData = (data: BalanceData): FormattedData[] => {
   return Object.entries(data).map(([label, value]) => {
@@ -113,12 +100,13 @@ export const transformData = (data: BalanceData): FormattedData[] => {
   });
 };
 
-
+// helper function to find exact matches where one person can pay another person to clear their debt
 export const findExactMatches = (positiveBalances: [string, number][], negativeBalances: [string, number][]) => {
   const exactMatches = [];
 
   for (let i = 0; i < positiveBalances.length; i++) {
     for (let j = 0; j < negativeBalances.length; j++) {
+      // in cases where the amount owed is the same as the amount owed
       if (positiveBalances[i][1] === Math.abs(negativeBalances[j][1])) {
         exactMatches.push({
           userName: negativeBalances[j][0],
@@ -139,6 +127,7 @@ export const findExactMatches = (positiveBalances: [string, number][], negativeB
   return exactMatches;
 };
 
+// gets the transactions that need to be made to clear the balances
 export const getTransactions = (overallBalances: { [userId: string]: number }) => {
   const positiveBalances = Object.entries(overallBalances).filter(([_, amount]) => amount > 0);
   const negativeBalances = Object.entries(overallBalances).filter(([_, amount]) => amount < 0);

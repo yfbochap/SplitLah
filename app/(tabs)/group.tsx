@@ -1,4 +1,4 @@
-import React, { useEffect,useState, useCallback, } from 'react';
+import React, { useEffect, useState, useCallback, } from 'react';
 import {
     ScrollView,
     View,
@@ -25,7 +25,7 @@ import { getGID, storeBID, getUUID } from '@/services/accountService';
 import * as Clipboard from 'expo-clipboard';
 import { AntDesign } from '@expo/vector-icons';
 import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
-import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, GroupBalanceList, transformData, getTransactions} from '../../classes/balance';
+import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, transformData, getTransactions} from '../../services/balance';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -67,11 +67,6 @@ interface Owedmoney {
 }
 
 
-
-const calculateTotalBalance = (balances: Balance[]): number => {
-  return balances.reduce((total, item) => total + item.amount, 0);
-};
-
 const handleBill = async (inputBillID: string) => {
   // console.log('test1', inputBillID);
   try {
@@ -81,7 +76,6 @@ const handleBill = async (inputBillID: string) => {
     // console.error('Failed to save bill ID.', e);
   }
 };
-
 
 function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
 
