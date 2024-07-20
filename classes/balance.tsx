@@ -100,7 +100,7 @@ export const getUserBalanceMessage = async (overallBalances: { [userName: string
     }
     return message; // <--- Add this return statement
   };
- 
+//transforms data to fit the format of the bar chart
 export const transformData = (data: BalanceData): FormattedData[] => {
   return Object.entries(data).map(([label, value]) => {
     const positiveValue = Math.abs(value);

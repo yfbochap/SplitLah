@@ -129,13 +129,15 @@ function FirstTab({ billDetails, checkGroupData, refreshing, onRefresh }) {
 
 function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGroupData, highestValue }) {
   const navigation = useNavigation();
-
+  // Inner component to display the list of group balances
   const GroupBalanceList: React.FC = () => {
     const renderItem = ({ item }: { item: Owedmoney }) => {
+      // Determine the positive value and text color based on the amount owed
       const positiveValue = Math.abs(item.amount);
       const textColor = item.amount > 0 ? 'green' : 'red';
   
       return (
+        // Display each item with the userName, owedToName and amount
         <View style={styles2.itemContainer}>
           <Text style={styles2.itemText}>
             {item.userName} owes {item.owedTo}
@@ -148,6 +150,7 @@ function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGr
     };
   
     return (
+      // Render the list of group balances
       <FlatList
         data={groupbalance}
         renderItem={renderItem}
@@ -167,6 +170,7 @@ function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGr
       <Text style={{color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10}}>
             Group Balance
           </Text>
+      {/* Display bar chart of the overall group balance */}
       <View style={{marginLeft: 0}}>
         <BarChart
         showScrollIndicator
@@ -174,53 +178,42 @@ function SecondTab({ groupbalance, FormattedData, refreshing, onRefresh, checkGr
         barBorderRadius={4}
         // noOfSections={60}
         maxValue={200}
-          stepValue={20}
-          // stepHeight={}
-          data={FormattedData}
-          horizontal
-          initialSpacing={0}
-          barMarginBottom={0}
-          // showGradient
-          // gradientColor={'#fc84ff'}
-          hideYAxisText
-          yAxisThickness={0}
-          xAxisThickness={0}
-          
-          // xAxisColor={'#c919ff'}
-          // frontColor={'green'}
-          // sideColor={'#ff00d0'}
-          // topColor={'#ff66f4'}
-          barStyle={{
-            // borderWidth: 1,
-            // borderColor: '',
-            // shadowColor: '',
-            // shadowOffset: {width: 0, height: 4},
-            // shadowOpacity: 1,
-            // shadowRadius: 8,
-            // elevation: 10,
-            
-          }}
-          xAxisLabelsVerticalShift={10}
-          labelWidth={30}
-          
-          autoShiftLabels
-          hideRules
-          height={140}
-          barWidth={20}
-          isAnimated
-          renderTooltip={(item, index) => {
-            return (
-                  <Text style={{transform: [{rotate: '270deg', }], flex: 1, 
-                  marginBottom: 20,
-                  marginLeft: 0,
-                  backgroundColor: '#ffcefe',
-                  paddingHorizontal: 2,
-                  paddingVertical: 4,
-                  borderRadius: 4}}>
-                  {item.value}
-                  </Text>
-            );
-          }}
+        stepValue={20}
+        // stepHeight={}
+        data={FormattedData}
+        horizontal
+        initialSpacing={0}
+        barMarginBottom={0}
+        // showGradient
+        // gradientColor={'#fc84ff'}
+        hideYAxisText
+        yAxisThickness={0}
+        xAxisThickness={0}
+        // xAxisColor={'#c919ff'}
+        // frontColor={'green'}
+        // sideColor={'#ff00d0'}
+        // topColor={'#ff66f4'}
+        xAxisLabelsVerticalShift={10}
+        labelWidth={30}
+        
+        autoShiftLabels
+        hideRules
+        height={140}
+        barWidth={20}
+        isAnimated
+        renderTooltip={(item, index) => {
+        return (
+              <Text style={{transform: [{rotate: '270deg', }], flex: 1, 
+              marginBottom: 20,
+              marginLeft: 0,
+              backgroundColor: '#ffcefe',
+              paddingHorizontal: 2,
+              paddingVertical: 4,
+              borderRadius: 4}}>
+              {item.value}
+              </Text>
+        );
+      }}
         />
        </View>
        <Text style={{ color: 'white', fontSize: 20, textAlign: 'center', marginTop: 10 }}>
@@ -386,7 +379,7 @@ export default function GroupScreen() {
         <Text style={{ ...styles.groupidtext }}>
           Invite code: {groupDetails ? groupDetails.invite_code : '#Group-Code-Here'}
           <View style={styles.copyIconContainer}>
-
+            {/* Displays the copy to clipboard button to copy the group's invite code */}
             <TouchableOpacity style={styles.copyIconContainer} onPress={copyToClipboard}>
               <AntDesign name="copy1" size={24} color="white" />
             </TouchableOpacity>
@@ -398,6 +391,8 @@ export default function GroupScreen() {
     </SafeAreaView>
   );
 }
+
+
 const styles2 = StyleSheet.create({
   container: {
     flex: 1,

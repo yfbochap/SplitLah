@@ -1,6 +1,6 @@
-import {Image, StyleSheet, Platform, FlatList, ScrollView, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
+import { ScrollView, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect, useCallback,useRef } from 'react';
-import { View, Text, TextInput, Button, BackHandler } from 'react-native';
+import { View, Text, TextInput, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {supabase} from "@/hooks/supabase";
 import {getGID, getUUID} from "@/services/accountService";
@@ -9,7 +9,7 @@ import {useFocusEffect} from "@react-navigation/native";
 import styles from '@/assets/styles';
 import { Group } from '@/classes/group';
 import {HeaderBackButton} from "@react-navigation/elements";
-import {router, useRouter} from 'expo-router';
+import { router } from 'expo-router';
 
 export default function GroupChatScreen(){
     const [messages, setMessages] = useState([]);
@@ -28,16 +28,17 @@ export default function GroupChatScreen(){
         router.navigate("group");
     };
 
+    // Fetches previous messages and cleans them before setting into messages const
     async function fetchPreviousCleanedMessages() {
         const pastMessages = await getPreviousMessages();
         if (pastMessages != null) {
             // Use Promise.all to process messages in parallel and then map to apply function to all the elements
             const cleanedMessages = await Promise.all(pastMessages.map(parseRawMessage));
             setMessages(cleanedMessages);
-            // console.log("PREVIOUS MESSAGES:", cleanedMessages);
         }
     }
 
+    // Starts a subscription to actively listen to database changes for that group and sets the incoming message when there is one
     async function openSubscription(){
         const gid = await getGID();
         if (gid){
@@ -52,16 +53,19 @@ export default function GroupChatScreen(){
         }
     }
 
+    // Scrolls to the end of the screen
     const handleAutoScroll = () =>{
         scrollViewRef.current.scrollToEnd({ animated: true });
     };
 
+    // Scrolls to the end of the screen when a user uses keyboard
     const handleTextInputFocus = () => {
         setTimeout(() => {
             handleAutoScroll();
         }, 300);
     };
 
+    // Sends the message and resets the input
     async function handleSendMessage(){
         const grpID = await getGID();
         const userID = await getUUID();
@@ -69,9 +73,19 @@ export default function GroupChatScreen(){
         setNewMessage('');
     }
 
+    // Gets the group name and sets it
+    const getGroupData = async () => {
+        const gid = await getGID();
+        if (gid){
+            const group = new Group(gid);
+            const groupData = await group.getGroupDetails();
+            if (groupData){
+                setGroupName(groupData[0].group_name);
+            }
+        }
+    };
 
 
-    // Fetch all messages on start
     useEffect(() => {
         fetchPreviousCleanedMessages();
         scrollViewRef.current.scrollToEnd({ animated: true });
@@ -82,37 +96,15 @@ export default function GroupChatScreen(){
         openSubscription();
     }, []);
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchPreviousCleanedMessages();
-            openSubscription();
-            handleAutoScroll();
-            getGroupData();
-        }, [])
-    );
-
-    useFocusEffect(
-        useCallback(()=>{
-            const backHandler = BackHandler.addEventListener("hardwareBackPress", handleAndroidBackButtonPress);
-
-            return () => {
-                backHandler.remove();
-            };
-        },[])
-    )
 
     // Checks if the rawIncomingMessage has something then take it out append it to the current messages then remove the message
     // The deps part is to tell this useEffect to run everytime incomingRawMessage changes
     useEffect(() => {
         const processMessages = async () => {
             if (incomingRawMessage) {
-                // console.log("INCOMING MESSAGE:", incomingRawMessage);
-                // console.log("MESSAGE TYPE:", typeof(incomingRawMessage));
                 // Use Promise.all to process messages in parallel
                 const cleanedMessage = await parseRawMessage(incomingRawMessage);
-                // console.log("CLEANED MESSAGE:", cleanedMessage);
                 setMessages((prevMessages) => [...prevMessages, cleanedMessage]);
-                // console.log("MESSAGEs NOW:",messages);
                 setIncomingRawMessage(null);
             }
         };
@@ -126,16 +118,28 @@ export default function GroupChatScreen(){
         }, 1500);
     }, []);
 
-    const getGroupData = async () => {
-        const gid = await getGID();
-        if (gid){
-            const group = new Group(gid);
-            const groupData = await group.getGroupDetails();
-            if (groupData){
-                setGroupName(groupData[0].group_name);
-            }
-        }
-    };
+    // Functions that will start when the uses enters the page again
+    useFocusEffect(
+        useCallback(() => {
+            fetchPreviousCleanedMessages();
+            openSubscription();
+            handleAutoScroll();
+            getGroupData();
+        }, [])
+    );
+
+    // Allows the back button on android phone will direct to the correct page
+    useFocusEffect(
+        useCallback(()=>{
+            const backHandler = BackHandler.addEventListener("hardwareBackPress", handleAndroidBackButtonPress);
+
+            return () => {
+                backHandler.remove();
+            };
+        },[])
+    )
+
+
 
 
     return (

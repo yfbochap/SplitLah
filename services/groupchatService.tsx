@@ -1,13 +1,14 @@
 import {supabase} from "@/hooks/supabase";
 import {Alert} from "react-native";
-import {Group} from "@/classes/group";
 import {User} from "@/classes/user";
-import {getUUID, getGID} from "./accountService";
+import { getGID } from "./accountService";
 
+// Function to append 0 to the time if not 2 digit
 function padZero(num) {
     return (num < 10 ? '0' : '') + num;
 }
 
+// Formats the timestamp taken from db into more understandable
 function formatTime(date) {
     const hours = date.getHours();
     const minutes = date.getMinutes();
@@ -38,10 +39,9 @@ async function getPreviousMessages(){
     }
 }
 
-// Function to get username from the rawMessage
+// Function to clean the message object into another object with relevant data
 async function parseRawMessage(rawMesssage){
     const userID = rawMesssage.user_id;
-    // console.log("userid:",userID);
     const userClass = new User(userID);
     const userDetails = await userClass.getUserDetails();
     const userName = userDetails[0].user_name;
@@ -50,7 +50,6 @@ async function parseRawMessage(rawMesssage){
     const timeStamp = new Date(rawMesssage.time_stamp);
     const formattedDate = `${timeStamp.getFullYear()}-${padZero(timeStamp.getMonth() + 1)}-${padZero(timeStamp.getDate())} ${formatTime(timeStamp)}`;
     const cleanedMessage = {user_name: userName, user_email: userEmail, message: message, time_stamp: formattedDate};
-    // console.log(cleanedMessage);
     return cleanedMessage;
 }
 
