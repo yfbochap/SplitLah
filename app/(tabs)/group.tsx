@@ -9,7 +9,9 @@ import {
     Image,
     StyleSheet,
     Dimensions,
-    RefreshControl
+    RefreshControl,
+    TouchableWithoutFeedback,
+    Alert,
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -18,12 +20,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, useFocusEffect, router } from 'expo-router';
 import styles from '../../assets/styles';
 import { Group } from '../../classes/group';
-import { getGID, storeBID, getUUID } from '@/services/accountService';
+import { getGID, storeBID, getUUID, storeOCRText } from '@/services/accountService';
 import * as Clipboard from 'expo-clipboard';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
 import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
 import { getGroupBalance, getOverallGroupBalance, getUserBalanceMessage, transformData, getTransactions} from '../../services/balance';
 import Entypo from '@expo/vector-icons/Entypo';
+import * as ImagePicker from 'expo-image-picker';
 
 //Declares the top navigation bar for 'Bills' and 'Balances'
 const Tab = createMaterialTopTabNavigator();
@@ -76,17 +80,17 @@ const handleBill = async (inputBillID: string) => {
 };
 
 // Defines the 'Bills' tab, with the relevant props being passed from default function 'GroupScreen'
-function FirstTab({ billDetails, refreshing, onRefresh }) {
+function FirstTab({ billDetails, refreshing, onRefresh, closeFabMenu, toggleFab, isFabOpen, showImageOptions }) {
 
   return (
-    //Renders the search bar and the plus button for creating a new bill
+    <TouchableWithoutFeedback onPress={closeFabMenu}>
     <View style={styles.container}>
       <View style={styles.searchFabContainer}>
-        <Link href='addbill' asChild>
-          <TouchableOpacity style={styles.fab}>
+        {/* <Link href='addbill' asChild> */}
+          <TouchableOpacity style={styles.fab} onPress={toggleFab}>
             <Image source={require('../../assets/images/plus.png')} style={styles.fabIcon} />
           </TouchableOpacity>
-        </Link>
+        {/* </Link> */}
         <TextInput
           style={styles.searchInput}
           placeholder="Search"
@@ -117,7 +121,26 @@ function FirstTab({ billDetails, refreshing, onRefresh }) {
             <Text style={{marginTop: 20, color: 'white', fontSize: 24, textAlign: 'center'}}>No bills available</Text> //Displays this message if there are no bills found
         )}
       </ScrollView>
+      {isFabOpen && (
+          <View style={{...styles.fabMenu, top: 45 }}>
+            <Link href='addbill' asChild>
+              <TouchableOpacity style={styles.fabMenuItem}>
+                <LinearGradient colors={['rgba(128,0,128,0.7)', 'rgba(0,0,255,0.7)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fabMenuItemBackground}>
+                  <Text style={styles.fabMenuText}>New Bill Entry</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </Link>
+            {/* <Link href='receiptreader' asChild> */}
+              <TouchableOpacity style={styles.fabMenuItem} onPress={showImageOptions}>
+                <LinearGradient colors={['rgba(236,180,10,0.7)', 'rgba(244,67,54,0.7)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fabMenuItemBackground}>
+                  <Text style={styles.fabMenuText}>Receipt Reader</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            {/* </Link> */}
+          </View>
+        )}
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -231,6 +254,7 @@ export default function GroupScreen() {
   useFocusEffect(
     useCallback(() => {
       checkGroupData();
+      setIsFabOpen(false);
     }, [])
   );
 
@@ -241,12 +265,27 @@ export default function GroupScreen() {
   const [groupbalance, setOwedMoney] = useState<Owedmoney[] | null>(null);
   const [FormattedData, setFormattedData] = useState<FormattedData[] | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [isFabOpen, setIsFabOpen] = useState(false);
   const [highestValue, sethighestValue ] = useState(0); //Variable for Experimental Feature
+
+  // Variables for OCR function
+  const [ocrResult, setOcrResult] = React.useState('');
  
   //Function for assisting the user in copying the group code
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(groupDetails.invite_code);
   };
+
+     // Function to open the FAB menu
+     const toggleFab = () => {
+      setIsFabOpen(!isFabOpen);
+    };
+    // Function close the FAB menu
+    const closeFabMenu = () => {
+      if (isFabOpen) {
+        setIsFabOpen(false);
+      }
+    };
 
   //Retrieves and processes all relevant group data (based on the stored 'group_id')
   const checkGroupData = async () => {
@@ -316,6 +355,103 @@ export default function GroupScreen() {
     setRefreshing(false);
   }, []);
 
+  //Function for OCR feature
+  const handleImageSelection = async (source) => {
+    let result;
+
+    if (source === 'camera') {
+      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+      if (cameraPermission.status !== 'granted') {
+        Alert.alert('Permission required', 'Camera permission is required.');
+        return;
+      }
+      result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+    } else if (source === 'gallery') {
+      const mediaLibraryPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (mediaLibraryPermission.status !== 'granted') {
+        Alert.alert('Permission required', 'Media library permission is required.');
+        return;
+      }
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      console.log('File Path: ',result.assets[0].uri);
+    }
+
+    if (!result.cancelled) {
+      const ocrResult = await uploadImage(result.assets[0].uri);
+      router.push({
+        pathname: 'ocrbill',
+        params: { ocrResult },
+      });
+    }
+  };
+
+  const uploadImage = async (uri) => {
+    const formData = new FormData();
+    formData.append('file', {
+      uri,
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+    });
+
+    try {
+      const apikey = process.env.EXPO_PUBLIC_OCR_KEY;
+      const response = await fetch('https://api.ocr.space/parse/image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'apikey': String(apikey),
+        },
+        body: formData,
+      });
+
+      // const responseText = await response.text();
+      // console.log('API Response:', responseText);
+
+      const result = await response.json();
+      console.log('API Response:', result);
+      const ocrResult = result.ParsedResults && result.ParsedResults.length > 0
+      ? result.ParsedResults[0].ParsedText
+      : 'No text found.';
+      await storeOCRText(ocrResult);
+      return ocrResult;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return 'Error occurred during OCR.';
+    }
+  };
+
+  const showImageOptions = () => {
+    Alert.alert(
+      'Select Image Source',
+      'Choose a source to select an image',
+      [
+        {
+          text: 'Take Photo',
+          onPress: () => handleImageSelection('camera'),
+        },
+        {
+          text: 'Choose from Gallery',
+          onPress: () => handleImageSelection('gallery'),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+
   return (
     // Display the header and the two tabs for bills and balances
     <SafeAreaView style={styles.container}>
@@ -363,7 +499,7 @@ export default function GroupScreen() {
       >
         {/* refresh function by pulling the items in bill down to check for new bills */}
         <Tab.Screen name="FirstTab">
-          {() => <FirstTab billDetails={billDetails} checkGroupData={checkGroupData} refreshing={refreshing} onRefresh={onRefresh} />}
+          {() => <FirstTab billDetails={billDetails} checkGroupData={checkGroupData} refreshing={refreshing} onRefresh={onRefresh} toggleFab={toggleFab} closeFabMenu={closeFabMenu} isFabOpen={isFabOpen} showImageOptions={showImageOptions} />}
         </Tab.Screen>
         <Tab.Screen name="SecondTab">
           {() => <SecondTab groupbalance={groupbalance} FormattedData={FormattedData} checkGroupData={checkGroupData} refreshing={refreshing} onRefresh={onRefresh} />}

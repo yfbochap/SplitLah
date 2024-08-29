@@ -253,6 +253,7 @@ export default function AddBill() {
       <View style={styles.header}>
         <HeaderBackButton tintColor='white' onPress={handleBackButtonPress} />
         <Text style={styles.headerText}>Add Bill</Text>
+        
       </View>
       <View>
         <Text style={styles.descText}>Title</Text>

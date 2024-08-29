@@ -228,5 +228,25 @@ async function getBID(): Promise<string | null> {
     }
 };
 
+async function storeOCRText(ocr_text: string){
+    try {
+        await AsyncStorage.setItem('ocr_text', ocr_text);
+        // console.log(bid);
+    } catch (e) {
+        console.error('Failed to save OCR data.', e);
+    }
+};
+
+async function getOCRText(): Promise<string | null> {
+    try {
+        const ocr_text = await AsyncStorage.getItem('ocr_text');
+        return ocr_text;
+    } catch (e) {
+        // console.error('Failed to retrieve UUID.', e);
+        return null;
+    }
+};
+
 export {passwordTotalCheck, emailTotalCheck, usernameTotalCheck, signUpEmail, signInEmail, signOutEmail, checkSession};
 export { getUUID, getGID, storeGID, getBID, storeBID};
+export { storeOCRText, getOCRText };
